@@ -11,6 +11,7 @@ import MySqlHome from './pages/MySqlHome';
 import OptimizedMySqlHome from './pages/OptimizedMySqlHome';
 import Resources from './pages/Resources';
 import About from './pages/About';
+import LegalResources from './pages/LegalResources';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Alerts from './pages/Alerts';
@@ -147,6 +148,7 @@ function App() {
                         <Route path="/marketplace" element={<Marketplace />} />
                         <Route path="/sponsors" element={<Sponsors />} />
                         <Route path="/resources" element={<Resources />} />
+						<Route path="/legal-resources" element={<LegalResources />} />
                         <Route path="/statistics" element={<Statistics />} />
 			<Route path="/benefits" element={<Benefits />} />
                         <Route path="/about" element={<About />} />
