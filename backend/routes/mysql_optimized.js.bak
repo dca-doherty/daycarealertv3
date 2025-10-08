@@ -1,0 +1,12 @@
+/**
+ * MySQL-optimized API Routes - Alias for mysqlDaycares routes
+ * This provides an alias to the existing MySQL routes for backward compatibility
+ */
+const express = require('express');
+const router = express.Router();
+const mysqlDaycaresRoutes = require('./mysqlDaycares');
+
+// Just forward all requests to the existing implementation
+router.use('/daycares', mysqlDaycaresRoutes);
+
+module.exports = router;

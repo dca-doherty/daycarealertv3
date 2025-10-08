@@ -1,0 +1,41 @@
+/**
+ * Headers Important Fix - v1.0
+ * Extra-aggressive fix for table headers
+ */
+
+/* Force all headers to be visible with appropriate styling */
+.responsive-table th .header,
+.responsive-table thead th .header,
+.responsive-table table th .header,
+.table th .header,
+.table thead th .header {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: #000 !important; /* Black text for maximum contrast */
+  font-weight: bold !important;
+  padding: 8px !important;
+  background-color: transparent !important;
+  text-shadow: none !important;
+}
+
+/* Target specific header text */
+.responsive-table th:nth-child(5) .header,
+.responsive-table th:nth-child(6) .header {
+  color: #000 !important;
+  font-weight: 900 !important; /* Extra bold */
+  text-shadow: 0 0 1px rgba(0,0,0,0.5) !important; /* Text outline effect */
+}
+
+/* Target specific cells to ensure they're visible */
+.responsive-table td.monthly_cost,
+.responsive-table td.yearsInOperation {
+  color: #000 !important;
+  font-weight: bold !important;
+}
+
+/* Add box shadow to make headers stand out */
+.responsive-table th .header {
+  box-shadow: 0 0 3px rgba(0,0,0,0.2) !important;
+  border-radius: 4px !important;
+}

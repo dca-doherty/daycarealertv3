@@ -1,0 +1,36 @@
+RATING DISTRIBUTION CHANGE ANALYSIS
+==========================================
+
+IMPACT OF OPERATIONAL FACTORS ON RATING DISTRIBUTION:
+
+SUMMARY:
+Average rating shift: +0.28 stars
+
+RATING DISTRIBUTION COMPARISON:
+Rating | Previous % | Current % | Change    | Assessment
+--------------------------------------------------------
+   5.0 | 40.66%     | 66.67%     |    +26.01% | Major increase
+   4.5 | 28.31%     | 17.38%     |    -10.93% | Major decrease
+   4.0 | 15.80%     |  8.79%     |     -7.01% | Significant decrease
+   3.5 |  8.33%     |  3.78%     |     -4.55% | Moderate decrease
+   3.0 |  3.72%     |  1.94%     |     -1.78% | Moderate decrease
+   2.5 |  1.82%     |  0.94%     |     -0.88% | Slight decrease
+   2.0 |  0.96%     |  0.35%     |     -0.61% | Slight decrease
+   1.5 |  0.25%     |  0.15%     |     -0.10% | Slight decrease
+   1.0 |  0.16%     |  0.01%     |     -0.15% | Slight decrease
+
+OPERATIONAL FACTORS IMPACT:
+The implementation of operational factors in the rating system has caused:
+- A significant shift toward higher ratings, with more 4.5-5 star daycares
+  (This suggests that quality operational factors are prevalent and beneficial)
+- A significant reduction in middle tier (3-4 stars) ratings, with more polarization
+
+KEY OPERATIONAL FACTORS DETECTED:
+- Accepts child care subsidies: Present in 51.1% of daycares, avg impact: 0.20 stars
+- Specialized infant care: Present in 72.2% of daycares, avg impact: 0.10 stars
+- Early morning care available: Present in 68.4% of daycares, avg impact: 0.10 stars
+- Serves wide age range: Present in 65.6% of daycares, avg impact: 0.10 stars
+- Evening/extended care available: Present in 51.7% of daycares, avg impact: 0.10 stars
+- Large capacity facility: Present in 29.7% of daycares, avg impact: 0.10 stars
+- Saturday care available: Present in 9.8% of daycares, avg impact: 0.10 stars
+- Sunday care available: Present in 4.1% of daycares, avg impact: 0.10 stars

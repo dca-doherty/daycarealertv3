@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaycareAlert - Clear User Session</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #d32f2f;
+        }
+        .login-btn {
+            background-color: #2196F3;
+        }
+        .login-btn:hover {
+            background-color: #0b7dda;
+        }
+        .register-btn {
+            background-color: #4CAF50;
+        }
+        .register-btn:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>DaycareAlert - Clear User Session</h1>
+    <p>Use this page to clear your current login session and start fresh.</p>
+    
+    <div class="container">
+        <h2>Current Authentication Status</h2>
+        <div id="authStatus">Checking...</div>
+        
+        <div class="actions">
+            <button id="clearSession">Clear Authentication</button>
+            <button id="goToLogin" class="login-btn">Go to Login</button>
+            <button id="goToRegister" class="register-btn">Go to Register</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>What This Does</h2>
+        <p>Clearing your session:</p>
+        <ul>
+            <li>Removes the authentication token from your browser</li>
+            <li>Logs you out of the application</li>
+            <li>Allows you to test registration with a new account</li>
+        </ul>
+        <p>This is useful when you want to test registering a new user instead of using an existing account.</p>
+    </div>
+
+    <script>
+        // Function to check current authentication status
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            const statusElement = document.getElementById('authStatus');
+            
+            if (!token) {
+                statusElement.innerHTML = '<p class="success">Not logged in. You can register a new account.</p>';
+                return;
+            }
+            
+            statusElement.innerHTML = 'Checking authentication...';
+            
+            try {
+                const response = await fetch('http://localhost:8081/special-auth/check', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusElement.innerHTML = `
+                        <p class="error">Currently logged in as: ${data.user.username}</p>
+                        <pre>${JSON.stringify(data.user, null, 2)}</pre>
+                        <p>You need to clear this session to register a new account.</p>
+                    `;
+                } else {
+                    statusElement.innerHTML = '<p class="success">Not logged in. You can register a new account.</p>';
+                }
+            } catch (error) {
+                statusElement.innerHTML = `<p>Error checking authentication: ${error.message}</p>`;
+            }
+        }
+        
+        // Function to clear authentication
+        document.getElementById('clearSession').addEventListener('click', function() {
+            // Remove token from localStorage
+            localStorage.removeItem('token');
+            
+            // Also clear any API-cached auth headers
+            sessionStorage.clear();
+            
+            document.getElementById('authStatus').innerHTML = `
+                <p class="success">Authentication cleared! You can now register a new account.</p>
+            `;
+        });
+        
+        // Navigation buttons
+        document.getElementById('goToLogin').addEventListener('click', function() {
+            window.location.href = 'special-login.html';
+        });
+        
+        document.getElementById('goToRegister').addEventListener('click', function() {
+            window.location.href = 'special-register.html';
+        });
+        
+        // Check auth on page load
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>

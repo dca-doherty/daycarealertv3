@@ -1,0 +1,84 @@
+.featured-section {
+  padding: 60px 0;
+  background-color: #f8f9fa;
+}
+
+.section-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #333;
+  text-align: center;
+}
+
+.section-subtitle {
+  color: #6c757d;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.featured-card {
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  height: 100%;
+  border: none;
+}
+
+.featured-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.daycare-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.daycare-location {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.daycare-rating {
+  margin-bottom: 10px;
+}
+
+.rating {
+  color: #ffc107;
+}
+
+.rating.excellent {
+  color: #28a745;
+}
+
+.rating.good {
+  color: #17a2b8;
+}
+
+.rating.average {
+  color: #ffc107;
+}
+
+.rating.poor {
+  color: #dc3545;
+}
+
+.rating-score {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-left: 5px;
+}
+
+.daycare-description {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .featured-section {
+    padding: 40px 0;
+  }
+}

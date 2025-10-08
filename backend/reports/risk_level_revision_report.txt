@@ -1,0 +1,44 @@
+DAYCARE VIOLATION RATING REVISION REPORT
+==================================================
+
+SUMMARY:
+Total violations analyzed: 145204
+Total ratings changed: 25307 (17.43%)
+
+CATEGORY DISTRIBUTION:
+Administrative: 34378 violations (23.68%)
+Paperwork: 32154 violations (22.14%)
+Safety: 30516 violations (21.02%)
+Health: 21516 violations (14.82%)
+Facility: 9367 violations (6.45%)
+Unknown: 7288 violations (5.02%)
+Child Well-being: 6105 violations (4.20%)
+Sleep/Rest: 2744 violations (1.89%)
+Transportation: 1136 violations (0.78%)
+
+ORIGINAL RISK LEVEL DISTRIBUTION:
+Medium High: 60372 violations (41.58%)
+Medium: 43530 violations (29.98%)
+High: 33235 violations (22.89%)
+Medium Low: 5711 violations (3.93%)
+Low: 2355 violations (1.62%)
+Unknown: 1 violations (0.00%)
+
+REVISED RISK LEVEL DISTRIBUTION:
+Medium High: 56475 violations (38.89%)
+Medium: 49375 violations (34.00%)
+High: 28502 violations (19.63%)
+Medium Low: 8528 violations (5.87%)
+Low: 2323 violations (1.60%)
+Unknown: 1 violations (0.00%)
+
+RISK LEVEL CHANGES:
+High → Medium High: 7348 violations (29.04% of changes)
+Medium High → Medium: 6904 violations (27.28% of changes)
+Medium High → High: 4546 violations (17.96% of changes)
+Medium → Medium Low: 2847 violations (11.25% of changes)
+High → Medium: 2694 violations (10.65% of changes)
+Medium → High: 701 violations (2.77% of changes)
+Medium → Medium High: 205 violations (0.81% of changes)
+Low → High: 32 violations (0.13% of changes)
+Medium Low → High: 30 violations (0.12% of changes)

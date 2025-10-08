@@ -1,0 +1,331 @@
+.cost-estimator-page {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.cost-estimator-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  position: relative;
+  top: -20px;
+}
+
+.estimator-description {
+  font-size: 1.1rem;
+  color: #626e82;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.estimator-form {
+  margin-bottom: 2rem;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  color: #3c4b64;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.button-group button {
+  min-width: 180px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.1rem;
+}
+
+.special-needs-checkbox {
+  margin-top: 2.5rem;
+}
+
+.estimate-result {
+  margin-top: 2rem;
+}
+
+.estimate-card {
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.estimate-card .card-header {
+  background-color: #3c4b64;
+  color: #ffffff;
+  text-align: center;
+  padding: 1.2rem;
+}
+
+.estimate-card .card-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.price-display {
+  text-align: center;
+  margin: 1.5rem 0;
+  font-family: 'Arial', sans-serif;
+}
+
+.currency {
+  font-size: 2rem;
+  vertical-align: top;
+  position: relative;
+  top: 1rem;
+}
+
+.amount {
+  font-size: 4.5rem;
+  font-weight: 700;
+  color: #3c4b64;
+  margin: 0 0.2rem;
+}
+
+.period {
+  font-size: 1.2rem;
+  color: #626e82;
+  vertical-align: bottom;
+  position: relative;
+  bottom: 1rem;
+}
+
+.estimate-details {
+  margin-top: 1.5rem;
+  border-top: 1px solid #e9ecef;
+  padding-top: 1rem;
+}
+
+.estimate-details h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+  color: #495057;
+}
+
+.estimate-details ul {
+  padding-left: 1.2rem;
+}
+
+.estimate-details li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.pricing-factors {
+  margin: 1rem 0;
+}
+
+.pricing-factor {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed #e9ecef;
+  position: relative;
+}
+
+.pricing-factor:last-child {
+  border-bottom: none;
+}
+
+.pricing-factor.base-price {
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.75rem;
+}
+
+.pricing-factor.total {
+  border-top: 2px solid #e9ecef;
+  border-bottom: none;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+.factor-label {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.factor-value {
+  font-weight: 500;
+  font-size: 1rem;
+  text-align: right;
+  margin-left: 1rem;
+}
+
+.factor-value.premium {
+  color: #d35400;
+}
+
+.factor-value.discount {
+  color: #2ecc71;
+}
+
+.factor-description {
+  display: block;
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+  font-style: italic;
+}
+
+.additional-factors {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+}
+
+.additional-factors h5 {
+  font-size: 1.05rem;
+  margin-bottom: 0.75rem;
+  color: #495057;
+}
+
+.estimate-note {
+  color: #626e82;
+  font-size: 0.95rem;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.estimate-tip {
+  background-color: #f8f9fa;
+  border-left: 4px solid #3c4b64;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+}
+
+/* Custom checkbox styling */
+.custom-control {
+  position: relative;
+  display: block;
+  min-height: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.custom-control-input {
+  position: absolute;
+  left: 0;
+  z-index: 1;
+  width: 1rem;
+  height: 1rem;
+  opacity: 0;
+}
+
+.custom-control-label {
+  position: relative;
+  margin-bottom: 0;
+  vertical-align: top;
+  cursor: pointer;
+}
+
+.custom-control-label::before {
+  position: absolute;
+  top: 0.25rem;
+  left: -1.5rem;
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+  content: "";
+  background-color: #fff;
+  border: #adb5bd solid 1px;
+  border-radius: 0.25rem;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+  color: #fff;
+  border-color: #0d6efd;
+  background-color: #0d6efd;
+}
+
+.custom-control-label::after {
+  position: absolute;
+  top: 0.25rem;
+  left: -1.5rem;
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  content: "";
+  background: no-repeat 50% / 50% 50%;
+}
+
+.custom-control-input:checked ~ .custom-control-label::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+}
+
+/* City Search Input Styles */
+.city-search-input {
+  width: 100%;
+  background-color: white;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.city-search-input:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Enhance datalist dropdown appearance */
+input::-webkit-calendar-picker-indicator {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .cost-estimator-container {
+    padding: 1.5rem 1rem;
+    margin-top: -10px;
+  }
+  
+  .estimator-description {
+    font-size: 1rem;
+  }
+  
+  .button-group button {
+    min-width: 150px;
+    font-size: 1rem;
+  }
+  
+  .amount {
+    font-size: 3.5rem;
+  }
+  
+  .special-needs-checkbox {
+    margin-top: 1rem;
+  }
+  
+  /* Mobile-specific city input styles */
+  .city-search-input {
+    font-size: 16px; /* Prevents zoom on mobile */
+    padding: 10px;
+    height: 44px !important; /* Larger touch target */
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-color: white !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
+    padding-right: 30px !important;
+  }
+}

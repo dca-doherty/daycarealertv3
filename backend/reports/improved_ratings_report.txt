@@ -1,0 +1,55 @@
+IMPROVED STATISTICAL DAYCARE RATING SYSTEM REPORT
+============================================================
+
+SUMMARY:
+Total daycares rated: 11509
+
+OVERALL RATING DISTRIBUTION:
+  4.5 stars: 723 daycares (6.3%)
+  3.5 stars: 1909 daycares (16.6%)
+  2.5 stars: 1813 daycares (15.8%)
+  1.5 stars: 987 daycares (8.6%)
+
+HEALTH & SAFETY RATING DISTRIBUTION:
+  4.5 stars: 1279 daycares (11.1%)
+  3.5 stars: 1279 daycares (11.1%)
+  2.5 stars: 1086 daycares (9.4%)
+  1.5 stars: 1279 daycares (11.1%)
+
+STRUCTURAL QUALITY RATING DISTRIBUTION:
+  4.5 stars: 1279 daycares (11.1%)
+  3.5 stars: 1086 daycares (9.4%)
+  2.5 stars: 1279 daycares (11.1%)
+  1.5 stars: 1279 daycares (11.1%)
+
+PROCESS QUALITY RATING DISTRIBUTION:
+  4.5 stars: 1279 daycares (11.1%)
+  3.5 stars: 1086 daycares (9.4%)
+  2.5 stars: 1279 daycares (11.1%)
+  1.5 stars: 1279 daycares (11.1%)
+
+MANAGEMENT RATING DISTRIBUTION:
+  4.5 stars: 1279 daycares (11.1%)
+  3.5 stars: 1086 daycares (9.4%)
+  2.5 stars: 1279 daycares (11.1%)
+  1.5 stars: 1279 daycares (11.1%)
+
+METHODOLOGY IMPROVEMENTS:
+1. Reversed Z-score interpretation for Health & Safety to align with risk scores
+2. Explicit percentile-based thresholds ensuring balanced distribution:
+   - FIVE_STAR: 89th percentile
+   - FOUR_HALF_STAR: 78th percentile
+   - FOUR_STAR: 67th percentile
+   - THREE_HALF_STAR: 56th percentile
+   - THREE_STAR: 44th percentile
+   - TWO_HALF_STAR: 33th percentile
+   - TWO_STAR: 22th percentile
+   - ONE_HALF_STAR: 11th percentile
+   - ONE_STAR: 0th percentile
+3. Enhanced raw score differentiation for dimensions with little variation
+4. Forced distribution bands creating meaningful separation between rating levels
+5. Dimension weights:
+   - HEALTH_SAFETY: 40%
+   - STRUCTURAL: 25%
+   - PROCESS: 20%
+   - MANAGEMENT: 15%

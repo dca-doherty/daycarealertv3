@@ -1,0 +1,45 @@
+
+> daycarealert-backend@1.0.0 start
+> node server.js
+
+Ignoring invalid configuration option passed to Connection: acquireTimeout. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
+Using console.log for debugging startup issues
+Environment variables loaded:
+DB_HOST: 172.26.144.1
+DB_NAME: daycarealert
+DAYCARE_DATASET: bc5r-88dy
+VIOLATIONS_DATASET: tqgd-mf4x
+FRONTEND_URL: http://localhost:3000
+PORT: 8083
+Scheduler service loaded successfully
+SERVER ENV: USE_MOCK_DATA is set to: false
+SERVER: Forcing USE_MOCK_DATA to false for all components
+RECOMMENDATIONS ENV: USE_MOCK_DATA is set to: false
+RECOMMENDATIONS: Forcing USE_MOCK_DATA to FALSE
+Port 8083 is already in use. Trying 8084...
+Server running on port 8084
+Alert scheduler disabled via environment variable
+Database connection established successfully
+Database connection check result: Connected
+Creating user authentication tables...
+Users table created or already exists
+Sessions table created or already exists
+Verification tokens table created or already exists
+Admin user already exists
+Creating test user...
+Error initializing user tables: Error: Duplicate entry 'test@example.com' for key 'users.email'
+    at PromisePool.query (/home/dohertyb/daycarealert/backend/node_modules/mysql2/lib/promise/pool.js:36:22)
+    at createUserTables (/home/dohertyb/daycarealert/backend/scripts/init-user-tables.js:96:38)
+    at async /home/dohertyb/daycarealert/backend/server.js:139:11 {
+  code: 'ER_DUP_ENTRY',
+  errno: 1062,
+  sql: '\n' +
+    '        INSERT INTO users (username, email, password_hash, role, verified, email_verified, full_name) \n' +
+    "        VALUES ('testuser', 'test@example.com', '$2a$10$cS4/MRqphNXyU3fka9H8IedxwlqauzTi3QBWh/fNb6ZeJfXnIf5ma', 'user', 1, 1, 'Test User')\n" +
+    '      ',
+  sqlState: '23000',
+  sqlMessage: "Duplicate entry 'test@example.com' for key 'users.email'"
+}
+User authentication tables initialized
+Tour requests table created or verified
+Tour requests table initialized

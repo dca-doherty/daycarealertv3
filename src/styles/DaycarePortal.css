@@ -1,0 +1,135 @@
+/* DaycarePortal.css - Styles for the Daycare Provider Portal */
+
+/* Login Page */
+.daycare-login-container {
+  min-height: calc(100vh - 150px);
+  display: flex;
+  align-items: center;
+}
+
+/* Dashboard Layout */
+.daycare-portal-dashboard {
+  min-height: calc(100vh - 56px);
+  background-color: #f5f7fa;
+}
+
+.portal-header {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.portal-sidebar .nav-link {
+  padding: 12px 20px;
+  color: #495057;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.portal-sidebar .nav-link:hover {
+  background-color: #f0f2f5;
+  border-left: 3px solid #ddd;
+}
+
+.portal-sidebar .nav-link.active {
+  background-color: #e9ecef;
+  border-left: 3px solid #007bff;
+  color: #007bff;
+  font-weight: 500;
+}
+
+/* Component Specific Styles */
+
+/* Tour List */
+.tours-table th {
+  background-color: #f5f7fa;
+  font-weight: 600;
+}
+
+.pending-tour {
+  background-color: rgba(255, 193, 7, 0.05);
+}
+
+.comment-box {
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+.age-group-badge {
+  display: inline-block;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  padding: 3px 8px;
+  background-color: #e9ecef;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: #495057;
+}
+
+/* Referral List */
+.referrals-table th {
+  background-color: #f5f7fa;
+  font-weight: 600;
+}
+
+.unconverted-referral {
+  background-color: rgba(255, 193, 7, 0.05);
+}
+
+/* Analytics Dashboard */
+.analytics-dashboard .card {
+  height: 100%;
+  transition: all 0.2s ease;
+}
+
+.analytics-dashboard .card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Daycare Info Form */
+.daycare-info-form label {
+  font-weight: 500;
+}
+
+.amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+/* Competitor Analysis */
+.competitor-table th {
+  background-color: #f5f7fa;
+  font-weight: 600;
+}
+
+.competitor-name {
+  font-weight: 500;
+}
+
+.summary-item {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-label {
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 4px;
+}
+
+.summary-value {
+  color: #212529;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+  .portal-sidebar {
+    margin-bottom: 1.5rem;
+  }
+  
+  .amenities-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}

@@ -1,0 +1,235 @@
+/* DaycareComparison.css */
+
+.comparison-modal .modal-dialog {
+  max-width: 95%;
+}
+
+.comparison-container {
+  overflow-x: auto;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.comparison-table th, 
+.comparison-table td {
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.category-col {
+  width: 150px;
+  background-color: #f8f9fa;
+  font-weight: bold;
+  text-align: left !important;
+}
+
+.daycare-col {
+  min-width: 200px;
+}
+
+.comparison-table .category-name {
+  font-weight: bold;
+  text-align: left;
+  background-color: #f8f9fa;
+}
+
+.daycare-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.daycare-header h5 {
+  margin: 0;
+  font-size: 1.1rem;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.comparison-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Rating styles */
+.rating {
+  font-size: 1.2rem;
+  display: inline-block;
+}
+
+.rating.excellent {
+  color: #28a745;
+}
+
+.rating.good {
+  color: #17a2b8;
+}
+
+.rating.average {
+  color: #ffc107;
+}
+
+.rating.poor {
+  color: #dc3545;
+}
+
+.rating-score {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* Make the table responsive on small screens */
+@media (max-width: 768px) {
+  .comparison-modal .modal-dialog {
+    max-width: 100%;
+    margin: 0 5px;
+    padding: 0;
+  }
+
+  .comparison-modal .modal-content {
+    border-radius: 8px;
+  }
+
+  .comparison-modal .modal-body {
+    padding: 10px;
+  }
+  
+  .category-col {
+    width: 90px;
+    font-size: 0.8rem;
+    padding: 8px 5px !important;
+  }
+  
+  .daycare-col {
+    min-width: 140px;
+    max-width: 140px;
+    padding: 8px 5px !important;
+  }
+  
+  .comparison-table td {
+    padding: 8px 5px !important;
+    font-size: 0.85rem;
+    line-height: 1.3;
+  }
+
+  .daycare-header h5 {
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+  }
+
+  .action-buttons {
+    margin-top: 0;
+  }
+
+  .action-buttons button {
+    padding: 2px 5px;
+    font-size: 0.75rem;
+  }
+
+  .comparison-table .rating {
+    font-size: 1rem;
+  }
+
+  .comparison-table .rating-score {
+    font-size: 0.75rem;
+  }
+
+  .violations-breakdown .badge {
+    min-width: 60px;
+    padding: 3px 5px;
+    font-size: 0.7rem;
+  }
+}
+
+.comparison-help {
+  background-color: #f8f9fa;
+  border: none;
+  border-radius: 8px;
+}
+
+.comparison-help .card-title {
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.comparison-help ul {
+  margin-left: 15px;
+  padding-left: 0;
+}
+
+.comparison-help li {
+  margin-bottom: 8px;
+}
+
+/* Styles for the violations breakdown */
+.violations-breakdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.violations-breakdown .badge {
+  display: inline-block;
+  min-width: 80px;
+  padding: 5px 8px;
+  margin-bottom: 3px;
+}
+
+/* Zebra striping for the table */
+.comparison-table tbody tr:nth-child(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Highlight row on hover */
+.comparison-table tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Make table headers stand out more */
+.comparison-table thead th {
+  background-color: #f0f7ff;
+  border-bottom: 2px solid #007bff;
+}
+
+/* Style for accented rows (important info) */
+.comparison-table tr.accent-row td {
+  background-color: #e8f4ff;
+}
+
+/* Fixed width for consistent look */
+.daycare-col {
+  min-width: 200px;
+  max-width: 250px;
+  width: 25%;
+}
+
+/* Better handle long text */
+.comparison-table td {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Fade animation for the modal */
+.comparison-modal .modal-content {
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

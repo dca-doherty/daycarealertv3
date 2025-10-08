@@ -1,0 +1,31 @@
+BALANCED RATINGS DISTRIBUTION REPORT
+=====================================
+
+Total daycares in original ratings: 15129
+Total daycares in balanced ratings: 13814
+
+Average original rating: 4.69 stars
+Average balanced rating: 4.54 stars
+Overall change: -0.15 stars
+
+RATING DISTRIBUTION COMPARISON:
+Rating | Original %  | Balanced %  | Change
+--------------------------------------------
+5.0000 | 66.67      % | 48.61      % | -18.06%
+4.5000 | 17.38      % | 29.47      % | +12.09%
+4.0000 | 8.79       % | 11.27      % | +2.48%
+3.5000 | 3.78       % | 5.70       % | +1.92%
+3.0000 | 1.94       % | 2.64       % | +0.70%
+2.5000 | 0.94       % | 1.43       % | +0.49%
+2.0000 | 0.35       % | 0.58       % | +0.23%
+1.5000 | 0.15       % | 0.27       % | +0.12%
+1.0000 | 0.01       % | 0.04       % | +0.02%
+
+ANALYSIS OF CHANGES:
+High-end ratings (4.5-5 stars): 0.00%
+Middle-tier ratings (3-4 stars): 0.00%
+Low-end ratings (1-2.5 stars): 0.00%
+
+RECOMMENDATIONS:
+- The balanced adjustment has created a better distribution
+- The average rating remains stable, indicating balanced adjustments

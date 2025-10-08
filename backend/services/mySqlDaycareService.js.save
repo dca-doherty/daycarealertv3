@@ -1,0 +1,2211 @@
+/**
+ * MySQL Database service for daycare data
+ * Provides methods to fetch daycare data exclusively from MySQL database
+ */
+const { pool } = require('../config/db');
+require('dotenv').config();
+
+/**
+ * Calculate star rating display with accurate half-star representation
+ * @param {number} ratingScore - The rating score value (0-5)
+ * @returns {object} - Object with score, class, and stars properties
+ */
+const calculateStarRating = (ratingScore) => {
+  if (ratingScore === null || ratingScore === undefined || isNaN(ratingScore)) {
+    return { score: 0, class: 'not-rated', stars: 'N/A' };
+  }
+
+  // Parse to ensure it's a number
+  const score = parseFloat(ratingScore);
+  // Calculate stars with half-star precision
+  const fullStars = Math.floor(score);
+  const hasHalfStar = score % 1 >= 0.5;
+
+  // Generate star string
+  let stars = '';
+  // Add full stars
+  for (let i = 0; i < fullStars; i++) {
+    stars += '★';
+  }
+  // Add half star if needed
+  if (hasHalfStar) {
+    stars += '½';
+  }
+
+  // Determine rating class based on score
+  let ratingClass = 'poor';
+  if (score >= 4.0) {
+    ratingClass = 'excellent';
+  } else if (score >= 3.0) {
+    ratingClass = 'good';
+  } else if (score >= 2.0) {
+    ratingClass = 'average';
+  } else if (score > 0) {
+    ratingClass = 'poor';
+  } else {
+    ratingClass = 'not-rated';
+  }
+
+  return {
+    score: score,
+    class: ratingClass,
+    stars: stars
+  };
+};
+
+/**
+ * Helper function to get parent recommendations directly from the database
+ * This ensures we always get the most accurate data
+ */
+async function getParentRecommendations(operationId) {
+  try {
+    console.log(`[HELPER] Getting parent recommendations for daycare #${operationId}`);
+    
+    // First, get the OPERATION_ID from daycare_operations to ensure we have the correct ID
+    const [operationData] = await pool.query(
+      'SELECT OPERATION_ID FROM daycare_operations WHERE OPERATION_ID = ? OR OPERATION_NUMBER = ?',
+      [operationId, operationId]
+    );
+    
+    if (operationData.length === 0) {
+      console.log(`[HELPER] Could not find daycare with ID ${operationId}`);
+      return null;
+    }
+    
+    const correctId = operationData[0].OPERATION_ID;
+    console.log(`[HELPER] Found daycare with ID ${correctId}`);
+    
+    // Get the parent recommendations using the correct ID
+    const [recommendations] = await pool.query(
+      'SELECT parent_recommendations FROM risk_analysis WHERE operation_id = ?',
+      [correctId]
+    );
+    
+    if (recommendations.length === 0 || !recommendations[0].parent_recommendations) {
+      console.log(`[HELPER] No parent recommendations found for daycare #${correctId}`);
+      return null;
+    }
+    
+    const rawRecs = recommendations[0].parent_recommendations;
+    console.log(`[HELPER] Found raw parent recommendations: Type = ${typeof rawRecs}`);
+    
+    // Parse JSON string if needed
+    if (typeof rawRecs === 'string') {
+      try {
+        const parsed = JSON.parse(rawRecs);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          console.log(`[HELPER] Successfully parsed string to array with ${parsed.length} items`);
+          return parsed;
+        }
+      } catch (e) {
+        console.warn(`[HELPER] Error parsing parent recommendations:`, e);
+      }
+    } else if (Array.isArray(rawRecs) && rawRecs.length > 0) {
+      console.log(`[HELPER] Using array directly with ${rawRecs.length} items`);
+      return rawRecs;
+    } else if (typeof rawRecs === 'object' && rawRecs !== null) {
+      const values = Object.values(rawRecs);
+      if (values.length > 0) {
+        console.log(`[HELPER] Converted object to array with ${values.length} items`);
+        return values;
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error(`[HELPER] Error getting parent recommendations:`, error);
+    return null;
+  }
+}
+
+/**
+ * Fetch daycare operations from MySQL database
+ */
+const getDaycareOperations = async (limit = 20, offset = 0, filters = {}, sortColumn = '', sortDirection = 'asc') => {
+  try {
+    console.log('Fetching daycares from MySQL database...');
+    
+    // ENHANCED DIAGNOSTIC: Improved logging for sorting parameters
+    console.log(`[SORT DIAGNOSTIC] Original request params: sortColumn=${sortColumn}, sortDirection=${sortDirection}`);
+    
+    // Add unique request ID for tracing through logs
+    const requestId = `req-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    console.log(`[SORT TRACE:${requestId}] Starting request with sortColumn=${sortColumn}, sortDirection=${sortDirection}`);
+    
+    // Log whether we'll use specialized query
+    if (sortColumn === 'monthly_cost' || sortColumn === 'price_est' || sortColumn === 'estimated_price') {
+      console.log(`[SORT TRACE:${requestId}] Will use specialized PRICE query`);
+    } else if (sortColumn === 'yearsInOperation') {
+      console.log(`[SORT TRACE:${requestId}] Will use specialized YEARS query`);
+    } else {
+      console.log(`[SORT TRACE:${requestId}] Will use regular query with ORDER BY clause`);
+    }
+    
+    // Special treatment for price and years sorting
+    if (sortColumn === 'monthly_cost' || sortColumn === 'price_est' || sortColumn === 'estimated_price') {
+      // Let's do an experimental query to check the data
+      try {
+        console.log('[PRICE DEBUG] Executing special diagnostic query to check price values');
+        const [debugRows] = await pool.query('SELECT operation_name, monthly_cost FROM daycare_finder ORDER BY CAST(monthly_cost AS DECIMAL(10,2)) DESC LIMIT 5');
+        console.log('[PRICE DEBUG] Top 5 prices by numeric sort:');
+        debugRows.forEach(row => {
+          console.log(`  ${row.operation_name}: ${row.monthly_cost}`);
+        });
+      } catch (err) {
+        console.error('[PRICE DEBUG] Diagnostic query failed:', err.message);
+      }
+    }
+    
+    if (sortColumn === 'yearsInOperation') {
+      // Let's do an experimental query to check the data
+      try {
+        console.log('[YEARS DEBUG] Executing special diagnostic query to check year values');
+        const [debugRows] = await pool.query('SELECT operation_name, years_in_operation FROM daycare_finder ORDER BY CAST(years_in_operation AS DECIMAL(10,1)) DESC LIMIT 5');
+        console.log('[YEARS DEBUG] Top 5 years by numeric sort:');
+        debugRows.forEach(row => {
+          console.log(`  ${row.operation_name}: ${row.years_in_operation}`);
+        });
+      } catch (err) {
+        console.error('[YEARS DEBUG] Diagnostic query failed:', err.message);
+      }
+    }
+    
+    // First check if the optimized daycare_finder table exists
+    let [tables] = await pool.query('SHOW TABLES LIKE "daycare_finder"');
+    
+    if (tables.length > 0) {
+      console.log('Using optimized daycare_finder table for fetching daycare operations');
+      
+      // PRICE SORTING OVERRIDE: Use completely different query for price sorting
+      if (sortColumn === 'monthly_cost' || sortColumn === 'price_est' || sortColumn === 'estimated_price') {
+        const safeDirection = sortDirection.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+        console.log('[RADICAL APPROACH] Using completely separate query for price sorting');
+        
+        // Build special query for price sorting that forces numeric ordering
+        // IMPROVED: Better handling of NULL and 0 values to ensure no records are hidden
+        const priceQuery = `
+          SELECT 
+            df.*,
+            do.OPERATION_NAME as operation_name_orig,
+            do.OPERATION_TYPE as operation_type_orig,
+            do.CITY as city_orig,
+            do.TEMPORARILY_CLOSED as temporarily_closed_orig,
+            ra.parent_recommendations
+          FROM daycare_finder df
+          LEFT JOIN daycare_operations do ON df.operation_id = do.OPERATION_ID
+          LEFT JOIN risk_analysis ra ON df.operation_id = ra.operation_id
+          WHERE df.operation_status != 'INACTIVE'
+            AND (df.temporarily_closed IS NULL OR df.temporarily_closed = 'N' OR df.temporarily_closed = 'NO')
+          ORDER BY 
+            -- Sort NULLs last regardless of sort direction
+            CASE WHEN df.monthly_cost IS NULL THEN 1 ELSE 0 END,
+            -- Sort zeros next to NULL values
+            CASE WHEN df.monthly_cost = 0 THEN 1 ELSE 0 END,
+            -- Then sort by numeric price
+            CAST(COALESCE(df.monthly_cost, 0) AS DECIMAL(10,2)) ${safeDirection}, 
+            df.operation_name ASC
+          LIMIT ${limit} OFFSET ${offset}
+        `;
+        
+        // Execute this special query instead of the regular one
+        console.log('[RADICAL APPROACH] Executing special price query');
+        const [rows] = await pool.query(priceQuery);
+        
+        if (rows.length > 0) {
+          console.log(`[RADICAL APPROACH] Found ${rows.length} daycares with price sorting`);
+          
+          // Transform the same way as normal query
+          const transformedResults = rows.map(row => {
+            // Same transformation logic as below
+            // Calculate years in operation if issuance date is available
+            let yearsInOperation = row.years_in_operation;
+            if (!yearsInOperation && row.issuance_date) {
+              const issuanceDate = new Date(row.issuance_date);
+              const currentDate = new Date();
+              yearsInOperation = ((currentDate - issuanceDate) / (1000 * 60 * 60 * 24 * 365.25));
+            }
+            
+            // Format rating data
+            let ratingData = null;
+            if (row.overall_rating !== null) {
+              const ratingScore = parseFloat(row.overall_rating);
+              let ratingClass = 'poor';
+              let stars = '';
+              
+              // Determine rating class and stars based on score
+              if (ratingScore >= 4.0) {
+                ratingClass = 'excellent';
+                stars = '★★★★★';
+              } else if (ratingScore >= 3.5) {
+                ratingClass = 'good';
+                stars = '★★★★';
+              } else if (ratingScore >= 3.0) {
+                ratingClass = 'good';
+                stars = '★★★';
+              } else if (ratingScore >= 2.5) {
+                ratingClass = 'average';
+                stars = '★★★';
+              } else if (ratingScore >= 2.0) {
+                ratingClass = 'average';
+                stars = '★★';
+              } else if (ratingScore >= 1.0) {
+                ratingClass = 'poor';
+                stars = '★';
+              } else {
+                stars = '☆';
+              }
+              
+              ratingData = {
+                score: ratingScore,
+                class: ratingClass,
+                stars: stars
+              };
+            }
+            
+            // Parse parent recommendations
+            let parentRecommendations = null;
+            try {
+              if (row.parent_recommendations) {
+                if (typeof row.parent_recommendations === 'object') {
+                  parentRecommendations = row.parent_recommendations;
+                } else {
+                  parentRecommendations = JSON.parse(row.parent_recommendations);
+                }
+              }
+            } catch(e) {
+              console.warn('Error parsing parent_recommendations JSON:', e);
+            }
+            
+            // Build features list based on boolean indicators
+            const features = [];
+            if (row.serves_infant === 1) features.push('Infant Care');
+            if (row.serves_toddler === 1) features.push('Toddler Care');
+            if (row.serves_preschool === 1) features.push('Preschool'); 
+            if (row.serves_school_age === 1) features.push('School Age Care');
+            if (row.has_meals_provided === 1) features.push('Meals Provided');
+            if (row.has_transportation_school === 1) features.push('Transportation');
+            if (row.has_special_needs === 1) features.push('Special Needs Support');
+            if (row.has_field_trips === 1) features.push('Field Trips');
+            if (row.has_accredited === 1) features.push('Accredited');
+            if (row.has_night_care === 1) features.push('Night Care');
+            if (row.has_weekend_care === 1) features.push('Weekend Care');
+            
+            return {
+              operation_id: row.operation_id ? row.operation_id.toString() : '',
+              operation_number: row.operation_number ? row.operation_number.toString() : row.operation_id ? row.operation_id.toString() : '',
+              operation_name: row.operation_name || row.operation_name_orig,
+              operation_type: row.operation_type || row.operation_type_orig,
+              location_address: row.address,
+              city: row.city || row.city_orig,
+              county: row.county,
+              phone_number: row.phone_number,
+              issuance_date: row.issuance_date,
+              license_issue_date: row.issuance_date, // alias for frontend compatibility
+              total_capacity: parseInt(row.total_capacity, 10) || 0,
+              email_address: row.email,
+              website_address: row.website_address,
+              days_of_operation: row.days_of_operation,
+              hours_of_operation: row.hours_of_operation,
+              temporarily_closed: row.temporarily_closed_orig || 'NO', // Use the original value from daycare_operations table
+              
+              // Boolean indicator fields
+              serves_infant: row.serves_infant === 1,
+              serves_toddler: row.serves_toddler === 1,
+              serves_preschool: row.serves_preschool === 1,
+              serves_school_age: row.serves_school_age === 1,
+              has_meals_provided: row.has_meals_provided === 1,
+              has_transportation_school: row.has_transportation_school === 1, 
+              has_special_needs: row.has_special_needs === 1,
+              has_accredited: row.has_accredited === 1,
+              
+              // Violation counts
+              high_risk_violations: row.high_risk_violation_count || 0,
+              total_violations_2yr: row.violation_count || 0,
+              
+              // Rating and cost data
+              rating: ratingData,
+              risk_score: row.risk_score,
+              estimated_price: row.monthly_cost || null,
+              price_est: row.monthly_cost || null, // alias for frontend compatibility
+              monthly_cost: row.monthly_cost || null,
+              weekly_cost: row.weekly_cost || null,
+              yearsInOperation: yearsInOperation,
+              
+              // Features list
+              features: features,
+              
+              // Parent recommendations
+              parent_recommendations: parentRecommendations,
+              data_source: 'optimized_daycare_finder'
+            };
+          });
+          
+          // Get total count for pagination with the same filters but no limits
+          // IMPROVED: Remove the monthly_cost filtering to match the main query and show all records in total count
+          const [countResult] = await pool.query(`
+            SELECT COUNT(*) AS total 
+            FROM daycare_finder df
+            WHERE df.operation_status != 'INACTIVE' 
+              AND (df.temporarily_closed IS NULL OR df.temporarily_closed = 'N' OR df.temporarily_closed = 'NO')
+          `);
+          
+          console.log(`[SORT TRACE:${requestId}] Price sort count query returned total: ${countResult[0].total}`);
+          
+          return {
+            data: transformedResults,
+            total: countResult[0].total
+          };
+        }
+      }
+      
+      // YEARS SORTING OVERRIDE: Use completely different query for years sorting
+      if (sortColumn === 'yearsInOperation') {
+        const safeDirection = sortDirection.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+        console.log('[RADICAL APPROACH] Using completely separate query for years sorting');
+        
+        // Build special query for years sorting that forces numeric ordering
+        // IMPROVED: Better handling of NULL and 0 values to ensure no records are hidden
+        const yearsQuery = `
+          SELECT 
+            df.*,
+            do.OPERATION_NAME as operation_name_orig,
+            do.OPERATION_TYPE as operation_type_orig,
+            do.CITY as city_orig,
+            do.TEMPORARILY_CLOSED as temporarily_closed_orig,
+            ra.parent_recommendations
+          FROM daycare_finder df
+          LEFT JOIN daycare_operations do ON df.operation_id = do.OPERATION_ID
+          LEFT JOIN risk_analysis ra ON df.operation_id = ra.operation_id
+          WHERE df.operation_status != 'INACTIVE'
+            AND (df.temporarily_closed IS NULL OR df.temporarily_closed = 'N' OR df.temporarily_closed = 'NO')
+          ORDER BY 
+            -- Sort NULLs last regardless of sort direction
+            CASE WHEN df.years_in_operation IS NULL THEN 1 ELSE 0 END,
+            -- Sort zeros appropriately - for years, we might want 0 years (new daycares) at beginning/end depending on sort
+            -- In DESC mode (newest last), 0 years should be at the end
+            -- In ASC mode (newest first), 0 years should be at the beginning (automatically handled)
+            CASE 
+              WHEN df.years_in_operation = 0 AND '${safeDirection}' = 'DESC' THEN 1 
+              ELSE 0 
+            END,
+            -- Then sort by numeric years
+            CAST(COALESCE(df.years_in_operation, 0) AS DECIMAL(10,1)) ${safeDirection}, 
+            df.operation_name ASC
+          LIMIT ${limit} OFFSET ${offset}
+        `;
+        
+        // Execute this special query instead of the regular one
+        console.log('[RADICAL APPROACH] Executing special years query');
+        const [rows] = await pool.query(yearsQuery);
+        
+        if (rows.length > 0) {
+          console.log(`[RADICAL APPROACH] Found ${rows.length} daycares with years sorting`);
+          
+          // Transform the same way as normal query
+          const transformedResults = rows.map(row => {
+            // Same transformation logic as below
+            // Calculate years in operation if issuance date is available
+            let yearsInOperation = row.years_in_operation;
+            if (!yearsInOperation && row.issuance_date) {
+              const issuanceDate = new Date(row.issuance_date);
+              const currentDate = new Date();
+              yearsInOperation = ((currentDate - issuanceDate) / (1000 * 60 * 60 * 24 * 365.25));
+            }
+            
+            // Format rating data
+            let ratingData = null;
+            if (row.overall_rating !== null) {
+              const ratingScore = parseFloat(row.overall_rating);
+              let ratingClass = 'poor';
+              let stars = '';
+              
+              // Determine rating class and stars based on score
+              if (ratingScore >= 4.0) {
+                ratingClass = 'excellent';
+                stars = '★★★★★';
+              } else if (ratingScore >= 3.5) {
+                ratingClass = 'good';
+                stars = '★★★★';
+              } else if (ratingScore >= 3.0) {
+                ratingClass = 'good';
+                stars = '★★★';
+              } else if (ratingScore >= 2.5) {
+                ratingClass = 'average';
+                stars = '★★★';
+              } else if (ratingScore >= 2.0) {
+                ratingClass = 'average';
+                stars = '★★';
+              } else if (ratingScore >= 1.0) {
+                ratingClass = 'poor';
+                stars = '★';
+              } else {
+                stars = '☆';
+              }
+              
+              ratingData = {
+                score: ratingScore,
+                class: ratingClass,
+                stars: stars
+              };
+            }
+            
+            // Parse parent recommendations
+            let parentRecommendations = null;
+            try {
+              if (row.parent_recommendations) {
+                if (typeof row.parent_recommendations === 'object') {
+                  parentRecommendations = row.parent_recommendations;
+                } else {
+                  parentRecommendations = JSON.parse(row.parent_recommendations);
+                }
+              }
+            } catch(e) {
+              console.warn('Error parsing parent_recommendations JSON:', e);
+            }
+            
+            // Build features list based on boolean indicators
+            const features = [];
+            if (row.serves_infant === 1) features.push('Infant Care');
+            if (row.serves_toddler === 1) features.push('Toddler Care');
+            if (row.serves_preschool === 1) features.push('Preschool'); 
+            if (row.serves_school_age === 1) features.push('School Age Care');
+            if (row.has_meals_provided === 1) features.push('Meals Provided');
+            if (row.has_transportation_school === 1) features.push('Transportation');
+            if (row.has_special_needs === 1) features.push('Special Needs Support');
+            if (row.has_field_trips === 1) features.push('Field Trips');
+            if (row.has_accredited === 1) features.push('Accredited');
+            if (row.has_night_care === 1) features.push('Night Care');
+            if (row.has_weekend_care === 1) features.push('Weekend Care');
+            
+            return {
+              operation_id: row.operation_id ? row.operation_id.toString() : '',
+              operation_number: row.operation_number ? row.operation_number.toString() : row.operation_id ? row.operation_id.toString() : '',
+              operation_name: row.operation_name || row.operation_name_orig,
+              operation_type: row.operation_type || row.operation_type_orig,
+              location_address: row.address,
+              city: row.city || row.city_orig,
+              county: row.county,
+              phone_number: row.phone_number,
+              issuance_date: row.issuance_date,
+              license_issue_date: row.issuance_date, // alias for frontend compatibility
+              total_capacity: parseInt(row.total_capacity, 10) || 0,
+              email_address: row.email,
+              website_address: row.website_address,
+              days_of_operation: row.days_of_operation,
+              hours_of_operation: row.hours_of_operation,
+              temporarily_closed: row.temporarily_closed_orig || 'NO', // Use the original value from daycare_operations table
+              
+              // Boolean indicator fields
+              serves_infant: row.serves_infant === 1,
+              serves_toddler: row.serves_toddler === 1,
+              serves_preschool: row.serves_preschool === 1,
+              serves_school_age: row.serves_school_age === 1,
+              has_meals_provided: row.has_meals_provided === 1,
+              has_transportation_school: row.has_transportation_school === 1, 
+              has_special_needs: row.has_special_needs === 1,
+              has_accredited: row.has_accredited === 1,
+              
+              // Violation counts
+              high_risk_violations: row.high_risk_violation_count || 0,
+              total_violations_2yr: row.violation_count || 0,
+              
+              // Rating and cost data
+              rating: ratingData,
+              risk_score: row.risk_score,
+              estimated_price: row.monthly_cost || null,
+              price_est: row.monthly_cost || null, // alias for frontend compatibility
+              monthly_cost: row.monthly_cost || null,
+              weekly_cost: row.weekly_cost || null,
+              yearsInOperation: yearsInOperation,
+              
+              // Features list
+              features: features,
+              
+              // Parent recommendations
+              parent_recommendations: parentRecommendations,
+              data_source: 'optimized_daycare_finder'
+            };
+          });
+          
+          // Get total count for pagination with the same filters but no limits
+          // IMPROVED: Remove the years_in_operation filtering to match the main query and show all records in total count
+          const [countResult] = await pool.query(`
+            SELECT COUNT(*) AS total 
+            FROM daycare_finder df
+            WHERE df.operation_status != 'INACTIVE' 
+              AND (df.temporarily_closed IS NULL OR df.temporarily_closed = 'N' OR df.temporarily_closed = 'NO')
+          `);
+          
+          console.log(`[SORT TRACE:${requestId}] Years sort count query returned total: ${countResult[0].total}`);
+          
+          return {
+            data: transformedResults,
+            total: countResult[0].total
+          };
+        }
+      }
+      
+      // STANDARD QUERY FOR ALL OTHER CASES
+      // Build SQL query using optimized daycare_finder table which has all the fields we need
+      let query = `
+        SELECT 
+          df.*,
+          do.OPERATION_NAME as operation_name_orig,
+          do.OPERATION_TYPE as operation_type_orig,
+          do.CITY as city_orig,
+          do.TEMPORARILY_CLOSED as temporarily_closed_orig,
+          ra.parent_recommendations
+        FROM daycare_finder df
+        LEFT JOIN daycare_operations do ON df.operation_id = do.OPERATION_ID
+        LEFT JOIN risk_analysis ra ON df.operation_id = ra.operation_id
+        WHERE df.operation_status != 'INACTIVE'
+          AND (df.temporarily_closed IS NULL OR df.temporarily_closed = 'N' OR df.temporarily_closed = 'NO')
+      `;
+      
+      // Add filters
+      const queryParams = [];
+      
+      // Add search term filter if provided
+      if (filters.searchTerm) {
+        const searchTerm = `%${filters.searchTerm}%`;
+        
+        // Check if searchTerm is numeric and might be an exact operation_id or zipcode match
+        const exactTerm = filters.searchTerm.trim();
+        const isNumeric = /^\d+$/.test(exactTerm);
+        
+        if (isNumeric) {
+          // If the term is purely numeric, it could be an operation_id or zipcode
+          // Use exact matching for operation_id and zipcode, with higher priority
+          query += ` AND (
+            df.operation_id = ? OR 
+            df.zip_code = ? OR
+            df.operation_name LIKE ? OR
+            df.city LIKE ? OR
+            df.operation_type LIKE ? OR
+            df.operation_id LIKE ? OR
+            df.zip_code LIKE ?
+          )`;
+          queryParams.push(
+            exactTerm,      // Exact match for operation_id
+            exactTerm,      // Exact match for zipcode
+            searchTerm,     // Partial match for name
+            searchTerm,     // Partial match for city
+            searchTerm,     // Partial match for type
+            searchTerm,     // Partial match for operation_id
+            searchTerm      // Partial match for zipcode
+          );
+        } else {
+          // For non-numeric terms, use the standard search
+          query += ` AND (
+            df.operation_name LIKE ? OR
+            df.city LIKE ? OR
+            df.operation_type LIKE ? OR
+            df.operation_id LIKE ? OR
+            df.zip_code LIKE ?
+          )`;
+          queryParams.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
+        }
+      }      
+      // Add city filter if provided
+      if (filters.city) {
+        query += ` AND df.city = ?`;
+        queryParams.push(filters.city);
+      }
+      
+      // Add operation type filter if provided
+      if (filters.operation_type) {
+        query += ` AND df.operation_type = ?`;
+        queryParams.push(filters.operation_type);
+      }
+      
+      // Add rating filter if provided
+      console.log(`Checking rating filter: "${filters.rating}" (${typeof filters.rating})`);
+      if (filters.rating) {
+        const minRating = parseFloat(filters.rating);
+        if (!isNaN(minRating)) {
+          console.log(`Adding rating filter: >= ${minRating}`);
+          query += ` AND df.overall_rating >= ?`;
+          queryParams.push(minRating);
+        } else {
+          console.log(`WARNING: Rating filter value "${filters.rating}" could not be parsed as a number`);
+        }
+      } else {
+        console.log(`No rating filter applied - empty or undefined value`);
+      }
+      
+      // Add price range filter if provided
+      console.log(`Checking price range filter: "${filters.priceRange}" (${typeof filters.priceRange})`);
+      if (filters.priceRange) {
+        console.log(`Adding price range filter: ${filters.priceRange}`);
+        const priceRange = filters.priceRange.split('-');
+        if (priceRange.length === 2) {
+          const minPrice = parseInt(priceRange[0], 10);
+          
+          if (priceRange[1] === 'up') {
+            // For ranges like "2500-up", filter for prices >= 2500
+            if (!isNaN(minPrice)) {
+              console.log(`Price range query: df.monthly_cost >= ${minPrice}`);
+              query += ` AND df.monthly_cost >= ?`;
+              queryParams.push(minPrice);
+            } else {
+              console.log(`WARNING: Minimum price "${priceRange[0]}" could not be parsed as a number`);
+            }
+          } else {
+            // For normal ranges like "1500-1800", filter for prices between min and max
+            const maxPrice = parseInt(priceRange[1], 10);
+            if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+              console.log(`Price range query: df.monthly_cost >= ${minPrice} AND df.monthly_cost < ${maxPrice}`);
+              query += ` AND df.monthly_cost >= ? AND df.monthly_cost < ?`;
+              queryParams.push(minPrice, maxPrice);
+            } else {
+              console.log(`WARNING: Price range "${priceRange[0]}-${priceRange[1]}" contains invalid numbers`);
+            }
+          }
+        } else {
+          console.log(`WARNING: Price range "${filters.priceRange}" is not in expected format (min-max)`);
+        }
+      } else {
+        console.log(`No price range filter applied - empty or undefined value`);
+      }
+      
+      // Add years in operation filter if provided
+      console.log(`Checking years filter: "${filters.yearsInOperation}" (${typeof filters.yearsInOperation})`);
+      if (filters.yearsInOperation) {
+        const minYears = parseInt(filters.yearsInOperation, 10);
+        if (!isNaN(minYears)) {
+          console.log(`Adding years in operation filter: ${minYears}+ years`);
+          if (minYears === 0) {
+            // Special case for "New" filter (< 1 year)
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+            const formattedDate = oneYearAgo.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            console.log(`Years query: df.issuance_date >= ${formattedDate} (for new daycares)`);
+            query += ` AND df.issuance_date >= ?`;
+            queryParams.push(formattedDate);
+          } else {
+            // For normal year filters (1+, 3+, 5+, 10+ years)
+            const cutoffDate = new Date();
+            cutoffDate.setFullYear(cutoffDate.getFullYear() - minYears);
+            const formattedDate = cutoffDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            console.log(`Years query: df.issuance_date <= ${formattedDate} (for ${minYears}+ years)`);
+            query += ` AND df.issuance_date <= ?`;
+            queryParams.push(formattedDate);
+          }
+        }
+      }
+      
+      // Add sorting - CRITICALLY IMPORTANT
+      if (sortColumn) {
+        const safeDirection = sortDirection.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+        
+        // HARDCODED SPECIAL CASES FOR TROUBLESHOOTING
+        // Direct handling for problematic columns
+        if (sortColumn === 'monthly_cost' || sortColumn === 'price_est' || sortColumn === 'estimated_price') {
+          // CRITICAL FIX: COMPLETELY OVERRIDE ORDERING FOR PRICE
+          console.log(`[EMERGENCY OVERRIDE] Forcing numeric price sort: ${sortColumn} ${sortDirection}`);
+          console.log(`[SORT TRACE:${requestId}] Using CAST-based price sorting in regular query path`);
+          
+          // IMPROVED: Better handling of NULL and 0 values to ensure no records are hidden
+          query += ` ORDER BY 
+            CASE WHEN df.monthly_cost IS NULL THEN 1 ELSE 0 END,
+            CASE WHEN df.monthly_cost = 0 THEN 1 ELSE 0 END,
+            CAST(COALESCE(df.monthly_cost, 0) AS DECIMAL(10,2)) ${safeDirection}, 
+            df.operation_name ASC`;
+        }
+        else if (sortColumn === 'yearsInOperation') {
+          // CRITICAL FIX: COMPLETELY OVERRIDE ORDERING FOR YEARS
+          console.log(`[EMERGENCY OVERRIDE] Forcing numeric years sort: ${sortColumn} ${sortDirection}`);
+          console.log(`[SORT TRACE:${requestId}] Using CAST-based years sorting in regular query path`);
+          
+          // IMPROVED: Better handling of NULL and 0 values to ensure no records are hidden
+          query += ` ORDER BY 
+            CASE WHEN df.years_in_operation IS NULL THEN 1 ELSE 0 END,
+            CASE 
+              WHEN df.years_in_operation = 0 AND '${safeDirection}' = 'DESC' THEN 1 
+              ELSE 0 
+            END,
+            CAST(COALESCE(df.years_in_operation, 0) AS DECIMAL(10,1)) ${safeDirection}, 
+            df.operation_name ASC`;
+        }
+        else {
+          // Normal flow for other columns
+          // Map frontend column names to database column names
+          const columnMapping = {
+            'operation_name': 'df.operation_name',
+            'city': 'df.city',
+            'operation_type': 'df.operation_type',
+            'total_capacity': 'df.total_capacity',
+            'rating': 'df.overall_rating'
+          };
+          
+          console.log(`[SORT DEBUG] Regular column sort: "${sortColumn}" direction: "${sortDirection}"`);
+          console.log(`[SORT TRACE:${requestId}] Using standard column mapping for sort`);
+          
+          // Get the mapped column or default to operation_name
+          const dbColumn = columnMapping[sortColumn] || 'df.operation_name';
+          
+          // Log exact SQL column being used
+          console.log(`[SORT TRACE:${requestId}] Mapped column "${sortColumn}" to SQL column "${dbColumn}"`);
+          
+          query += ` ORDER BY ${dbColumn} ${safeDirection}`;
+        }
+      } else {
+        // No sort column provided, use default sorting
+        console.log(`[SORT TRACE:${requestId}] No sort column specified, using default sort order`);
+        query += ` ORDER BY df.overall_rating DESC, df.high_risk_violation_count ASC`;
+      }
+      
+      // Add pagination
+      query += ` LIMIT ? OFFSET ?`;
+      queryParams.push(limit, offset);
+      
+      // Log the final SQL query and parameters for debugging
+      console.log('FINAL SQL QUERY:');
+      console.log(query);
+      console.log('QUERY PARAMETERS:', queryParams);
+      
+      // Execute the query
+      const [rows] = await pool.query(query, queryParams);
+      
+      if (rows.length > 0) {
+        console.log(`Found ${rows.length} daycares in database using daycare_finder table`);
+        
+        // Enhanced logging for query results
+        if (rows.length > 0) {
+          console.log(`[SORT TRACE:${requestId}] Query returned ${rows.length} results`);
+          
+          if (sortColumn === 'monthly_cost' || sortColumn === 'price_est' || sortColumn === 'estimated_price') {
+            // Log price values for top 3 results to verify sorting
+            console.log(`[SORT TRACE:${requestId}] Top ${Math.min(3, rows.length)} prices (${sortDirection})`);
+            for (let i = 0; i < Math.min(3, rows.length); i++) {
+              console.log(`[SORT TRACE:${requestId}] [${i+1}] ${rows[i].operation_name}: ${rows[i].monthly_cost} (${typeof rows[i].monthly_cost})`);
+            }
+          } else if (sortColumn === 'yearsInOperation') {
+            // Log years values for top 3 results to verify sorting
+            console.log(`[SORT TRACE:${requestId}] Top ${Math.min(3, rows.length)} years_in_operation (${sortDirection})`);
+            for (let i = 0; i < Math.min(3, rows.length); i++) {
+              console.log(`[SORT TRACE:${requestId}] [${i+1}] ${rows[i].operation_name}: ${rows[i].years_in_operation} (${typeof rows[i].years_in_operation})`);
+            }
+          }
+          
+          // Log sample data from first row
+          console.log(`[SORT TRACE:${requestId}] Sample data from first row:`);
+          console.log('operation_id:', rows[0].operation_id);
+          console.log('monthly_cost:', rows[0].monthly_cost, typeof rows[0].monthly_cost);
+          console.log('years_in_operation:', rows[0].years_in_operation, typeof rows[0].years_in_operation);
+          console.log('overall_rating:', rows[0].overall_rating);
+          console.log('serves_infant:', rows[0].serves_infant);
+          console.log('has_meals_provided:', rows[0].has_meals_provided);
+        } else {
+          console.log(`[SORT TRACE:${requestId}] Query returned no results`);
+        }
+        
+        // Transform the database results
+        const transformedResults = rows.map(row => {
+          // Calculate years in operation if issuance date is available
+          let yearsInOperation = row.years_in_operation;
+          if (!yearsInOperation && row.issuance_date) {
+            const issuanceDate = new Date(row.issuance_date);
+            const currentDate = new Date();
+            yearsInOperation = ((currentDate - issuanceDate) / (1000 * 60 * 60 * 24 * 365.25));
+          }
+          
+          // Format rating data
+          let ratingData = null;
+          if (row.overall_rating !== null) {
+            const ratingScore = parseFloat(row.overall_rating);
+            let ratingClass = 'poor';
+            let stars = '';
+            
+            // Determine rating class and stars based on score
+            if (ratingScore >= 4.0) {
+              ratingClass = 'excellent';
+              stars = '★★★★★';
+            } else if (ratingScore >= 3.5) {
+              ratingClass = 'good';
+              stars = '★★★★';
+            } else if (ratingScore >= 3.0) {
+              ratingClass = 'good';
+              stars = '★★★';
+            } else if (ratingScore >= 2.5) {
+              ratingClass = 'average';
+              stars = '★★★';
+            } else if (ratingScore >= 2.0) {
+              ratingClass = 'average';
+              stars = '★★';
+            } else if (ratingScore >= 1.0) {
+              ratingClass = 'poor';
+              stars = '★';
+            } else {
+              stars = '☆';
+            }
+            
+            ratingData = {
+              score: ratingScore,
+              class: ratingClass,
+              stars: stars
+            };
+          }
+          
+          // Parse parent recommendations
+          let parentRecommendations = null;
+          try {
+            if (row.parent_recommendations) {
+              if (typeof row.parent_recommendations === 'object') {
+                parentRecommendations = row.parent_recommendations;
+              } else {
+                parentRecommendations = JSON.parse(row.parent_recommendations);
+              }
+            }
+          } catch(e) {
+            console.warn('Error parsing parent_recommendations JSON:', e);
+          }
+          
+          // Build features list based on boolean indicators
+          const features = [];
+          if (row.serves_infant === 1) features.push('Infant Care');
+          if (row.serves_toddler === 1) features.push('Toddler Care');
+          if (row.serves_preschool === 1) features.push('Preschool'); 
+          if (row.serves_school_age === 1) features.push('School Age Care');
+          if (row.has_meals_provided === 1) features.push('Meals Provided');
+          if (row.has_transportation_school === 1) features.push('Transportation');
+          if (row.has_special_needs === 1) features.push('Special Needs Support');
+          if (row.has_field_trips === 1) features.push('Field Trips');
+          if (row.has_accredited === 1) features.push('Accredited');
+          if (row.has_night_care === 1) features.push('Night Care');
+          if (row.has_weekend_care === 1) features.push('Weekend Care');
+          
+          return {
+            operation_id: row.operation_id ? row.operation_id.toString() : '',
+            operation_number: row.operation_number ? row.operation_number.toString() : row.operation_id ? row.operation_id.toString() : '',
+            operation_name: row.operation_name || row.operation_name_orig,
+            operation_type: row.operation_type || row.operation_type_orig,
+            location_address: row.address,
+            city: row.city || row.city_orig,
+            county: row.county,
+            phone_number: row.phone_number,
+            issuance_date: row.issuance_date,
+            license_issue_date: row.issuance_date, // alias for frontend compatibility
+            total_capacity: parseInt(row.total_capacity, 10) || 0,
+            email_address: row.email,
+            website_address: row.website_address,
+            days_of_operation: row.days_of_operation,
+            hours_of_operation: row.hours_of_operation,
+            temporarily_closed: row.temporarily_closed_orig || 'NO', // Use the original value from daycare_operations table
+            
+            // Boolean indicator fields
+            serves_infant: row.serves_infant === 1,
+            serves_toddler: row.serves_toddler === 1,
+            serves_preschool: row.serves_preschool === 1,
+            serves_school_age: row.serves_school_age === 1,
+            has_meals_provided: row.has_meals_provided === 1,
+            has_transportation_school: row.has_transportation_school === 1, 
+            has_special_needs: row.has_special_needs === 1,
+            has_accredited: row.has_accredited === 1,
+            
+            // Violation counts
+            high_risk_violations: row.high_risk_violation_count || 0,
+            total_violations_2yr: row.violation_count || 0,
+            
+            // Rating and cost data
+            rating: ratingData,
+            risk_score: row.risk_score,
+            estimated_price: row.monthly_cost || null,
+            price_est: row.monthly_cost || null, // alias for frontend compatibility
+            monthly_cost: row.monthly_cost || null,
+            weekly_cost: row.weekly_cost || null,
+            yearsInOperation: yearsInOperation,
+            
+            // Features list
+            features: features,
+            
+            // Parent recommendations
+            parent_recommendations: parentRecommendations,
+            data_source: 'optimized_daycare_finder'
+          };
+        });
+        
+        // Get total count for pagination - apply the same filters
+        let countQuery = `
+          SELECT COUNT(*) AS total 
+          FROM daycare_finder df
+          WHERE df.operation_status != 'INACTIVE' 
+            AND (df.temporarily_closed IS NULL OR df.temporarily_closed = 'N' OR df.temporarily_closed = 'NO')
+        `;
+        
+        // Create a copy of the queryParams for the count query
+        const countParams = [];
+        
+        // Apply the same filters to count query
+        if (filters.searchTerm) {
+          const searchTerm = `%${filters.searchTerm}%`;
+          
+          // Check if searchTerm is numeric and might be an exact operation_id or zipcode match
+          const exactTerm = filters.searchTerm.trim();
+          const isNumeric = /^\d+$/.test(exactTerm);
+          
+          if (isNumeric) {
+            // If the term is purely numeric, it could be an operation_id or zipcode
+            countQuery += ` AND (
+              df.operation_id = ? OR 
+              df.zip_code = ? OR
+              df.operation_name LIKE ? OR
+              df.city LIKE ? OR
+              df.operation_type LIKE ? OR
+              df.operation_id LIKE ? OR
+              df.zip_code LIKE ?
+            )`;
+            countParams.push(
+              exactTerm,      // Exact match for operation_id
+              exactTerm,      // Exact match for zipcode
+              searchTerm,     // Partial match for name
+              searchTerm,     // Partial match for city
+              searchTerm,     // Partial match for type
+              searchTerm,     // Partial match for operation_id
+              searchTerm      // Partial match for zipcode
+            );
+          } else {
+            // For non-numeric terms, use the standard search
+            countQuery += ` AND (
+              df.operation_name LIKE ? OR
+              df.city LIKE ? OR
+              df.operation_type LIKE ? OR
+              df.operation_id LIKE ? OR
+              df.zip_code LIKE ?
+            )`;
+            countParams.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
+          }
+        }        
+        if (filters.city) {
+          countQuery += ` AND df.city = ?`;
+          countParams.push(filters.city);
+        }
+        
+        if (filters.operation_type) {
+          countQuery += ` AND df.operation_type = ?`;
+          countParams.push(filters.operation_type);
+        }
+        
+        if (filters.rating) {
+          const minRating = parseFloat(filters.rating);
+          if (!isNaN(minRating)) {
+            countQuery += ` AND df.overall_rating >= ?`;
+            countParams.push(minRating);
+          }
+        }
+        
+        if (filters.priceRange) {
+          const priceRange = filters.priceRange.split('-');
+          if (priceRange.length === 2) {
+            const minPrice = parseInt(priceRange[0], 10);
+            
+            if (priceRange[1] === 'up') {
+              if (!isNaN(minPrice)) {
+                countQuery += ` AND df.monthly_cost >= ?`;
+                countParams.push(minPrice);
+              }
+            } else {
+              const maxPrice = parseInt(priceRange[1], 10);
+              if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+                countQuery += ` AND df.monthly_cost >= ? AND df.monthly_cost < ?`;
+                countParams.push(minPrice, maxPrice);
+              }
+            }
+          }
+        }
+        
+        if (filters.yearsInOperation) {
+          const minYears = parseInt(filters.yearsInOperation, 10);
+          if (!isNaN(minYears)) {
+            if (minYears === 0) {
+              const oneYearAgo = new Date();
+              oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+              const formattedDate = oneYearAgo.toISOString().split('T')[0];
+              countQuery += ` AND df.issuance_date >= ?`;
+              countParams.push(formattedDate);
+            } else {
+              const cutoffDate = new Date();
+              cutoffDate.setFullYear(cutoffDate.getFullYear() - minYears);
+              const formattedDate = cutoffDate.toISOString().split('T')[0];
+              countQuery += ` AND df.issuance_date <= ?`;
+              countParams.push(formattedDate);
+            }
+          }
+        }
+        
+        const [countResult] = await pool.query(countQuery, countParams);
+        
+        return {
+          data: transformedResults,
+          total: countResult[0].total
+        };
+      }
+    }
+    
+    // Fallback to old implementation if daycare_finder table doesn't exist or has no data
+    console.log('Falling back to original tables for fetching daycare operations');
+    
+    // Build the SQL query with LEFT JOINs to include rating, cost estimate and risk analysis data
+    let query = `
+      SELECT 
+             d.OPERATION_ID as operation_id, 
+             d.OPERATION_NUMBER as operation_number,
+             d.OPERATION_NAME as operation_name, 
+             d.OPERATION_TYPE as operation_type,
+             d.LOCATION_ADDRESS as location_address,
+             d.CITY as city,
+             d.STATE as state,
+             d.ZIP as zip_code,
+             d.COUNTY as county,
+             d.PHONE_NUMBER as phone_number,
+             d.EMAIL_ADDRESS as email_address,
+             d.WEBSITE_ADDRESS as website_address,
+             d.ADMINISTRATOR_DIRECTOR_NAME as administrator_director_name,
+             d.DAYS_OF_OPERATION as days_of_operation,
+             d.HOURS_OF_OPERATION as hours_of_operation,
+             d.ISSUANCE_DATE as issuance_date,
+             d.TOTAL_CAPACITY as total_capacity,
+             d.ACCEPTS_CHILD_CARE_SUBSIDIES as accepts_child_care_subsidies,
+             d.TEMPORARILY_CLOSED as temporarily_closed,
+             r.overall_rating, r.rating_factors, r.quality_indicators, r.risk_score,
+             c.monthly_cost, c.weekly_cost, c.calculation_factors,
+             ra.analysis_summary, ra.risk_factors, ra.parent_recommendations,
+             
+             -- Count violations from revised_non_compliance table
+             (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID) as total_violations,
+             (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID AND rnc.revised_risk_level = 'High') as high_risk_violations,
+             (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID AND rnc.revised_risk_level = 'Medium High') as medium_high_risk_violations,
+             (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID AND rnc.revised_risk_level = 'Medium') as medium_risk_violations,
+             (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID AND rnc.revised_risk_level = 'Medium Low') as medium_low_risk_violations,
+             (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID AND rnc.revised_risk_level = 'Low') as low_risk_violations
+             
+      FROM daycare_operations d
+      LEFT JOIN daycare_ratings_balanced r ON d.OPERATION_ID = r.operation_id
+      LEFT JOIN daycare_cost_estimates c ON d.OPERATION_ID = c.operation_id
+      LEFT JOIN risk_analysis ra ON d.OPERATION_ID = ra.operation_id
+      WHERE d.OPERATION_STATUS = 'Y' 
+        AND d.TEMPORARILY_CLOSED = 'NO'
+    `;
+    
+    // Apply filters
+    const queryParams = [];
+    
+    // Add search term filter if provided
+    if (filters.searchTerm) {
+      const searchTerm = `%${filters.searchTerm}%`;
+      query += ` AND (
+        d.OPERATION_NAME LIKE ? OR
+        d.CITY LIKE ? OR
+        d.OPERATION_TYPE LIKE ?
+      )`;
+      queryParams.push(searchTerm, searchTerm, searchTerm);
+    }
+    
+    // Add city filter if provided
+    if (filters.city) {
+      query += ` AND d.CITY = ?`;
+      queryParams.push(filters.city);
+    }
+    
+    // Add operation type filter if provided
+    if (filters.operation_type) {
+      query += ` AND d.OPERATION_TYPE = ?`;
+      queryParams.push(filters.operation_type);
+    }
+    
+    // Add rating filter if provided
+    if (filters.rating) {
+      const minRating = parseFloat(filters.rating);
+      if (!isNaN(minRating)) {
+        console.log(`Adding rating filter (fallback): >= ${minRating}`);
+        query += ` AND r.overall_rating >= ?`;
+        queryParams.push(minRating);
+      }
+    }
+    
+    // Add price range filter if provided
+    if (filters.priceRange) {
+      console.log(`Adding price range filter (fallback): ${filters.priceRange}`);
+      const priceRange = filters.priceRange.split('-');
+      if (priceRange.length === 2) {
+        const minPrice = parseInt(priceRange[0], 10);
+        
+        if (priceRange[1] === 'up') {
+          // For ranges like "2500-up", filter for prices >= 2500
+          if (!isNaN(minPrice)) {
+            query += ` AND c.monthly_cost >= ?`;
+            queryParams.push(minPrice);
+          }
+        } else {
+          // For normal ranges like "1500-1800", filter for prices between min and max
+          const maxPrice = parseInt(priceRange[1], 10);
+          if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+            query += ` AND c.monthly_cost >= ? AND c.monthly_cost < ?`;
+            queryParams.push(minPrice, maxPrice);
+          }
+        }
+      }
+    }
+    
+    // Add years in operation filter if provided
+    if (filters.yearsInOperation) {
+      const minYears = parseInt(filters.yearsInOperation, 10);
+      if (!isNaN(minYears)) {
+        console.log(`Adding years in operation filter (fallback): ${minYears}+ years`);
+        if (minYears === 0) {
+          // Special case for "New" filter (< 1 year)
+          const oneYearAgo = new Date();
+          oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+          const formattedDate = oneYearAgo.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+          query += ` AND d.ISSUANCE_DATE >= ?`;
+          queryParams.push(formattedDate);
+        } else {
+          // For normal year filters (1+, 3+, 5+, 10+ years)
+          const cutoffDate = new Date();
+          cutoffDate.setFullYear(cutoffDate.getFullYear() - minYears);
+          const formattedDate = cutoffDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+          query += ` AND d.ISSUANCE_DATE <= ?`;
+          queryParams.push(formattedDate);
+        }
+      }
+    }
+    
+    // Add sorting - CRITICALLY IMPORTANT FALLBACK
+    if (sortColumn) {
+      const safeDirection = sortDirection.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+      
+      // HARDCODED SPECIAL CASES FOR TROUBLESHOOTING FALLBACK
+      // Direct handling for problematic columns
+      if (sortColumn === 'monthly_cost' || sortColumn === 'price_est' || sortColumn === 'estimated_price') {
+        // CRITICAL FIX: COMPLETELY OVERRIDE ORDERING FOR PRICE
+        console.log(`[EMERGENCY OVERRIDE FALLBACK] Forcing numeric price sort: ${sortColumn} ${sortDirection}`);
+        
+        // Force direct numeric sorting on monthly_cost field 
+        query += ` ORDER BY CAST(c.monthly_cost AS DECIMAL(10,2)) ${safeDirection}`;
+      }
+      else if (sortColumn === 'yearsInOperation') {
+        // CRITICAL FIX: COMPLETELY OVERRIDE ORDERING FOR YEARS
+        console.log(`[EMERGENCY OVERRIDE FALLBACK] Forcing numeric years sort: ${sortColumn} ${sortDirection}`);
+        
+        // Force direct numeric sorting on calculated years field
+        query += ` ORDER BY TIMESTAMPDIFF(YEAR, d.ISSUANCE_DATE, CURDATE()) ${safeDirection}`;
+      }
+      else {
+        // Normal flow for other columns
+        // Map frontend column names to database column names
+        const columnMapping = {
+          'operation_name': 'd.OPERATION_NAME',
+          'city': 'd.CITY',
+          'operation_type': 'd.OPERATION_TYPE',
+          'total_capacity': 'd.TOTAL_CAPACITY',
+          'rating': 'r.overall_rating'
+        };
+        
+        console.log(`[SORT DEBUG FALLBACK] Regular column sort: "${sortColumn}" direction: "${sortDirection}"`);
+        
+        const dbColumn = columnMapping[sortColumn] || 'd.OPERATION_NAME';
+        query += ` ORDER BY ${dbColumn} ${safeDirection}`;
+      }
+    } else {
+      query += ` ORDER BY d.OPERATION_NAME ASC`;
+    }
+    
+    // Add pagination
+    query += ` LIMIT ? OFFSET ?`;
+    queryParams.push(limit, offset);
+    
+    // Execute the query
+    const [rows] = await pool.query(query, queryParams);
+    
+    if (rows.length > 0) {
+      console.log(`Found ${rows.length} daycares in database`);
+      
+      // Log sample data for debugging
+      if (rows[0]) {
+        console.log('Sample data from database:');
+        console.log('operation_id:', rows[0].operation_id);
+        console.log('monthly_cost:', rows[0].monthly_cost);
+        console.log('overall_rating:', rows[0].overall_rating);
+      }
+      
+      // Transform the database results to match the format expected by the frontend
+      const transformedResults = rows.map(row => {
+        // Calculate years in operation if issuance date is available
+        let yearsInOperation = null;
+        if (row.issuance_date) {
+          const issuanceDate = new Date(row.issuance_date);
+          const currentDate = new Date();
+          yearsInOperation = ((currentDate - issuanceDate) / (1000 * 60 * 60 * 24 * 365.25));
+        }
+        
+        // Format rating data to match what the frontend expects
+        let ratingData = null;
+        if (row.overall_rating) {
+          const ratingScore = parseFloat(row.overall_rating);
+          let ratingClass = 'poor';
+          let stars = '';
+          
+          // Determine rating class and stars based on score
+          if (ratingScore >= 4.0) {
+            ratingClass = 'excellent';
+            stars = '★★★★★';
+          } else if (ratingScore >= 3.5) {
+            ratingClass = 'good';
+            stars = '★★★★';
+          } else if (ratingScore >= 3.0) {
+            ratingClass = 'good';
+            stars = '★★★';
+          } else if (ratingScore >= 2.5) {
+            ratingClass = 'average';
+            stars = '★★★';
+          } else if (ratingScore >= 2.0) {
+            ratingClass = 'average';
+            stars = '★★';
+          } else if (ratingScore >= 1.0) {
+            ratingClass = 'poor';
+            stars = '★';
+          } else {
+            stars = '☆';
+          }
+          
+          ratingData = {
+            score: ratingScore,
+            class: ratingClass,
+            stars: stars,
+            factors: row.rating_factors ? JSON.parse(row.rating_factors) : {},
+            quality: row.quality_indicators ? JSON.parse(row.quality_indicators) : {},
+            yearsInOperation: yearsInOperation
+          };
+        }
+        
+        // Parse JSON fields if needed, handling already-parsed objects
+        let calculationFactors = null;
+        try {
+          if (row.calculation_factors) {
+            // Check if it's already an object (MySQL JSON datatype)
+            if (typeof row.calculation_factors === 'object') {
+              calculationFactors = row.calculation_factors;
+            } else {
+              calculationFactors = JSON.parse(row.calculation_factors);
+            }
+          }
+        } catch(e) {
+          console.warn('Error parsing calculation_factors JSON:', e);
+        }
+        
+        let riskFactors = null;
+        try {
+          if (row.risk_factors) {
+            // Check if it's already an object (MySQL JSON datatype)
+            if (typeof row.risk_factors === 'object') {
+              riskFactors = row.risk_factors;
+            } else {
+              riskFactors = JSON.parse(row.risk_factors);
+            }
+          }
+        } catch(e) {
+          console.warn('Error parsing risk_factors JSON:', e);
+        }
+        
+        let parentRecommendations = null;
+        try {
+          if (row.parent_recommendations) {
+            // Check if it's already an object (MySQL JSON datatype)
+            if (typeof row.parent_recommendations === 'object') {
+              parentRecommendations = row.parent_recommendations;
+            } else {
+              parentRecommendations = JSON.parse(row.parent_recommendations);
+            }
+          }
+        } catch(e) {
+          console.warn('Error parsing parent_recommendations JSON:', e);
+        }
+        
+        return {
+          operation_id: row.operation_id ? row.operation_id.toString() : '',
+          operation_number: row.operation_number ? row.operation_number.toString() : row.operation_id ? row.operation_id.toString() : '', // For backward compatibility with frontend
+          operation_name: row.operation_name,
+          operation_type: row.operation_type,
+          location_address: row.location_address,
+          city: row.city,
+          county: row.county,
+          phone_number: row.phone_number,
+          issuance_date: row.issuance_date,
+          license_issue_date: row.issuance_date, // alias for frontend compatibility
+          total_capacity: parseInt(row.total_capacity, 10) || 0,
+          email_address: row.email_address,
+          website_address: row.website_address,
+          administrator_director_name: row.administrator_director_name,
+          days_of_operation: row.days_of_operation,
+          hours_of_operation: row.hours_of_operation,
+          accepts_child_care_subsidies: row.accepts_child_care_subsidies,
+          accepts_cccsubsidy: row.accepts_child_care_subsidies, // alias for frontend compatibility
+          temporarily_closed: row.temporarily_closed,
+          
+          // Violation summary counts from revised_non_compliance
+          high_risk_violations: row.high_risk_violations || 0,
+          medium_high_risk_violations: row.medium_high_risk_violations || 0,
+          medium_risk_violations: row.medium_risk_violations || 0,
+          medium_low_risk_violations: row.medium_low_risk_violations || 0,
+          low_risk_violations: row.low_risk_violations || 0,
+          total_violations_2yr: row.total_violations || 0,
+          
+          // Rating and cost data - use values directly from the database tables
+          rating: ratingData,
+          risk_score: row.risk_score,
+          estimated_price: row.monthly_cost || null, // From the daycare_cost_estimates table
+          monthly_cost: row.monthly_cost || null,
+          weekly_cost: row.weekly_cost || null,
+          calculation_factors: calculationFactors,
+          yearsInOperation: yearsInOperation,
+          
+          // Risk analysis data
+          risk_analysis: row.analysis_summary,
+          risk_factors: riskFactors,
+          parent_recommendations: parentRecommendations
+        };
+      });
+      
+      // Get total count for pagination - apply the same filters
+      let countQuery = `
+        SELECT COUNT(*) AS total 
+        FROM daycare_operations d
+        LEFT JOIN daycare_ratings_balanced r ON d.OPERATION_ID = r.operation_id
+        LEFT JOIN daycare_cost_estimates c ON d.OPERATION_ID = c.operation_id
+        WHERE d.OPERATION_STATUS = 'Y' 
+          AND d.TEMPORARILY_CLOSED = 'NO'
+      `;
+      
+      // Create a copy of the queryParams for the count query
+      const countParams = [];
+      
+      // Apply the same filters to count query
+      if (filters.searchTerm) {
+        const searchTerm = `%${filters.searchTerm}%`;
+        countQuery += ` AND (
+          d.OPERATION_NAME LIKE ? OR
+          d.CITY LIKE ? OR
+          d.OPERATION_TYPE LIKE ?
+        )`;
+        countParams.push(searchTerm, searchTerm, searchTerm);
+      }
+      
+      if (filters.city) {
+        countQuery += ` AND d.CITY = ?`;
+        countParams.push(filters.city);
+      }
+      
+      if (filters.operation_type) {
+        countQuery += ` AND d.OPERATION_TYPE = ?`;
+        countParams.push(filters.operation_type);
+      }
+      
+      if (filters.rating) {
+        const minRating = parseFloat(filters.rating);
+        if (!isNaN(minRating)) {
+          countQuery += ` AND r.overall_rating >= ?`;
+          countParams.push(minRating);
+        }
+      }
+      
+      if (filters.priceRange) {
+        const priceRange = filters.priceRange.split('-');
+        if (priceRange.length === 2) {
+          const minPrice = parseInt(priceRange[0], 10);
+          
+          if (priceRange[1] === 'up') {
+            if (!isNaN(minPrice)) {
+              countQuery += ` AND c.monthly_cost >= ?`;
+              countParams.push(minPrice);
+            }
+          } else {
+            const maxPrice = parseInt(priceRange[1], 10);
+            if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+              countQuery += ` AND c.monthly_cost >= ? AND c.monthly_cost < ?`;
+              countParams.push(minPrice, maxPrice);
+            }
+          }
+        }
+      }
+      
+      if (filters.yearsInOperation) {
+        const minYears = parseInt(filters.yearsInOperation, 10);
+        if (!isNaN(minYears)) {
+          if (minYears === 0) {
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+            const formattedDate = oneYearAgo.toISOString().split('T')[0];
+            countQuery += ` AND d.ISSUANCE_DATE >= ?`;
+            countParams.push(formattedDate);
+          } else {
+            const cutoffDate = new Date();
+            cutoffDate.setFullYear(cutoffDate.getFullYear() - minYears);
+            const formattedDate = cutoffDate.toISOString().split('T')[0];
+            countQuery += ` AND d.ISSUANCE_DATE <= ?`;
+            countParams.push(formattedDate);
+          }
+        }
+      }
+      
+      const [countResult] = await pool.query(countQuery, countParams);
+      
+      return {
+        data: transformedResults,
+        total: countResult[0].total
+      };
+    }
+    
+    console.log('No results in database - returning empty results');
+    return { data: [], total: 0 };
+  } catch (error) {
+    console.error('Error fetching daycares from database:', error);
+    return { data: [], total: 0 };
+  }
+};
+
+/**
+ * Fetch daycare by ID from MySQL database
+ */
+const getDaycareById = async (operationId) => {
+  try {
+    console.log(`Fetching daycare #${operationId} from MySQL database...`);
+    
+    // Query with joins to get all related information
+    const query = `
+      SELECT 
+             d.OPERATION_ID as operation_id, 
+             d.OPERATION_NUMBER as operation_number,
+             d.OPERATION_NAME as operation_name, 
+             d.OPERATION_TYPE as operation_type,
+             d.LOCATION_ADDRESS as location_address,
+             d.CITY as city,
+             d.STATE as state,
+             d.ZIP as zip_code,
+             d.COUNTY as county,
+             d.PHONE_NUMBER as phone_number,
+             d.EMAIL_ADDRESS as email_address,
+             d.WEBSITE_ADDRESS as website_address,
+             d.ADMINISTRATOR_DIRECTOR_NAME as administrator_director_name,
+             d.DAYS_OF_OPERATION as days_of_operation,
+             d.HOURS_OF_OPERATION as hours_of_operation,
+             d.ISSUANCE_DATE as issuance_date,
+             d.TOTAL_CAPACITY as total_capacity,
+             d.ACCEPTS_CHILD_CARE_SUBSIDIES as accepts_child_care_subsidies,
+             d.TEMPORARILY_CLOSED as temporarily_closed,
+             r.overall_rating, r.rating_factors, r.quality_indicators, r.risk_score,
+             c.monthly_cost, c.weekly_cost, c.calculation_factors,
+             ra.analysis_summary, ra.risk_factors, ra.parent_recommendations,
+             
+             -- Count violations from revised_non_compliance table
+             (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID) as total_violations,
+             (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID AND rnc.revised_risk_level = 'High') as high_risk_violations,
+             (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID AND rnc.revised_risk_level = 'Medium High') as medium_high_risk_violations,
+             (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID AND rnc.revised_risk_level = 'Medium') as medium_risk_violations,
+             (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID AND rnc.revised_risk_level = 'Medium Low') as medium_low_risk_violations,
+             (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID AND rnc.revised_risk_level = 'Low') as low_risk_violations
+             
+      FROM daycare_operations d
+      LEFT JOIN daycare_ratings_balanced r ON d.OPERATION_ID = r.operation_id
+      LEFT JOIN daycare_cost_estimates c ON d.OPERATION_ID = c.operation_id
+      LEFT JOIN risk_analysis ra ON d.OPERATION_ID = ra.operation_id
+      WHERE d.OPERATION_ID = ? OR d.OPERATION_NUMBER = ?
+    `;
+    
+    const [rows] = await pool.query(query, [operationId, operationId]);
+    
+    if (rows.length > 0) {
+      console.log(`Found daycare #${operationId} in database`);
+      
+      // Get the daycare object
+      const daycare = rows[0];
+      
+      // Calculate years in operation if issuance date is available
+      let yearsInOperation = null;
+      if (daycare.issuance_date) {
+        const issuanceDate = new Date(daycare.issuance_date);
+        const currentDate = new Date();
+        yearsInOperation = ((currentDate - issuanceDate) / (1000 * 60 * 60 * 24 * 365.25));
+      }
+      
+      // Format rating data to match what the frontend expects
+      let ratingData = null;
+      if (daycare.overall_rating) {
+        const ratingScore = parseFloat(daycare.overall_rating);
+        let ratingClass = 'poor';
+        let stars = '';
+        
+        // Determine rating class and stars based on score
+        if (ratingScore >= 4.0) {
+          ratingClass = 'excellent';
+          stars = '★★★★★';
+        } else if (ratingScore >= 3.5) {
+          ratingClass = 'good';
+          stars = '★★★★';
+        } else if (ratingScore >= 3.0) {
+          ratingClass = 'good';
+          stars = '★★★';
+        } else if (ratingScore >= 2.5) {
+          ratingClass = 'average';
+          stars = '★★★';
+        } else if (ratingScore >= 2.0) {
+          ratingClass = 'average';
+          stars = '★★';
+        } else if (ratingScore >= 1.0) {
+          ratingClass = 'poor';
+          stars = '★';
+        } else {
+          stars = '☆';
+        }
+        
+        ratingData = {
+          score: ratingScore,
+          class: ratingClass,
+          stars: stars,
+          factors: daycare.rating_factors ? JSON.parse(daycare.rating_factors) : {},
+          quality: daycare.quality_indicators ? JSON.parse(daycare.quality_indicators) : {},
+          yearsInOperation: yearsInOperation
+        };
+      }
+      
+      // Parse JSON fields if needed, handling already-parsed objects
+      let calculationFactors = null;
+      try {
+        if (daycare.calculation_factors) {
+          // Check if it's already an object (MySQL JSON datatype)
+          if (typeof daycare.calculation_factors === 'object') {
+            calculationFactors = daycare.calculation_factors;
+          } else {
+            calculationFactors = JSON.parse(daycare.calculation_factors);
+          }
+        }
+      } catch(e) {
+        console.warn('Error parsing calculation_factors JSON:', e);
+      }
+      
+      let riskFactors = null;
+      try {
+        if (daycare.risk_factors) {
+          // Check if it's already an object (MySQL JSON datatype)
+          if (typeof daycare.risk_factors === 'object') {
+            riskFactors = daycare.risk_factors;
+          } else {
+            riskFactors = JSON.parse(daycare.risk_factors);
+          }
+        }
+      } catch(e) {
+        console.warn('Error parsing risk_factors JSON:', e);
+      }
+      
+      // Get parent recommendations directly from the database using a dedicated function
+      let parentRecommendations = null;
+      try {
+        // Get fresh parent recommendations directly from database
+        parentRecommendations = await getParentRecommendations(operationId);
+        
+        if (parentRecommendations && Array.isArray(parentRecommendations) && parentRecommendations.length > 0) {
+          console.log(`[DEBUG] Successfully retrieved ${parentRecommendations.length} recommendations for daycare #${operationId}`);
+        } else {
+          console.log(`[DEBUG] No parent recommendations found in database for daycare #${operationId}`);
+        }
+        
+        // Continue with normal processing if we don't have recommendations yet
+        if (!parentRecommendations && daycare.parent_recommendations && 
+            daycare.parent_recommendations !== '[]' && 
+            daycare.parent_recommendations !== 'null') {
+          
+          // Check if it's already an object (MySQL JSON datatype)
+          if (typeof daycare.parent_recommendations === 'object' && 
+              Array.isArray(daycare.parent_recommendations)) {
+            
+            if (daycare.parent_recommendations.length > 0) {
+              parentRecommendations = daycare.parent_recommendations;
+              console.log(`[DEBUG] Using array directly:`, 
+                          parentRecommendations.slice(0, 3), '...');
+            }
+          } else if (typeof daycare.parent_recommendations === 'object' && 
+                     daycare.parent_recommendations !== null) {
+            // Handle case where it might be a non-array object
+            if (Object.keys(daycare.parent_recommendations).length > 0) {
+              parentRecommendations = Object.values(daycare.parent_recommendations);
+              console.log(`[DEBUG] Converted object to array:`, 
+                          parentRecommendations.slice(0, 3), '...');
+            }
+          } else if (typeof daycare.parent_recommendations === 'string' && 
+                     daycare.parent_recommendations.trim() !== '') {
+            try {
+              // Parse JSON string
+              const parsed = JSON.parse(daycare.parent_recommendations);
+              
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                parentRecommendations = parsed;
+                console.log(`[DEBUG] Parsed from JSON string to array:`, 
+                            parentRecommendations.slice(0, 3), '...');
+              } else if (typeof parsed === 'object' && parsed !== null) {
+                // Convert object to array if needed
+                const values = Object.values(parsed);
+                if (values.length > 0) {
+                  parentRecommendations = values;
+                  console.log(`[DEBUG] Parsed from JSON string to object, then to array:`, 
+                              parentRecommendations.slice(0, 3), '...');
+                }
+              } else if (typeof parsed === 'string' && parsed.trim() !== '') {
+                // Single string recommendation
+                parentRecommendations = [parsed];
+                console.log(`[DEBUG] Using single string recommendation:`, parentRecommendations);
+              }
+            } catch (parseErr) {
+              console.warn(`[DEBUG] Error parsing parent_recommendations JSON:`, parseErr);
+              
+              // Try treating it as a comma-separated list
+              if (daycare.parent_recommendations.includes(',')) {
+                const items = daycare.parent_recommendations.split(',')
+                  .map(item => item.trim())
+                  .filter(item => item.length > 0);
+                
+                if (items.length > 0) {
+                  parentRecommendations = items;
+                  console.log(`[DEBUG] Using comma-separated list:`, 
+                              parentRecommendations.slice(0, 3), '...');
+                }
+              } else if (daycare.parent_recommendations.length > 10) {
+                // Single string that's not JSON or comma-separated
+                parentRecommendations = [daycare.parent_recommendations];
+                console.log(`[DEBUG] Using single string as recommendation:`, parentRecommendations);
+              }
+            }
+          }
+        }
+        
+        // Check if we have valid recommendations
+        if (parentRecommendations && Array.isArray(parentRecommendations) && 
+            parentRecommendations.length > 0) {
+          // Ensure recommendations are strings
+          parentRecommendations = parentRecommendations.map(rec => {
+            if (typeof rec === 'object' && rec !== null) {
+              return JSON.stringify(rec);
+            }
+            return String(rec);
+          });
+          
+          console.log(`[DEBUG] Successfully processed ${parentRecommendations.length} recommendations.`);
+          console.log(`[DEBUG] First few:`, parentRecommendations.slice(0, 3));
+        } else {
+          console.log(`[DEBUG] No valid recommendations found. Using fallback.`);
+          
+          // Generate recommendations based on daycare type
+          if (daycare.operation_type && 
+              daycare.operation_type.toLowerCase().includes('infant')) {
+            // Add infant-specific recommendations
+            parentRecommendations = [
+              "Ask about their safe sleep policies for infants and how they follow SIDS prevention guidelines",
+              "Inquire about their feeding schedules and how they handle breast milk/formula storage",
+              "Ask about their diaper changing procedures and how they prevent cross-contamination",
+              "Discuss their policy on daily reports for infant activities, feedings, and diaper changes",
+              "Ask about their staff-to-infant ratios and how individual attention is provided"
+            ];
+            
+            console.log(`[DEBUG] Added infant-specific fallback recommendations`);
+          } else {
+            // Generic recommendations for all daycares - SHORTENED TO REDUCE REPETITION
+            parentRecommendations = [
+              "Ask about their illness policy and the specific symptoms that require a child to stay home",
+              "Inquire about their medication administration procedures and documentation requirements",
+              "Ask about their food allergy management protocols and how they prevent cross-contamination",
+              "Ask about the types of records they maintain for each child and how they ensure accuracy",
+              "Inquire about their system for tracking and updating emergency contact information"
+            ];
+            
+            console.log(`[DEBUG] Added generic fallback recommendations`);
+          }
+          
+          try {
+            // Try to update the database with these recommendations for future use
+            const recommendationsJson = JSON.stringify(parentRecommendations);
+            await pool.query(
+              'UPDATE risk_analysis SET parent_recommendations = ? WHERE operation_id = ?',
+              [recommendationsJson, operationId]
+            );
+            console.log(`[DEBUG] Updated database with generated recommendations`);
+          } catch (dbErr) {
+            console.warn('[DEBUG] Error updating database:', dbErr);
+          }
+        }
+      } catch(e) {
+        console.warn('[DEBUG] Error in parent recommendations processing:', e);
+        
+        // Add fallback recommendations if any error occurs
+        parentRecommendations = [
+          "Ask about their illness policy and the specific symptoms that require a child to stay home",
+          "Inquire about their medication administration procedures and documentation requirements",
+          "Ask about their food allergy management protocols and how they prevent cross-contamination"
+        ];
+        console.log(`[DEBUG] Added error fallback recommendations`);
+      }
+      
+      // Get recent reviews for this daycare if available
+      let reviews = [];
+      try {
+        const [reviewRows] = await pool.query(
+          'SELECT * FROM reviews WHERE operation_number = ? ORDER BY created_at DESC LIMIT 5', 
+          [operationId]
+        );
+        if (reviewRows.length > 0) {
+          reviews = reviewRows;
+        }
+      } catch (reviewError) {
+        console.warn(`Error fetching reviews for daycare #${operationId}:`, reviewError);
+      }
+      
+      return {
+        data: {
+          operation_id: daycare.operation_id ? daycare.operation_id.toString() : '',
+          operation_number: daycare.operation_number ? daycare.operation_number.toString() : daycare.operation_id ? daycare.operation_id.toString() : '', // For backward compatibility with frontend
+          operation_name: daycare.operation_name,
+          operation_type: daycare.operation_type,
+          location_address: daycare.location_address,
+          city: daycare.city,
+          county: daycare.county,
+          phone_number: daycare.phone_number,
+          issuance_date: daycare.issuance_date,
+          license_issue_date: daycare.issuance_date, // alias for frontend compatibility
+          total_capacity: parseInt(daycare.total_capacity, 10) || 0,
+          email_address: daycare.email_address,
+          website_address: daycare.website_address,
+          administrator_director_name: daycare.administrator_director_name,
+          days_of_operation: daycare.days_of_operation,
+          hours_of_operation: daycare.hours_of_operation,
+          accepts_child_care_subsidies: daycare.accepts_child_care_subsidies,
+          accepts_cccsubsidy: daycare.accepts_child_care_subsidies, // alias for frontend compatibility
+          temporarily_closed: daycare.temporarily_closed,
+          
+          // Violation summary counts from revised_non_compliance
+          high_risk_violations: daycare.high_risk_violations || 0,
+          medium_high_risk_violations: daycare.medium_high_risk_violations || 0,
+          medium_risk_violations: daycare.medium_risk_violations || 0,
+          medium_low_risk_violations: daycare.medium_low_risk_violations || 0,
+          low_risk_violations: daycare.low_risk_violations || 0,
+          total_violations_2yr: daycare.total_violations || 0,
+          
+          // Rating and cost data - use values directly from the database tables
+          rating: ratingData,
+          risk_score: daycare.risk_score,
+          estimated_price: daycare.monthly_cost || null, // From the daycare_cost_estimates table
+          price_est: daycare.monthly_cost || null, // alias for frontend compatibility
+          monthly_cost: daycare.monthly_cost || null,
+          weekly_cost: daycare.weekly_cost || null,
+          calculation_factors: calculationFactors,
+          yearsInOperation: yearsInOperation,
+          
+          // Risk analysis data
+          risk_analysis: daycare.analysis_summary,
+          risk_factors: riskFactors,
+          parent_recommendations: parentRecommendations,
+          
+          // Reviews data if available
+          reviews: reviews
+        }
+      };
+    }
+    
+    console.log(`Daycare #${operationId} not found in database - returning null`);
+    return { data: null };
+  } catch (error) {
+    console.error(`Error fetching daycare #${operationId} from database:`, error);
+    return { data: null };
+  }
+};
+
+/**
+ * Fetch violations for a daycare from MySQL database
+ */
+const getViolationsById = async (operationId) => {
+  try {
+    console.log(`Fetching violations for daycare #${operationId} from database...`);
+    
+    // Use the revised_non_compliance table, which has the most up-to-date data
+    console.log(`Executing query: SELECT * FROM revised_non_compliance WHERE operation_id = '${operationId}' ORDER BY activity_date DESC`);
+    
+    const [revisedRows] = await pool.query(
+      'SELECT * FROM revised_non_compliance WHERE operation_id = ? ORDER BY activity_date DESC', 
+      [operationId]
+    );
+    
+    // Log sample data if available
+    if (revisedRows.length > 0) {
+      const sampleRow = revisedRows[0];
+      console.log('Sample violation row:');
+      console.log('- operation_id:', sampleRow.operation_id);
+      console.log('- non_compliance_id:', sampleRow.non_compliance_id);
+      console.log('- standard_number_description:', sampleRow.standard_number_description);
+      console.log('- narrative (truncated):', typeof sampleRow.narrative === 'string' 
+        ? sampleRow.narrative.substring(0, 100) + (sampleRow.narrative.length > 100 ? '...' : '')
+        : typeof sampleRow.narrative);
+      console.log('- risk_level:', sampleRow.revised_risk_level || sampleRow.standard_risk_level);
+    }
+    
+    if (revisedRows.length > 0) {
+      console.log(`Found ${revisedRows.length} violations for daycare #${operationId} in revised_non_compliance table`);
+      
+      // Transform the results to match the expected format
+      const transformedViolations = revisedRows.map(row => {
+        // Process the standard_number_description field
+        let stdDesc = row.standard_number_description || '';
+        // Capitalize column name if it exists in uppercase
+        if (!stdDesc && row.STANDARD_NUMBER_DESCRIPTION) {
+          stdDesc = row.STANDARD_NUMBER_DESCRIPTION;
+          console.log(`Found uppercase STANDARD_NUMBER_DESCRIPTION field: ${stdDesc.substring(0, 50)}`);
+        }
+        
+        // Process the narrative field
+        let narrative = row.narrative;
+        
+        // Check for uppercase NARRATIVE field if lowercase one is missing
+        if (narrative === undefined && row.NARRATIVE !== undefined) {
+          narrative = row.NARRATIVE;
+          console.log('Found uppercase NARRATIVE field instead of lowercase');
+        }
+        
+        // Ensure narrative is a string, even if it's null or undefined
+        if (narrative === null || narrative === undefined) {
+          narrative = 'No narrative available';
+        } else if (typeof narrative === 'string' && (narrative.startsWith('{') || narrative.startsWith('['))) {
+          // Try to parse JSON strings
+          try {
+            narrative = JSON.parse(narrative);
+          } catch(e) {
+            console.warn('Failed to parse narrative as JSON:', e.message);
+            // Not JSON, leave as is
+          }
+        }
+        
+        // Log detailed debug info for this violation
+        console.log(`Violation #${row.non_compliance_id || row.NON_COMPLIANCE_ID}: ${stdDesc}`);
+        console.log(`  Narrative type: ${typeof narrative}, length: ${typeof narrative === 'string' ? narrative.length : 'N/A'}`);
+        
+        return {
+          violation_id: row.non_compliance_id || row.NON_COMPLIANCE_ID || `violation-${Date.now()}`,
+          operation_id: row.operation_id || row.OPERATION_ID,
+          operation_number: row.operation_id || row.OPERATION_ID, // For backward compatibility
+          activity_id: row.activity_id || row.ACTIVITY_ID,
+          section_id: row.section_id || row.SECTION_ID,
+          standard_number_description: stdDesc,
+          narrative: narrative,
+          risk_level: formatRiskLevel(row.revised_risk_level || row.REVISED_RISK_LEVEL || row.standard_risk_level || row.STANDARD_RISK_LEVEL),
+          standard_risk_level: row.standard_risk_level || row.STANDARD_RISK_LEVEL,
+          revised_risk_level: row.revised_risk_level || row.REVISED_RISK_LEVEL,
+          technical_assistance_given: (row.technical_assistance_given || row.TECHNICAL_ASSISTANCE_GIVEN || 'NO'),
+          corrected_at_inspection: (row.corrected_at_inspection || row.CORRECTED_AT_INSPECTION) === 'Y' ? 'Yes' : 'No',
+          corrected_date: row.corrected_date || row.CORRECTED_DATE,
+          violation_date: row.activity_date || row.ACTIVITY_DATE,
+          date_correction_verified: row.date_correction_verified || row.DATE_CORRECTION_VERIFIED
+        };
+      });
+      
+      return {
+        data: transformedViolations
+      };
+    }
+    
+    console.log(`No violations found in database for daycare #${operationId} - returning empty array`);
+    return { data: [] };
+  } catch (error) {
+    console.error(`Error fetching violations for daycare #${operationId} from database:`, error);
+    return { data: [] };
+  }
+};
+
+/**
+ * Fetch available cities from MySQL database
+ */
+const getCities = async () => {
+  try {
+    console.log('Fetching distinct cities from database...');
+    
+    const [rows] = await pool.query(`
+      SELECT DISTINCT CITY as city FROM daycare_operations 
+      WHERE CITY IS NOT NULL 
+        AND CITY != '' 
+        AND (OPERATION_TYPE = 'Licensed Center' OR OPERATION_TYPE = 'Licensed Child-Care Home')
+      ORDER BY CITY ASC
+    `);
+    
+    if (rows.length > 0) {
+      console.log(`Found ${rows.length} cities in database`);
+      
+      // Transform the results to match expected format
+      const cities = rows.map(row => row.city);
+      return {
+        data: cities
+      };
+    }
+    
+    console.log('No cities found in database - returning empty array');
+    return { data: [] };
+  } catch (error) {
+    console.error('Error fetching cities from database:', error);
+    return { data: [] };
+  }
+};
+
+/**
+ * Helper function to convert risk levels to the format expected by the frontend
+ */
+function formatRiskLevel(riskLevel) {
+  if (!riskLevel) return 'Low';
+  
+  if (riskLevel === 'Medium High') return 'Medium-High';
+  if (riskLevel === 'Medium Low') return 'Medium-Low';
+  
+  // Return the original value if no transform needed
+  return riskLevel;
+}
+
+/**
+ * Fetch just the risk analysis summary for a daycare
+ */
+const getAnalysisSummary = async (operationId) => {
+  try {
+    console.log(`Fetching analysis summary for daycare #${operationId} from database...`);
+    
+    // First, find the correct operation ID
+    const [operationData] = await pool.query(
+      'SELECT OPERATION_ID FROM daycare_operations WHERE OPERATION_ID = ? OR OPERATION_NUMBER = ?',
+      [operationId, operationId]
+    );
+    
+    if (operationData.length === 0) {
+      console.log(`Could not find daycare with ID ${operationId}`);
+      return { data: null };
+    }
+    
+    const correctId = operationData[0].OPERATION_ID;
+    console.log(`Found daycare with ID ${correctId}`);
+    
+    // Get the analysis summary using the correct ID
+    const [summaryData] = await pool.query(
+      'SELECT analysis_summary FROM risk_analysis WHERE operation_id = ?',
+      [correctId]
+    );
+    
+    if (summaryData.length === 0 || !summaryData[0].analysis_summary) {
+      console.log(`No analysis summary found for daycare #${correctId}`);
+      return { data: null };
+    }
+    
+    return { 
+      data: summaryData[0].analysis_summary,
+      operationId: correctId
+    };
+  } catch (error) {
+    console.error(`Error fetching analysis summary for daycare #${operationId}:`, error);
+    return { data: null };
+  }
+};
+
+/**
+ * Fetch daycare autocomplete suggestions based on a search term
+ */
+const getAutocompleteSuggestions = async (searchTerm, limit = 10) => {
+  try {
+    if (!searchTerm || searchTerm.trim().length < 2) {
+      return { data: [] };
+    }
+
+    console.log(`Fetching autocomplete suggestions for term: '${searchTerm}'`);
+    
+    // Check if the daycare_finder table exists (preferred source)
+    const [tables] = await pool.query('SHOW TABLES LIKE "daycare_finder"');
+    
+    if (tables.length > 0) {
+      console.log('Using daycare_finder table for autocomplete suggestions');
+
+      // Check if searchTerm is numeric and might be an exact operation_id or zipcode match
+      const exactTerm = searchTerm.trim();
+      const isNumeric = /^\d+$/.test(exactTerm);
+      
+      let suggestions;
+      if (isNumeric) {
+        // If numeric, prioritize exact matches for operation_id and zipcode
+        [suggestions] = await pool.query(`
+          SELECT 
+            operation_id,
+            operation_number,
+            operation_name,
+            city,
+            operation_type,
+            address,
+            zip_code,
+            monthly_cost,
+            overall_rating,
+            'operation_id' as match_type,
+            1 as match_priority
+          FROM daycare_finder
+          WHERE 
+            operation_id = ? AND
+            (temporarily_closed IS NULL OR temporarily_closed != 'Y') AND
+            operation_status != 'INACTIVE'
+          
+          UNION ALL
+          
+          SELECT 
+            operation_id,
+            operation_number,
+            operation_name,
+            city,
+            operation_type,
+            address,
+            zip_code,
+            monthly_cost,
+            overall_rating,
+            'zipcode' as match_type,
+            2 as match_priority
+          FROM daycare_finder
+          WHERE 
+            zip_code = ? AND
+            operation_id != ? AND
+            (temporarily_closed IS NULL OR temporarily_closed != 'Y') AND
+            operation_status != 'INACTIVE'
+          
+          UNION ALL
+          
+          SELECT 
+            operation_id,
+            operation_number,
+            operation_name,
+            city,
+            operation_type,
+            address,
+            zip_code,
+            monthly_cost,
+            overall_rating,
+            'partial' as match_type,
+            3 as match_priority
+          FROM daycare_finder
+          WHERE 
+            (operation_name LIKE ? OR
+             operation_id LIKE ? OR
+             city LIKE ? OR
+             zip_code LIKE ?) AND
+            operation_id != ? AND
+            zip_code != ? AND
+            (temporarily_closed IS NULL OR temporarily_closed != 'Y') AND
+            operation_status != 'INACTIVE'
+          
+          ORDER BY match_priority ASC, operation_name ASC
+          LIMIT ?
+        `, [
+          exactTerm, // Exact match for operation_id
+          exactTerm, // Exact match for zipcode
+          exactTerm, // Exclude exact operation_id matches from zipcode results
+          
+          `%${searchTerm}%`, // Partial match for name
+          `%${searchTerm}%`, // Partial match for operation_id
+          `%${searchTerm}%`, // Partial match for city
+          `%${searchTerm}%`, // Partial match for zipcode
+          exactTerm, // Exclude exact operation_id matches from partial results
+          exactTerm, // Exclude exact zipcode matches from partial results
+          
+          limit
+        ]);
+      } else {
+        // Standard query for non-numeric search terms
+        [suggestions] = await pool.query(`
+          SELECT 
+            operation_id,
+            operation_number,
+            operation_name,
+            city,
+            operation_type,
+            address,
+            zip_code,
+            monthly_cost,
+            overall_rating
+          FROM daycare_finder
+          WHERE 
+            (operation_name LIKE ? OR
+             city LIKE ? OR
+             operation_type LIKE ?) AND
+            (temporarily_closed IS NULL OR temporarily_closed != 'Y') AND
+            operation_status != 'INACTIVE'
+          ORDER BY operation_name ASC
+          LIMIT ?
+        `, [`%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`, limit]);
+      }      
+      
+      console.log(`Found ${suggestions.length} autocomplete suggestions in daycare_finder`);
+      
+      // Transform into standard format expected by the frontend
+      return {
+        data: suggestions.map(item => {
+          // Determine the proper suggestion type based on how it matched
+          let suggestType = 'daycare';
+          
+          // If we have a match_type from our UNION query for numeric searches, use it
+          if (item.match_type === 'operation_id') {
+            suggestType = 'operation_id';
+          } else if (item.match_type === 'zipcode') {
+            suggestType = 'zipcode';
+          }
+          
+          return {
+            id: item.operation_id,
+            operation_number: item.operation_number || item.operation_id,
+            operation_id: item.operation_id, // For direct access
+            name: item.operation_name,
+            address: item.address || `${item.city || 'Unknown location'}`,
+            zip_code: item.zip_code, // Include zip code for display
+            type: suggestType, // Type is used for routing in the frontend
+            subtype: item.operation_type,
+            price: item.monthly_cost ? `$${Math.round(item.monthly_cost)}` : null,
+            rating: item.overall_rating ? parseFloat(item.overall_rating).toFixed(1) : null
+        }))
+      };
+    } else {
+      // Fallback to daycare_operations table
+      console.log('Falling back to daycare_operations table for autocomplete suggestions');
+      
+      const [suggestions] = await pool.query(`
+        SELECT 
+          OPERATION_ID as operation_id,
+          OPERATION_NUMBER as operation_number,
+          OPERATION_NAME as operation_name,
+          CITY as city,
+          OPERATION_TYPE as operation_type,
+          LOCATION_ADDRESS as address
+        FROM daycare_operations
+        WHERE 
+          OPERATION_NAME LIKE ? AND
+          OPERATION_STATUS = 'Y' AND
+          TEMPORARILY_CLOSED = 'NO'
+        ORDER BY OPERATION_NAME ASC
+        LIMIT ?
+      `, [`%${searchTerm}%`, limit]);
+      
+      console.log(`Found ${suggestions.length} autocomplete suggestions in daycare_operations`);
+      
+      // Transform into standard format
+      return {
+        data: suggestions.map(item => ({
+          id: item.operation_id,
+          operation_number: item.operation_number || item.operation_id,
+          name: item.operation_name,
+          address: item.address || `${item.city || 'Unknown location'}`,
+          type: 'daycare',
+          subtype: item.operation_type
+        }))
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching autocomplete suggestions:', error);
+    return { data: [] };
+  }
+};
+
+module.exports = {
+  getDaycareOperations,
+  getDaycareById,
+  getViolationsById,
+  getCities,
+  getAnalysisSummary,
+  getAutocompleteSuggestions
+};

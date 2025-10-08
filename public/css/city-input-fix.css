@@ -1,0 +1,65 @@
+/**
+ * City Input Fix CSS - v1.0
+ * Ensures city input is visible on cost estimator page
+ */
+
+/* Force the city input to be visible */
+.location-section,
+.city-container,
+.city-input-container,
+[data-testid="city-select"],
+select[name="city"],
+input[name="city"],
+.city-input,
+form [name="city"],
+form .city-input,
+.location-section .select-container {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  min-height: 38px !important;
+  overflow: visible !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Show labels for city inputs */
+label[for="city-input"],
+label[for="city"],
+.location-section label,
+.city-container label {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin-bottom: 0.5rem !important;
+  font-weight: 500 !important;
+}
+
+/* Ensure city inputs have proper styling */
+input[name="city"],
+select[name="city"],
+.city-input,
+.location-section select,
+.location-section input[type="text"] {
+  width: 100% !important;
+  padding: 0.375rem 0.75rem !important;
+  border: 1px solid #ced4da !important;
+  border-radius: 0.25rem !important;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out !important;
+}
+
+/* Fix for React components that might be hiding the city input */
+.cost-estimator-form > div > div:nth-child(2),
+form > div > div:nth-child(2) {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Force location section to appear fixed in first 4 elements of the form */
+.cost-estimator-form > div:nth-child(1),
+.cost-estimator-form > div:nth-child(2),
+.cost-estimator-form > div:nth-child(3),
+.cost-estimator-form > div:nth-child(4) {
+  display: block !important;
+}

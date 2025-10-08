@@ -1,0 +1,48 @@
+DAYCARE STAR RATING REPORT
+==================================================
+
+SUMMARY:
+Total daycares rated: 15389
+Average rating: 4.44 stars
+
+RATING DISTRIBUTION:
+5 stars (★★★★★): 6606 daycares (42.93%)
+4.5 stars (★★★★★): 4239 daycares (27.55%)
+4 stars (★★★★): 2310 daycares (15.01%)
+3.5 stars (★★★★): 1223 daycares (7.95%)
+3 stars (★★★): 544 daycares (3.53%)
+2.5 stars (★★★): 276 daycares (1.79%)
+2 stars (★★): 130 daycares (0.84%)
+1.5 stars (★★): 40 daycares (0.26%)
+1 stars (★): 21 daycares (0.14%)
+
+OPERATIONAL FACTORS (BALANCED APPROACH):
+The rating system includes these operational factors with refined weights:
+- Extended hours of operation (early morning: +0.03, evening: +0.06, 24-hour: +0.09)
+- Weekend availability (Saturday: +0.03, Sunday: +0.06, 7-day: +0.09)
+- Acceptance of child care subsidies (+0.06)
+- Specialized infant care (+0.06) and broad age range coverage (+0.03)
+- Facility size and capacity (+0.03 for large facilities)
+- Operational status and permit conditions (up to -0.3 penalty)
+
+These factors use a progressive scoring system with diminishing returns:
+- First 0.1 points: 100% value
+- Next 0.1 points: 80% value
+- Next 0.1 points: 60% value
+- Next 0.1 points: 40% value
+- Any additional: 20% value
+
+The maximum quality boost is capped at +0.4 stars, with stronger penalties
+for facilities with permit conditions or temporary closures (max 2.5 stars).
+
+NEW TIERED RATING SYSTEM:
+In addition to the overall star rating, each daycare is now evaluated on four key dimensions
+using a 1-10 scale for more granular assessment:
+
+1. Safety & Compliance (1-10): Regulatory compliance and safety metrics
+2. Operational Quality (1-10): Hours, weekend availability, accessibility features
+3. Educational Programming (1-10): Curriculum quality and educational approach
+4. Staff Qualifications (1-10): Staff education, certification, and professional development
+
+This tiered system allows parents to see both a simple overall rating and detailed
+category-specific scores that align with their individual priorities.

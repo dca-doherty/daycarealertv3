@@ -1,0 +1,14 @@
+ <IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^index\.html$ - [L]
+
+    # Don't rewrite sitemap.xml or robots.txt
+    RewriteCond %{REQUEST_URI} !^/sitemap\.xml [NC]
+    RewriteCond %{REQUEST_URI} !^/robots\.txt [NC]
+
+    # Only rewrite if file or directory doesn't exist
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /index.html [L]
+  </IfModule>

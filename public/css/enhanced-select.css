@@ -1,0 +1,178 @@
+/**
+ * Enhanced Select Dropdown Styles
+ * Mobile-friendly, searchable dropdown replacement
+ */
+
+.enhanced-select-container {
+  position: relative;
+  width: 100%;
+  font-family: inherit;
+  margin-bottom: 15px;
+}
+
+.enhanced-select-display {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 10px 15px;
+  background-color: #fff;
+  cursor: pointer;
+  position: relative;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.enhanced-select-display::after {
+  content: '▼';
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.enhanced-select-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  z-index: 1000;
+  display: none;
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-top: 5px;
+  width: 100%; /* Ensure full width */
+}
+
+.enhanced-select-dropdown.open {
+  display: block;
+}
+
+.enhanced-select-search {
+  width: 100%;
+  padding: 10px 15px;
+  border: none;
+  border-bottom: 1px solid #ced4da;
+  font-size: 16px; /* Prevents iOS zoom */
+  margin-bottom: 5px;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 1;
+}
+
+.enhanced-select-search:focus {
+  outline: none;
+  border-bottom-color: #007bff;
+}
+
+.enhanced-select-options {
+  max-height: calc(60vh - 50px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+}
+
+.enhanced-select-option {
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.enhanced-select-option:hover,
+.enhanced-select-option:focus {
+  background-color: #f8f9fa;
+}
+
+.enhanced-select-option.selected {
+  background-color: #e9ecef;
+  font-weight: bold;
+}
+
+/* Ensure proper scrolling on mobile */
+@media (max-width: 768px) {
+  .enhanced-select-dropdown {
+    position: fixed !important; /* Fixed position on mobile */
+    top: 30% !important; /* Position near top for better keyboard access */
+    left: 5% !important;
+    right: 5% !important;
+    width: 90% !important; /* Take up most of the screen width */
+    max-height: 60vh !important;
+    z-index: 9999 !important; /* Ensure it's above everything */
+    border-radius: 8px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+    transform: none !important; /* Reset any transforms */
+    margin: 0 !important; /* Reset margins */
+  }
+  
+  .enhanced-select-options {
+    max-height: calc(60vh - 60px) !important;
+    -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
+  }
+  
+  .enhanced-select-option {
+    padding: 16px 15px !important; /* Larger touch targets on mobile */
+    font-size: 16px !important; /* Ensure readable text */
+    border-bottom: 1px solid #f0f0f0 !important;
+  }
+  
+  .enhanced-select-option:last-child {
+    border-bottom: none !important;
+  }
+  
+  .enhanced-select-search {
+    padding: 14px 15px !important;
+    font-size: 16px !important;
+    border-radius: 8px 8px 0 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    background: white !important;
+    z-index: 1 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+  }
+  
+  /* Create a backdrop to make it more like a modal */
+  body.enhanced-select-open::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    animation: fadeIn 0.2s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  /* Styling for the display field */
+  .enhanced-select-display {
+    background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
+    padding-right: 2.5rem !important;
+  }
+  
+  /* Filter-specific styling */
+  #city-filter + .enhanced-select-container .enhanced-select-display::after {
+    content: '⌨️ Tap to search';
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #666;
+  }
+}

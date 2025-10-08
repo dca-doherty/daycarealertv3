@@ -1,0 +1,53 @@
+{
+  "name": "daycarealert-backend",
+  "version": "1.0.0",
+  "description": "Backend API for DaycareAlert website with MySQL database",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "simple": "node simple-test-server.js",
+    "dev:simple": "nodemon simple-test-server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "load-data": "node scripts/load_api_data.js",
+    "load-data:simple": "node scripts/simple_load_data.js",
+    "load-violations": "node scripts/load_violations.js",
+    "find-violations": "node scripts/find_violations.js",
+    "load-all-violations": "node scripts/load_all_violations.js",
+    "load-violations:fixed": "node scripts/load_violations_fixed.js",
+    "load-violations:parallel": "node scripts/load_violations_parallel.js",
+    "load-violations:basic": "node scripts/load_violations_basic.js",
+    "load-inspections": "node scripts/load_inspections.js",
+    "load-api-data": "node scripts/load_all_records.js",
+    "setup-daycare-table": "node scripts/create_daycare_table.js",
+    "cleanup-daycare-table": "node scripts/cleanup_daycare_table.js",
+    "sync-data": "node sync-data.js",
+    "update-risk-table": "node scripts/update_risk_analysis_table.js",
+    "analyze-daycare": "node analyze_daycare.js",
+    "generate-risk-analysis": "node scripts/generate_risk_analysis.js",
+    "schedule-risk-analysis": "node scripts/schedule_risk_analysis.js",
+    "run-risk-analysis": "node scripts/schedule_risk_analysis.js --run-now"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^16.5.0",
+    "express": "^4.18.3",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.14.0",
+    "natural": "^6.12.0",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.12",
+    "winston": "^3.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "private": true
+}

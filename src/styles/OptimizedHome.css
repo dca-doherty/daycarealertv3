@@ -1,0 +1,59 @@
+/* Optimized MySQL Home page styles */
+
+.custom-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.title-section {
+  flex: 1;
+}
+
+.title-section h1 {
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.performance-stats {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.performance-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  min-width: 80px;
+}
+
+.performance-value {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #2980b9;
+}
+
+.performance-label {
+  font-size: 0.75rem;
+  color: #7f8c8d;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .custom-title-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .performance-stats {
+    margin-top: 1rem;
+    align-self: flex-start;
+  }
+}

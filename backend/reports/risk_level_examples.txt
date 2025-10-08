@@ -1,0 +1,208 @@
+RISK LEVEL RECLASSIFICATION EXAMPLES
+=====================================
+
+
+Administrative: High → Medium High
+--------------------------------------------------
+Standard: 745.641 - AP Background check results - Must receive notification prior to allowing subject to be present at your operation
+Description: Employee without an active background check on file was present at the operation.     Note: Employee left during inspection.  Background check was run during inspection.
+Original Risk: High → Revised Risk: Medium High
+--------------------------------------------------
+Standard: 746.1201(1) - Responsibilities of Employees and Caregivers -Demonstrate Competency, Good Judgment, Self-control
+Description: It was determined that a caregiver did not provide good judgement after they allowed a door to remain open resulting in a child leaving the class unsupervised.
+Original Risk: High → Revised Risk: Medium High
+--------------------------------------------------
+Standard: 746.1201(1) - Responsibilities of Employees and Caregivers -Demonstrate Competency, Good Judgment, Self-control
+Description: A caregiver did not demonstrate competence when accounting for children during transitions.
+Original Risk: High → Revised Risk: Medium High
+--------------------------------------------------
+
+Paperwork: Medium High → Medium
+--------------------------------------------------
+Standard: 746.605(6) - Required Admission Information - Emergency Contact
+Description: 10 child files were reviewed.  Emergency contact information for admission form is still needed for 1 child. Addresses for both listed emergency contacts is needed for 1 child.
+Original Risk: Medium High → Revised Risk: Medium
+--------------------------------------------------
+Standard: 746.801(11) - Required Records Maintained and Made Available - Fire Inspection Report, Including Written Approval for Above/Below Ground Level Care
+Description: The operation still needs to provide proof of a current fire inspection has been completed.
+Original Risk: Medium High → Revised Risk: Medium
+--------------------------------------------------
+Standard: 746.801(11) - Required Records Maintained and Made Available - Fire Inspection Report, Including Written Approval for Above/Below Ground Level Care
+Description: The operation doesn't have a current fire inspeciton report.
+Original Risk: Medium High → Revised Risk: Medium
+--------------------------------------------------
+
+Paperwork: Medium → Medium Low
+--------------------------------------------------
+Standard: 746.901(7)(A) - Required Personnel Records - signed dated statement that employee received operational policies
+Description: Of the four personnel records evaluated, one lacked signed documentation that a copy of the parent handbook was received.
+Original Risk: Medium → Revised Risk: Medium Low
+--------------------------------------------------
+Standard: 746.611(a)(3) - Health Statement parent sign - Dated within past yr, name/address health care professional, states child can participate. Follow by signed statement
+Description: Of the six children's records evaluated, three lacked the name and address of the doctor that examined the child within the past year.
+Original Risk: Medium → Revised Risk: Medium Low
+--------------------------------------------------
+Standard: 746.611(a)(3) - Health Statement parent sign - Dated within past yr, name/address health care professional, states child can participate. Follow by signed statement
+Description: Of the 4 children's records evaluated, 1 lacked a complete health statement. The name and address of the doctor who examined the child within the last year was missing.
+Original Risk: Medium → Revised Risk: Medium Low
+--------------------------------------------------
+
+Paperwork: High → Medium
+--------------------------------------------------
+Standard: 746.605(12) - Required Admission Information - Emergency Medical Authorization
+Description: A child's record did not have a signed, completed emergency medical authorization portion of the enrollment application.
+Original Risk: High → Revised Risk: Medium
+--------------------------------------------------
+Standard: 746.2428 - No Swaddling of Infant Unless Completed Sleep Exception Form on File
+Description: An infant was observed being swaddled while laying on thir back in the crib to sleep.
+Original Risk: High → Revised Risk: Medium
+--------------------------------------------------
+Standard: 746.5617(a)(2) - Required Equipment in Vehicles - Emergency Medical Information
+Description: Emergency medical transport and treatment authorization forms for each child being transported is not in a vehicle used for transportation.
+Original Risk: High → Revised Risk: Medium
+--------------------------------------------------
+
+Safety: Medium High → High
+--------------------------------------------------
+Standard: 746.5207(a)(4) - Emergency Evacuation and Relocation Diagram - Designated Location Inside
+Description: The emergency evacuation and relocation diagram does not show the location inside of the building to relocate in the event of severe weather.
+Original Risk: Medium High → Revised Risk: High
+--------------------------------------------------
+Standard: 746.5101(b) - Annual Fire Inspection - Conducted by Fire Marshal
+Description: The annual fire inspection for the operation has not been conducted in the required timeframe.
+Original Risk: Medium High → Revised Risk: High
+--------------------------------------------------
+Standard: 746.5207(a)(4) - Emergency Evacuation and Relocation Diagram - Designated Location Inside
+Description: The operation's emergency diagram did not include a shelter-in-place location.    This information was added during the inspection.
+Original Risk: Medium High → Revised Risk: High
+--------------------------------------------------
+
+Safety: Medium → High
+--------------------------------------------------
+Standard: 747.403 - Required Posting of Emergency Telephone Numbers
+Description: The emergency telephone numbers were not completed or posted.     NOTE: This was corrected at inspection by provider completing and posting the emergency numbers.
+Original Risk: Medium → Revised Risk: High
+--------------------------------------------------
+Standard: 747.403 - Required Posting of Emergency Telephone Numbers
+Description: The operation does not have the required posting of emergency telephone numbers.
+Original Risk: Medium → Revised Risk: High
+--------------------------------------------------
+Standard: 748.3239(b) - Evacuation-Must practice severe weather drill at least once every 6 months from date of last severe weather drill
+Description: During the inspection, it was found that 2 out of 3 cottage homes practiced a sever weather drill within the past 6 months.
+Original Risk: Medium → Revised Risk: High
+--------------------------------------------------
+
+Health: Medium High → High
+--------------------------------------------------
+Standard: 746.3819 - Food Allergy Emergency Plan Signed by Parents and Health Care Professional
+Description: A child in care with a known food allergy and epi pen did not have a written food allergy emergency plan on file.
+Original Risk: Medium High → Revised Risk: High
+--------------------------------------------------
+Standard: 746.3819 - Food Allergy Emergency Plan Signed by Parents and Health Care Professional
+Description: A child did not have a food alllergy emergency plan on file.
+Original Risk: Medium High → Revised Risk: High
+--------------------------------------------------
+Standard: 746.3819 - Food Allergy Emergency Plan Signed by Parents and Health Care Professional
+Description: One child epi pen was expired.
+Original Risk: Medium High → Revised Risk: High
+--------------------------------------------------
+
+Health: Medium → Medium High
+--------------------------------------------------
+Standard: 749.1541(c)(3) - Medication Record-Must include reason medication was prescribed, for prescription medication
+Description: All medication records reviewed were observed to not have the reason the medication was prescribed.
+Original Risk: Medium → Revised Risk: Medium High
+--------------------------------------------------
+Standard: 749.1541(c)(3) - Medication Record-Must include reason medication was prescribed, for prescription medication
+Description: There is no documentation showing that a dental exam has been completed or is scheduled.
+Original Risk: Medium → Revised Risk: Medium High
+--------------------------------------------------
+Standard: 749.1541(c)(3) - Medication Record-Must include reason medication was prescribed, for prescription medication
+Description: There was no reason for why the medication was prescribed on two medication records reviewed.
+Original Risk: Medium → Revised Risk: Medium High
+--------------------------------------------------
+
+Child Well-being: Medium High → High
+--------------------------------------------------
+Standard: 746.201(5) - Reporting Suspected Abuse, Neglect, Exploitation
+Description: It was determined through the course of the investigation that the operation failed to report suspected abuse of a child within a 48 hour time period.
+Original Risk: Medium High → Revised Risk: High
+--------------------------------------------------
+Standard: 746.201(5) - Reporting Suspected Abuse, Neglect, Exploitation
+Description: Based on the evidence obtained during the DFPS investigation, the operation did not contact Child Care Regulation in a timely manner to report the concerns.
+Original Risk: Medium High → Revised Risk: High
+--------------------------------------------------
+Standard: 748.2451(a)(1) - Emergency Behavior Intervention-Use short personal restraint only If policies permit and requirements of this subchapter are met
+Description: During the course of the investigation, it was determined that a caregiver did not restraint a child when he was in the middle of the street. Caregiver admitted that he did not restrain the child.
+Original Risk: Medium High → Revised Risk: High
+--------------------------------------------------
+
+Child Well-being: Medium → High
+--------------------------------------------------
+Standard: 746.501(a)(26) - Written Operational Policies - Preventing and Responding to Abuse and Neglect
+Description: The operational policies does not inform parents of the staff's requirement for annual training in recognizing the signs and symptoms of abuse and neglect; methods to increase parent and staff awarene...
+Original Risk: Medium → Revised Risk: High
+--------------------------------------------------
+Standard: 746.501(a)(26) - Written Operational Policies - Preventing and Responding to Abuse and Neglect
+Description: Preventing and responding to abuse and neglect of children policies are not included in the parent handbook.
+Original Risk: Medium → Revised Risk: High
+--------------------------------------------------
+Standard: 746.501(a)(23) - Written Operational Policies - Instructions for Contacting Licensing Office/Online and TX Abuse & Neglect Hotline
+Description: Procedures for contacting licensing and the Texas Abuse and Neglect hotline are not included in the parent handbook.
+Original Risk: Medium → Revised Risk: High
+--------------------------------------------------
+
+EXAMPLES OF UNCHANGED RISK LEVELS
+--------------------------------------------------
+
+Safety - Unchanged Risk Levels:
+--------------------------------------------------
+Standard: 746.3701 - Safety - Areas Free From Hazards
+Risk Level: Medium High (unchanged)
+Description: At time of inspection, there was a deep hole in the outdoor play area. The hole is a tripping hazard. Photos were taken.
+--------------------------------------------------
+Standard: 747.5005(1) - Fire Drill Monthly - Exit in 3 Minutes
+Risk Level: Medium High (unchanged)
+Description: The caregiver did not practice fire drill monthly since 01/2022.
+--------------------------------------------------
+
+Paperwork - Unchanged Risk Levels:
+--------------------------------------------------
+Standard: 746.707 - Incident/Illness Report Form Shared with Parent
+Risk Level: Medium (unchanged)
+Description: Based on the information obtained during the investigation, a student received an injury on 10/8/21 and a incident report was not shared with the parent until 10/11/21.
+--------------------------------------------------
+Standard: 747.2103(a)(2) - Written Activity Plan - Outline Daily Activities
+Risk Level: Medium (unchanged)
+Description: Caregiver did not have an activity plan outlined for parents to see what activities the children conduct at the daycare.
+--------------------------------------------------
+
+Administrative - Unchanged Risk Levels:
+--------------------------------------------------
+Standard: 746.1311(a) - Director Annual Training 30 Hours Required
+Risk Level: Medium (unchanged)
+Description: One director had 24 of the required 30 hours of training completed during her most recently completed training year.
+--------------------------------------------------
+Standard: 746.1315(b) - Each Caregiver and the Director Must Have Current Training in pediatric CPR
+Risk Level: Medium High (unchanged)
+Description: Two of four staff records reviewed had online CPR certifications.
+--------------------------------------------------
+
+Health - Unchanged Risk Levels:
+--------------------------------------------------
+Standard: 747.2321(a) - Written Feeding Instructions - Signed and Dated by Parent or Health-Care Professional
+Risk Level: Medium (unchanged)
+Description: One infant in care did not have feeding instructions signed by a parent.
+--------------------------------------------------
+Standard: 746.613(b) - Immunization Records, Exceptions, and Exemptions Current
+Risk Level: Medium High (unchanged)
+Description: Two children did not have current immunization records available in their files.
+--------------------------------------------------
+
+SUMMARY STATISTICS
+--------------------------------------------------
+Total violations: 145204
+Total changed: 25307 (17.43%)
+High risk unchanged: 23193
+High risk downgraded: 10042
+Upgraded to High risk: 5309

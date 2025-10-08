@@ -1,0 +1,83 @@
+.tour-info-box {
+  background-color: #f8f9fa;
+  border-left: 4px solid #0275d8;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.tour-info-box h5 {
+  color: #0275d8;
+  margin-bottom: 0.5rem;
+}
+
+.tour-info-box p {
+  margin-bottom: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.tour-type-options {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.tour-type-option {
+  flex: 1;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tour-type-option:hover {
+  border-color: #0275d8;
+  background-color: #f8f9fa;
+}
+
+.tour-type-option.selected {
+  border-color: #0275d8;
+  background-color: rgba(2, 117, 216, 0.05);
+  box-shadow: 0 0 0 1px #0275d8;
+}
+
+.tour-type-icon {
+  font-size: 1.75rem;
+  color: #0275d8;
+  margin-bottom: 0.75rem;
+}
+
+.tour-type-name {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.tour-type-desc {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.selected-slot-summary {
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+}
+
+.selected-date-time {
+  color: #212529;
+  font-weight: 500;
+}
+
+.calendar-notice {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 576px) {
+  .tour-type-options {
+    flex-direction: column;
+  }
+}

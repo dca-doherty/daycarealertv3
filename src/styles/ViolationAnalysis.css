@@ -1,0 +1,243 @@
+.violation-analysis-container {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.violation-analysis-title {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.violation-analysis-summary {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 1rem 0;
+  color: #444;
+}
+
+.violation-analysis-loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.violation-analysis-error {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+
+.violation-analysis-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+.violation-stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.violation-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1d4ed8;
+}
+
+.stat-label {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #666;
+  text-align: center;
+}
+
+.risk-factors-section, .recommendations-section {
+  margin: 2rem 0;
+}
+
+.risk-factors-section h4, .recommendations-section h4 {
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.analysis-helper-text {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.risk-factors-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+}
+
+.risk-factor-item {
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.risk-factor-item h5 {
+  margin-top: 0;
+  color: #1a202c;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.risk-count {
+  background-color: #edf2f7;
+  color: #4a5568;
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.risk-examples {
+  margin-top: 1rem;
+}
+
+.risk-example {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #f7fafc;
+  border-radius: 4px;
+  border-left: 3px solid #e2e8f0;
+}
+
+.example-description {
+  font-size: 0.95rem;
+  color: #4a5568;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  font-style: italic;
+}
+
+.example-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.risk-level {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.risk-level.high {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.risk-level.medium-high {
+  background-color: #fff7ed;
+  color: #c2410c;
+}
+
+.risk-level.medium {
+  background-color: #e1f3ff;
+  color: #0369a1;
+}
+
+.risk-level.medium-low {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.risk-level.low {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.example-date {
+  color: #718096;
+}
+
+.correction-status {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.correction-status.corrected {
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.correction-status.not-corrected {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+.recommendations-list {
+  margin-top: 1rem;
+  padding-left: 1.5rem;
+}
+
+.recommendations-list li {
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.violation-disclaimer {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f1f5f9;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.violation-description p {
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+.violation-date {
+  margin-top: 4px;
+  color: #6c757d;
+}
+
+.resolution-details {
+  color: #6c757d;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .risk-factors-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .violation-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .violation-stat-item {
+    margin-bottom: 1rem;
+  }
+}

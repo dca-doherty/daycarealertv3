@@ -1,0 +1,316 @@
+/**
+ * Mobile Responsive Enhancements
+ * Improves the mobile experience across all components
+ */
+
+/* Small devices (phones, 576px and down) */
+@media (max-width: 576px) {
+  /* Global Adjustments */
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  h1 {
+    font-size: 1.8rem !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  /* Search & Autocomplete Improvements */
+  .unified-search-container {
+    width: 100%;
+  }
+  
+  .search-controls {
+    flex-direction: column;
+  }
+  
+  .search-input-wrapper {
+    width: 100%;
+  }
+  
+  .unified-search-input {
+    height: 48px; /* Larger touch target */
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  .category-select {
+    width: 100%;
+    height: 44px;
+    border-left: none;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .search-button {
+    width: 100%;
+    height: 44px; /* Larger touch target */
+    margin-top: 1px;
+  }
+  
+  .suggestions-container {
+    max-height: 60vh;
+    z-index: 1000;
+  }
+  
+  .suggestion-item {
+    padding: 14px 10px; /* Larger touch targets */
+  }
+  
+  /* Filter Adjustments */
+  .filter-row {
+    flex-direction: column;
+  }
+  
+  .filter-group {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+  
+  .filter-group select {
+    height: 44px; /* Larger touch target */
+  }
+  
+  .advanced-filters.expanded {
+    padding: 12px;
+  }
+  
+  /* Results Display */
+  .daycare-item {
+    flex-direction: column;
+    padding: 15px 12px;
+  }
+  
+  .daycare-details {
+    padding-left: 0;
+    margin-top: 10px;
+    width: 100%;
+  }
+  
+  /* Tabs & Navigation */
+  .nav-tabs .nav-link {
+    padding: 10px 8px;
+    font-size: 14px;
+  }
+  
+  .tab-content {
+    padding: 15px 10px;
+  }
+  
+  /* Daycare Details */
+  .daycare-profile-container {
+    padding: 0;
+  }
+  
+  .daycare-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px 12px;
+  }
+  
+  .daycare-title {
+    margin-bottom: 10px;
+  }
+  
+  .daycare-actions {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  /* Cost Estimator */
+  .cost-estimator-form {
+    padding: 15px 12px;
+  }
+  
+  .program-preferences {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Violation Cards */
+  .violation-card {
+    padding: 15px 12px;
+  }
+}
+
+/* Medium devices (tablets, between 577px and 768px) */
+@media (min-width: 577px) and (max-width: 768px) {
+  /* Tablet-specific adjustments */
+  .search-controls {
+    flex-wrap: wrap;
+  }
+  
+  .search-input-wrapper {
+    flex: 1 0 100%;
+  }
+  
+  .category-select {
+    flex: 1;
+  }
+  
+  .search-button {
+    flex: 0 0 auto;
+  }
+  
+  /* Results Display for tablets */
+  .daycare-card {
+    flex: 0 0 calc(50% - 15px);
+  }
+  
+  /* Program preferences in cost estimator */
+  .program-preferences {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Shared improvements for mobile and tablet */
+@media (max-width: 768px) {
+  /* Fix for daycare details sticky header on mobile */
+  .daycare-details-header {
+    position: relative !important;
+    top: auto !important;
+    z-index: 100 !important;
+  }
+  
+  /* Ensure card is scrollable */
+  .daycare-details-card {
+    overflow-y: auto !important;
+    max-height: 90vh !important;
+  }
+  
+  /* Improved tap targets for all touch devices */
+  button, 
+  .btn,
+  a.nav-link,
+  .form-control,
+  select {
+    min-height: 44px; /* Apple's recommended minimum */
+  }
+  
+  /* Fix for long daycare names */
+  .daycare-name {
+    word-break: break-word;
+  }
+  
+  /* Fix for filter overlaps */
+  .filter-toggle-button {
+    height: 44px;
+  }
+  
+  /* Fix for scrollable tables */
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  /* Make sure view details button is visible on small screens */
+  .view-details-btn {
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+    max-width: 90px !important;
+  }
+  
+  /* Optimize table for mobile */
+  .responsive-table {
+    margin-bottom: 0;
+  }
+  
+  /* Make the table horizontally scrollable */
+  .data-table-section {
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch; /* Better scroll on iOS */
+  }
+  
+  /* Make sure view details button is visible on small screens */
+  .view-details-btn {
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+    max-width: 90px !important;
+  }
+  
+  /* Optimize table for mobile */
+  .responsive-table {
+    margin-bottom: 0;
+  }
+  
+  /* Make the table horizontally scrollable */
+  .data-table-section {
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch; /* Better scroll on iOS */
+  }
+  
+  /* FIX: Make tables on mobile properly horizontally scrollable */
+  .responsive-table table {
+    min-width: 800px; /* Ensure table maintains minimum width for all columns */
+  }
+  
+  /* Fix for violations tab in daycare details */
+  .tab-pane[id*="violations"] table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Make description column in violations table wrap text */
+  td.description-column {
+    max-width: 250px;
+    white-space: normal;
+    word-wrap: break-word;
+  }
+  
+  /* Fix for status column in violations tab */
+  .tab-pane[id*="violations"] th:first-child,
+  .tab-pane[id*="violations"] td:first-child {
+    position: sticky;
+    left: 0;
+    background-color: white;
+    z-index: 2;
+    min-width: 100px;
+    max-width: 120px;
+    box-shadow: 2px 0px 3px rgba(0,0,0,0.1);
+  }
+  
+  /* Ensure header row stays in place */
+  .tab-pane[id*="violations"] thead th:first-child {
+    background-color: #f8f9fa;
+    z-index: 3;
+  }
+  
+  /* Improved modal display on mobile */
+  .modal-dialog {
+    margin: 10px;
+  }
+  
+  .modal-footer {
+    flex-direction: column;
+  }
+  
+  .modal-footer button {
+    width: 100%;
+    margin: 5px 0;
+  }
+}
+
+/* Extra small screens (iPhone SE and similar) */
+@media (max-width: 375px) {
+  .container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  
+  h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  h2 {
+    font-size: 1.2rem !important;
+  }
+}

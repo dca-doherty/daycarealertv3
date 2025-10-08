@@ -1,0 +1,205 @@
+/**
+ * Cost Estimator Critical Fix - v3.0
+ * These styles override all others to address critical issues:
+ * 1. Double dropdown arrows on mobile
+ * 2. City search input visibility issues
+ * 3. Immediate loading without refresh
+ */
+
+/* Added for immediate visibility - highest priority */
+#city-filter-input, 
+input#city-filter-input,
+.city-search-input,
+input.city-search-input,
+#city-search,
+input#city-search,
+input[id*="city-filter"],
+input[id*="city-search"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  height: 38px !important;
+  padding: 8px 12px !important;
+  font-size: 1rem !important;
+  border: 1px solid #ced4da !important;
+  border-radius: 0.25rem !important;
+  background-color: #fff !important;
+  position: static !important;
+  z-index: 10 !important;
+  pointer-events: auto !important;
+}
+
+/* 
+ * PRIORITY STYLES FOR IMMEDIATE EFFECT
+ * High-specificity selectors with !important to override everything else
+ */
+
+/* Ensure the city search wrapper is always visible */
+.city-search-wrapper,
+.estimator-form .form-group .city-search-wrapper,
+.estimator-form div[class*="city"] div,
+div[id*="city"].city-search-wrapper,
+.form-group.mb-3.city-search-wrapper {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  overflow: visible !important;
+  margin-bottom: 1rem !important;
+  position: relative !important;
+  pointer-events: auto !important;
+  z-index: 10 !important;
+}
+
+/* Always make sure the city search input is visible */
+#city-search,
+input#city-search,
+.city-search-input,
+input.city-search-input,
+input[id*="city"],
+.estimator-form input[type="text"][id*="city"],
+.form-control.city-search-input {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  height: 38px !important;
+  padding: 8px 12px !important;
+  margin-bottom: 0 !important;
+  border: 1px solid #ced4da !important;
+  border-radius: 0.25rem !important;
+  font-size: 1rem !important;
+  background-color: #fff !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+}
+
+/* Mobile specific enhancements for the city search input */
+@media (max-width: 767px) {
+  #city-search,
+  input#city-search,
+  .city-search-input,
+  input.city-search-input,
+  input[id*="city"],
+  .estimator-form input[type="text"][id*="city"],
+  .form-control.city-search-input {
+    height: 44px !important;
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    padding: 10px 12px !important;
+  }
+}
+
+/* Hide the original select elements when our enhanced version is active */
+.estimator-form select#city-select,
+select#city-select,
+.estimator-form select[id*="city"]:not(#city-search),
+select[id*="city"]:not(#city-search) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  pointer-events: none !important;
+}
+
+/* Fix for double dropdown arrows on mobile - CRITICAL HIGH SPECIFICITY */
+@media (max-width: 767px) {
+  /* Override all selects in the estimator form */
+  .estimator-form select,
+  .estimator-form .form-select,
+  .estimator-form select.form-control,
+  .estimator-form select.form-select,
+  .estimator-form select.mobile-friendly-select,
+  .estimator-form select#age-group,
+  .estimator-form select[id*="child"],
+  .estimator-form div.form-group select,
+  .estimator-form select.custom-select,
+  body#body-cost-estimator select.form-control,
+  body#body-cost-estimator select.form-select,
+  body#body-cost-estimator select.mobile-friendly-select,
+  html body#body-cost-estimator .estimator-form select#age-group,
+  html body .estimator-form select#age-group {
+    /* Force removal of browser-specific styling */
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    
+    /* Use a single consistent background image for the arrow */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
+    background-color: #fff !important;
+    
+    /* Force proper padding to accommodate the arrow */
+    padding-right: 2.5rem !important;
+    
+    /* Ensure other styles are consistent */
+    border: 1px solid #ced4da !important;
+    border-radius: 0.25rem !important;
+    height: 44px !important;
+    font-size: 16px !important;
+    padding: 10px 12px !important;
+    padding-right: 2.5rem !important;
+    width: 100% !important;
+    cursor: pointer !important;
+  }
+  
+  /* Hide browser default arrow in Internet Explorer */
+  .estimator-form select::-ms-expand,
+  .estimator-form .form-select::-ms-expand,
+  .estimator-form select.form-control::-ms-expand,
+  body .estimator-form select::-ms-expand {
+    display: none !important;
+  }
+  
+  /* Remove any pseudo-elements that might be adding extra arrows */
+  .estimator-form select::after,
+  .estimator-form select::before,
+  .estimator-form .form-select::after,
+  .estimator-form .form-select::before,
+  .estimator-form .form-group select::after,
+  .estimator-form .form-group select::before,
+  .estimator-form select.form-control::after,
+  .estimator-form select.form-control::before {
+    display: none !important;
+    content: none !important;
+  }
+  
+  /* For any parent container that might be adding arrows */
+  .estimator-form .form-group,
+  .estimator-form .dropdown-wrapper,
+  .estimator-form .select-wrapper,
+  .estimator-form div:has(> select) {
+    background-image: none !important;
+    position: relative !important;
+  }
+}
+
+/* Eliminate any double city labels */
+.city-search-label ~ label[for="city-select"],
+label[for="city-select"] ~ .city-search-label,
+label[for="city-select"] + label,
+.estimator-form .form-group:first-child label:not(:first-of-type),
+.estimator-form .form-group:first-child .city-search-wrapper ~ label {
+  display: none !important;
+}
+
+/* Make sure datalist is properly styled */
+datalist#city-datalist,
+#city-datalist {
+  display: none !important; /* Datalists are hidden but used by the browser */
+}
+
+/* Fix styles for any validation states */
+.form-control.is-valid,
+.was-validated .form-control:valid,
+.form-control.is-invalid,
+.was-validated .form-control:invalid {
+  background-position: right calc(0.375em + 0.1875rem) center !important;
+  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
+  padding-right: calc(1.5em + 0.75rem) !important;
+}

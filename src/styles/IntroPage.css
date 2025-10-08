@@ -1,0 +1,133 @@
+.intro-page {
+    text-align: center;
+    padding: 2rem;
+    max-width: 100%;
+    margin: 0 auto;
+    min-height: 100vh;
+    background-image: url('../images/daycareimage01.png');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .intro-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.85);
+    z-index: 1;
+  }
+  
+  .intro-page h1,
+  .intro-page p,
+  .intro-page .intro-features,
+  .intro-page .cta-button,
+  .intro-page .logo-container {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .intro-page .logo-container {
+    margin-bottom: 2rem;
+  }
+  
+  .intro-page .intro-logo {
+    width: 250px;
+    height: auto;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+  }
+  
+  .intro-page h1 {
+    color: #0275d8;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .intro-page > p {
+    font-size: 1.25rem;
+    margin-bottom: 3rem;
+    max-width: 800px;
+  }
+  
+  .intro-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+    max-width: 1200px;
+    width: 100%;
+  }
+  
+  .feature {
+    background-color: transparent;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #e6e6e6;
+    background-color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .feature:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .feature h2 {
+    color: #0275d8;
+    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .feature p {
+    color: #333;
+    font-size: 1.1rem;
+  }
+  
+  .cta-button {
+    background-color: #0275d8;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  .disclaimer {      
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: #666;
+    max-width: 800px;
+    opacity: 0.8;
+  }
+  .cta-button:hover {
+    background-color: #025aa5;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+  }
+  
+  @media (max-width: 768px) {
+    .intro-page h1 {
+      font-size: 2.5rem;
+    }
+    
+    .intro-features {
+      grid-template-columns: 1fr;
+    }
+    
+    .intro-page .intro-logo {
+      width: 200px;
+    }
+  }

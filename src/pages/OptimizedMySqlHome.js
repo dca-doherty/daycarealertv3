@@ -1,0 +1,954 @@
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
+import DaycareDataView from '../components/DaycareDataView';
+import DaycareDetails from '../components/DaycareDetails';
+import DaycareComparison from '../components/DaycareComparison';
+import { Button } from 'react-bootstrap';
+import { fetchDaycares, fetchDaycareById, fetchCities } from '../utils/optimizedMysqlApi';
+import { initializeGlobalStore, getDaycareViolationData } from '../utils/violationHelper';
+import { trackSearchResultsImpression, trackSeoKeyword } from '../utils/analytics';
+import { debounce } from 'lodash';
+import heroImage from '../images/pexels-mikhail-nilov-8923956.jpg';
+import '../styles/Home.css';
+// Import logger when needed: import logger from '../utils/logger';
+
+const OptimizedMySqlHome = ({ tabView, profileId }) => {
+  // Performance tracking
+  const [performanceStats, setPerformanceStats] = useState({
+    loadTime: 0,
+    itemsFetched: 0
+  });
+  
+  // State for daycare comparison
+  const [compareMode, setCompareMode] = useState(false);
+  const [daycareComparison, setDaycareComparison] = useState([]);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
+  
+  // Define comparison functions with useCallback to prevent recreation on each render
+  const toggleCompareMode = useCallback(() => {
+    const newCompareMode = !compareMode;
+    setCompareMode(newCompareMode);
+    
+    // Update window global variables for cross-component communication
+    window.daycarealertCompareMode = newCompareMode;
+    window.daycareComparisonCount = newCompareMode ? daycareComparison.length : 0;
+    
+    if (compareMode) {
+      // If turning off compare mode, clear the comparison list
+      setDaycareComparison([]);
+      window.daycareComparisonCount = 0;
+    }
+  }, [compareMode, daycareComparison.length]);
+
+  // Open comparison modal
+  const openComparisonModal = useCallback(() => {
+    if (daycareComparison.length > 0) {
+      setShowComparisonModal(true);
+    } else {
+      alert('Please add at least one daycare to compare');
+    }
+  }, [daycareComparison.length]);
+  
+  // Initialize window global variables for cross-component communication
+  useEffect(() => {
+    // Set window global variables
+    window.daycarealertCompareMode = compareMode;
+    window.daycareComparisonCount = daycareComparison.length;
+    window.toggleCompareMode = toggleCompareMode;
+    window.openComparisonModal = openComparisonModal;
+    
+    // Clean up global variables when component unmounts
+    return () => {
+      window.daycarealertCompareMode = undefined;
+      window.daycareComparisonCount = undefined;
+      window.toggleCompareMode = undefined;
+      window.openComparisonModal = undefined;
+    };
+  }, [compareMode, daycareComparison.length, toggleCompareMode, openComparisonModal]);
+  
+  // Get URL parameters
+  const params = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  
+  // If profileId is passed as a prop (from router), use it, otherwise check URL params
+  // Also check location.state for daycareId passed from recommendations page
+  const daycareId = profileId || 
+                  (params && params.id) || 
+                  queryParams.get('id') || 
+                  (location.state && location.state.daycareId);
+                  
+  // Debug logging to see what we're receiving
+  console.log("Optimized MySQL Home page state:", {
+    locationState: location.state,
+    daycareId,
+    params,
+    queryParams: Object.fromEntries(queryParams)
+  });
+  
+  // Default tab view (overview, violations, pricing, quality)
+  const initialTabView = tabView || queryParams.get('tab') || 'overview';
+  const [daycares, setDaycares] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20);
+  const [totalItems, setTotalItems] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [sortColumn, setSortColumn] = useState('');
+  const [sortDirection, setSortDirection] = useState('asc');
+  const [filters, setFilters] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDaycare, setSelectedDaycare] = useState(null);
+  const [showDaycareDetails, setShowDaycareDetails] = useState(false);
+  const [activeTab, setActiveTab] = useState(initialTabView);
+  const [availableCities, setAvailableCities] = useState([]);
+  
+  // Listen for performance events
+  useEffect(() => {
+    const handlePerformanceEvent = (event) => {
+      const { endpoint, time, items, total } = event.detail;
+      
+      if (endpoint === 'daycares') {
+        setPerformanceStats({
+          loadTime: time,
+          itemsFetched: items,
+          totalItems: total
+        });
+      }
+    };
+    
+    window.addEventListener('apiPerformance', handlePerformanceEvent);
+    
+    return () => {
+      window.removeEventListener('apiPerformance', handlePerformanceEvent);
+    };
+  }, []);
+  
+  // Load cities on component mount
+  useEffect(() => {
+    const loadCities = async () => {
+      try {
+        const citiesList = await fetchCities();
+        console.log(`Loaded ${citiesList.length} cities from optimized MySQL service`);
+        setAvailableCities(citiesList);
+      } catch (error) {
+        console.error("Error loading cities:", error);
+      }
+    };
+    
+    loadCities();
+  }, []);
+  
+  // Check if specific daycare ID was provided
+  useEffect(() => {
+    if (daycareId) {
+      console.log(`Processing daycare with ID: ${daycareId}`);
+      setLoading(true);
+      
+      // Check if we have a complete daycare object in the state
+      const daycareFromState = location.state && location.state.daycare;
+      
+      if (daycareFromState) {
+        console.log("Using daycare object from state:", daycareFromState);
+        const normalizedDaycare = { ...daycareFromState };
+        if (normalizedDaycare.rating !== undefined) {
+          console.log("Normalizing rating for daycare from state:", normalizedDaycare.rating);
+          // Convert string ratings to numbers
+          if (typeof normalizedDaycare.rating === 'string' && !isNaN(parseFloat(normalizedDaycare.rating))) {
+            normalizedDaycare.rating = parseFloat(normalizedDaycare.rating);
+          }
+
+          // If the rating is a number, convert it to a standard object format
+          if (typeof normalizedDaycare.rating === 'number') {
+           const scoreValue = normalizedDaycare.rating;
+           console.log(`Converting numeric rating ${scoreValue} to object format`);
+
+           // Create standardized rating object
+           normalizedDaycare.rating = {
+             score: scoreValue,
+             class: scoreValue >= 4.5 ? 'excellent' :
+                   scoreValue >= 3.5 ? 'good' :
+                   scoreValue >= 2.5 ? 'average' :
+                   scoreValue >= 1.5 ? 'poor' : 'poor'
+           };
+          }
+          console.log("Normalized rating:", normalizedDaycare.rating);
+         }
+        setSelectedDaycare(normalizedDaycare);
+        setShowDaycareDetails(true);
+        setActiveTab(initialTabView);
+        setLoading(false);
+      } else {
+        // If no daycare in state, fetch it from the API
+        console.log(`Fetching daycare with ID: ${daycareId} from optimized MySQL service`);
+        const fetchStart = performance.now();
+        
+        fetchDaycareById(daycareId)
+          .then(daycare => {
+            const fetchEnd = performance.now();
+            console.log(`Daycare details fetched in ${(fetchEnd - fetchStart).toFixed(2)}ms`);
+            
+            console.log("Fetched daycare from optimized MySQL service:", daycare);
+            if (daycare) {
+              // Create a copy of the daycare for consistent processing
+              const normalizedDaycare = { ...daycare };
+
+              // Apply consistent rating normalization for direct API fetch
+              if (normalizedDaycare.rating !== undefined) {
+               console.log("Normalizing rating for API fetched daycare:", normalizedDaycare.rating);
+               // Convert string ratings to numbers
+               if (typeof normalizedDaycare.rating === 'string' && !isNaN(parseFloat(normalizedDaycare.rating))) {
+                 normalizedDaycare.rating = parseFloat(normalizedDaycare.rating);
+               }
+               // If the rating is a number, convert it to a standard object format
+               if (typeof normalizedDaycare.rating === 'number') {
+                 const scoreValue = normalizedDaycare.rating;
+                 console.log(`Converting numeric rating ${scoreValue} to object format`);
+
+                 // Create standardized rating object
+                 normalizedDaycare.rating = {
+                    score: scoreValue,
+                    class: scoreValue >= 4.5 ? 'excellent' :
+                          scoreValue >= 3.5 ? 'good' :
+                          scoreValue >= 2.5 ? 'average' :
+                          scoreValue >= 1.5 ? 'poor' : 'poor'
+                    };
+                   }
+                   console.log("Normalized rating:", normalizedDaycare.rating);
+                  }
+              setSelectedDaycare(normalizedDaycare);
+              setShowDaycareDetails(true);
+              setActiveTab(initialTabView);
+              console.log("Daycare details set to be shown (from optimized MySQL service):", {
+                name: normalizedDaycare.operation_name,
+                id: normalizedDaycare.operation_id,
+                rating: normalizedDaycare.rating
+              });
+            } else {
+              console.error("No daycare found with ID:", daycareId);
+            }
+            setLoading(false);
+          })
+          .catch(error => {
+            console.error("Error fetching daycare details from optimized MySQL:", error);
+            setLoading(false);
+          });
+      }
+    }
+  }, [daycareId, location.state, initialTabView]);
+  
+  // Function to load daycare data with filtering, sorting, and pagination
+  const loadDaycares = useCallback(async () => {
+    setLoading(true);
+    
+    // Start timing
+    const fetchStart = performance.now();
+    
+    try {
+      // Save a copy of the filters
+      const apiFilters = { ...filters };
+      
+      // Normalize search term
+      const normalizedSearchTerm = (searchTerm || '').trim();
+      
+      // Add search term if it's not empty
+      if (normalizedSearchTerm) {
+        apiFilters.searchTerm = normalizedSearchTerm;
+      }
+      
+      console.log("Fetching daycares from optimized MySQL service with filters:", apiFilters);
+      console.log(`Using sorting: ${sortColumn} ${sortDirection}`);
+      
+      // Fetch data from optimized MySQL service
+      const result = await fetchDaycares(
+        currentPage, 
+        itemsPerPage, 
+        apiFilters, 
+        sortColumn, 
+        sortDirection
+      );
+      
+      // Stop timing
+      const fetchEnd = performance.now();
+      const loadTime = fetchEnd - fetchStart;
+      
+      if (result && Array.isArray(result.daycares)) {
+        console.log(`Loaded ${result.daycares.length} daycares from optimized MySQL service in ${loadTime.toFixed(2)}ms`);
+        
+        // Track search results impressions for SEO analysis
+        if (normalizedSearchTerm) {
+          trackSearchResultsImpression(normalizedSearchTerm, result.total);
+          
+          // Track specific keywords for SEO
+          normalizedSearchTerm.split(/\s+/).forEach(word => {
+            if (word.length > 3) {  // Only track meaningful keywords
+              trackSeoKeyword(word, 'search_results');
+            }
+          });
+        }
+        
+        // Update performance stats
+        setPerformanceStats({
+          loadTime: Math.round(loadTime),
+          itemsFetched: result.daycares.length,
+          totalItems: result.total
+        });
+        
+        setDaycares(result.daycares);
+        setTotalItems(result.total);
+      } else {
+        console.error("Invalid response format from optimized MySQL service:", result);
+        setDaycares([]);
+        setTotalItems(0);
+      }
+    } catch (error) {
+      console.error("Error loading daycares from optimized MySQL:", error);
+      setDaycares([]);
+      setTotalItems(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, itemsPerPage, filters, sortColumn, sortDirection, searchTerm]);
+  
+  // Add an event listener for daycare data updates (particularly for reviews)
+  useEffect(() => {
+    // Handler for when reviews are updated for any daycare
+    const handleDaycareDataUpdated = (event) => {
+      if (!event.detail || !event.detail.daycareId) {
+        console.error('[Optimized MySQL Home] Received invalid daycareDataUpdated event:', event);
+        return;
+      }
+      
+      const updatedDaycareId = event.detail.daycareId;
+      console.log(`[Optimized MySQL Home] Received dataUpdated event for daycare: ${updatedDaycareId}`);
+      
+      // If this is the currently selected daycare, update it
+      if (selectedDaycare && selectedDaycare.operation_id === updatedDaycareId) {
+        console.log(`[Optimized MySQL Home] This is the currently selected daycare (${selectedDaycare.operation_name}), updating it`);
+        
+        // Check if the event contains the updated daycare data
+        if (event.detail.daycare) {
+          console.log('[Optimized MySQL Home] Using daycare data from event');
+          const eventDaycare = event.detail.daycare;
+          
+          // Update the selected daycare with data from the event
+          setSelectedDaycare(prev => ({
+            ...prev,
+            rating: eventDaycare.rating,
+            parent_review_score: eventDaycare.parent_review_score,
+            parent_review_count: eventDaycare.parent_review_count,
+            reviews: eventDaycare.reviews,
+          }));
+          
+          console.log(`[Optimized MySQL Home] Updated selected daycare with data from event`);
+        } else {
+          // Fetch fresh data from the optimized MySQL service
+          console.log('[Optimized MySQL Home] No daycare data in event, fetching from optimized MySQL service');
+          
+          fetchDaycareById(updatedDaycareId)
+            .then(updatedDaycare => {
+              if (updatedDaycare) {
+                console.log('[Optimized MySQL Home] Found daycare in optimized MySQL service, updating selected daycare');
+                setSelectedDaycare(updatedDaycare);
+                console.log(`[Optimized MySQL Home] Updated selected daycare with data from optimized MySQL service`);
+              } else {
+                console.warn(`[Optimized MySQL Home] Daycare ${updatedDaycareId} not found in optimized MySQL service`);
+              }
+            })
+            .catch(error => {
+              console.error('[Optimized MySQL Home] Error fetching updated daycare:', error);
+            });
+        }
+      } else {
+        console.log(`[Optimized MySQL Home] This is not the currently selected daycare, just reloading data table`);
+      }
+      
+      // Force reload of the data table to reflect updated data
+      console.log('[Optimized MySQL Home] Scheduling loadDaycares to refresh data table with updated data');
+      
+      // Use a short delay to ensure all events have been processed
+      setTimeout(() => {
+        console.log('[Optimized MySQL Home] Now executing loadDaycares to refresh after update');
+        loadDaycares();
+      }, 200);
+    };
+    
+    // Add event listener
+    console.log('[Optimized MySQL Home] Adding daycareDataUpdated event listener');
+    window.addEventListener('daycareDataUpdated', handleDaycareDataUpdated);
+    
+    // Clean up
+    return () => {
+      console.log('[Optimized MySQL Home] Removing daycareDataUpdated event listener');
+      window.removeEventListener('daycareDataUpdated', handleDaycareDataUpdated);
+    };
+  }, [selectedDaycare, loadDaycares]);
+  
+  // Sort handler
+  const handleSort = useCallback((column, direction) => {
+    console.log(`Sorting by ${column} in ${direction} direction`);
+    setSortColumn(column);
+    setSortDirection(direction);
+    setCurrentPage(1);
+  }, []);
+  
+  // Filter handler
+  const handleFilter = useCallback((newFilters) => {
+    console.log('OptimizedMySqlHome - Filter handler called with new filters:', newFilters);
+    
+    // Update filters in state
+    setFilters(newFilters);
+    setCurrentPage(1);
+    
+    // If clearing all filters (empty object), force a reload
+    if (Object.keys(newFilters).length === 0) {
+      console.log('OptimizedMySqlHome - Filters cleared, forcing data reload');
+      // Small delay to ensure state updates
+      setTimeout(() => {
+        loadDaycares();
+      }, 50);
+    }
+  }, [loadDaycares]);
+
+  // Debounce data loading to prevent excessive API calls
+  const debouncedLoadDaycares = useMemo(
+    () => debounce(loadDaycares, 300),
+    [loadDaycares]
+  );
+
+  useEffect(() => {
+    debouncedLoadDaycares();
+  }, [debouncedLoadDaycares]);
+  
+  // Search handler
+  const handleSearch = useCallback((term, category, newFilters) => {
+    console.log(`Optimized MySQL Home - Search handler called with term: "${term}", category: "${category}"`);
+    console.log('Filters received:', newFilters);
+    console.log('DEBUGGING FILTERS - Current filters:', filters);
+    console.log('DEBUGGING FILTERS - New filters:', newFilters);
+    console.log('DEBUGGING FILTERS - Price filter:', newFilters?.priceRange);
+    console.log('DEBUGGING FILTERS - Rating filter:', newFilters?.rating);
+    console.log('DEBUGGING FILTERS - Years filter:', newFilters?.yearsInOperation);
+    
+    // Normalize the search term - handle empty strings properly
+    const searchTermValue = term?.trim() || '';
+    
+    // Check if the filters actually changed to prevent unnecessary reloads
+    const filtersChanged = JSON.stringify(newFilters || {}) !== JSON.stringify(filters);
+    const searchChanged = searchTermValue !== searchTerm;
+    
+    if (filtersChanged || searchChanged) {
+      console.log("Search or filters changed, updating state and triggering reload");
+      
+      // Set search term in state
+      setSearchTerm(searchTermValue);
+      
+      // Set filters in state, with a fallback to empty object if null/undefined
+      setFilters(newFilters || {});
+      
+      // Reset to first page when search or filters change
+      setCurrentPage(1);
+      
+      console.log(`Search state updated:
+        - Search term: "${searchTermValue}"
+        - Category: "${category}"
+        - Filters: ${JSON.stringify(newFilters || {})}
+      `);
+      
+      // Use a small delay to ensure state updates finish properly
+      // before triggering data loading
+      setTimeout(() => {
+        console.log('DEBUGGING FILTERS - Triggering data load with filters:', newFilters);
+        loadDaycares();
+      }, 50);
+    } else {
+      console.log("No changes to search or filters, skipping reload");
+    }
+  }, [loadDaycares, filters, searchTerm]);
+
+  // Pagination handler
+  const paginate = useCallback((pageNumber) => {
+    setCurrentPage(pageNumber);
+  }, []);
+
+  // Render expanded content for each daycare
+  // eslint-disable-next-line no-unused-vars
+  const renderExpandedContent = (daycare) => {
+    // Format date function
+    const formatDate = (dateString) => {
+      if (!dateString) return 'Not available';
+      try {
+        // Parse the date and format as YYYY-MM-DD
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'Invalid date';
+        return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+      } catch (error) {
+        return dateString; // Return original if parsing fails
+      }
+    };
+    
+    // Format violations for display
+    const formatViolations = () => {
+      // Debug to ensure we have the correct daycare data
+      console.log(`[Expanded Row] Formatting violations for ${daycare.operation_name} (ID: ${daycare.operation_id || daycare.operation_number})`);
+      console.log(`[Expanded Row] Raw violation data:`, {
+        high_risk_violations: daycare.high_risk_violations,
+        medium_high_risk_violations: daycare.medium_high_risk_violations,
+        high_risk: daycare.high_risk,
+        medium_high_risk: daycare.medium_high_risk,
+        high_risk_violation_count: daycare.high_risk_violation_count,
+        total_violations: daycare.total_violations,
+        total_violations_2yr: daycare.total_violations_2yr
+      });
+      
+      // Initialize the global store if it doesn't exist
+      // Get normalized violation data using the helper function
+      // This will prioritize data from the global store if available
+      const violationData = getDaycareViolationData(daycare);
+      
+      // Get the actual violation counts from the normalized object
+      const highRisk = parseInt(violationData?.high_risk_violations || 0, 10);
+      const medHighRisk = parseInt(violationData?.medium_high_risk_violations || 0, 10);
+      const medRisk = parseInt(violationData?.medium_risk_violations || 0, 10);
+      const medLowRisk = parseInt(violationData?.medium_low_risk_violations || 0, 10);
+      const lowRisk = parseInt(violationData?.low_risk_violations || 0, 10);
+      
+      return (
+        <div className="violations-by-level-wrapper">
+          <div className="violation-risk-item">
+            <span className="risk-badge high-risk">High</span>
+            <span className="risk-count">{highRisk || '0'}</span>
+          </div>
+          <div className="violation-risk-item">
+            <span className="risk-badge medium-high-risk">Medium-High</span>
+            <span className="risk-count">{medHighRisk || '0'}</span>
+          </div>
+          <div className="violation-risk-item">
+            <span className="risk-badge medium-risk">Medium</span>
+            <span className="risk-count">{medRisk || '0'}</span>
+          </div>
+          <div className="violation-risk-item">
+            <span className="risk-badge medium-low-risk">Medium-Low</span>
+            <span className="risk-count">{medLowRisk || '0'}</span>
+          </div>
+          <div className="violation-risk-item">
+            <span className="risk-badge low-risk">Low</span>
+            <span className="risk-count">{lowRisk || '0'}</span>
+          </div>
+        </div>
+      );
+    };
+    
+    return (
+      <div className="expanded-daycare-details">
+        <div className="expanded-details-row">
+          <div className="expanded-column compliance-column">
+            <h4>Licensing & Compliance</h4>
+            <p><strong>License Date:</strong> {formatDate(daycare.issuance_date)}</p>
+            <p><strong>Years Operating:</strong> {daycare.yearsInOperation ? Math.round(daycare.yearsInOperation) : 'Not specified'}</p>
+            <p><strong>Total Violations (2yr):</strong> {daycare.total_violations_2yr || '0'}</p>
+            <p><strong>Status:</strong> <span className={daycare.temporarily_closed === 'NO' ? 'status-open' : 'status-closed'}>
+              {daycare.temporarily_closed === 'NO' ? 'Open' : 'Temporarily Closed'}
+            </span></p>
+            <p><strong>Risk Analysis:</strong> {daycare.risk_analysis || 'Not available'}</p>
+          </div>
+          
+          <div className="expanded-column violations-column">
+            <h4>Violations by Risk Level</h4>
+            {formatViolations()}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Check if a daycare is in the comparison list
+  const isInComparison = useCallback((daycare) => {
+    return daycareComparison.some(d => d.operation_id === daycare.operation_id);
+  }, [daycareComparison]);
+
+  // Add a daycare to comparison
+  const addToComparison = useCallback((daycare) => {
+    // Check if daycare is already in comparison
+    if (!daycareComparison.some(d => d.operation_id === daycare.operation_id)) {
+      const newComparison = [...daycareComparison, daycare];
+      setDaycareComparison(newComparison);
+      
+      // Update window global variable for cross-component communication
+      window.daycareComparisonCount = newComparison.length;
+      
+      // Show a temporary notification
+      const notification = document.createElement('div');
+      notification.className = 'comparison-notification';
+      notification.textContent = `Added ${daycare.operation_name} to comparison`;
+      document.body.appendChild(notification);
+      
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+  }, [daycareComparison]);
+
+  // Remove a daycare from comparison
+  const removeFromComparison = useCallback((daycare) => {
+    const newComparison = daycareComparison.filter(d => d.operation_id !== daycare.operation_id);
+    setDaycareComparison(newComparison);
+    
+    // Update window global variable for cross-component communication
+    window.daycareComparisonCount = newComparison.length;
+  }, [daycareComparison]);
+
+  // Handle daycare selection from the data view
+  const handleDaycareSelect = useCallback((daycare, fromComparison = false) => {
+    // If in compare mode and not coming from comparison modal, toggle selection
+    if (compareMode && !fromComparison) {
+      // Toggle daycare in comparison - if already added, remove it
+      if (isInComparison(daycare)) {
+        removeFromComparison(daycare);
+      } else {
+        addToComparison(daycare);
+      }
+      return;
+    }
+    
+    // Normal daycare detail view
+    // Store current scroll position before showing details
+    const scrollPosition = window.scrollY;
+    
+    console.log("Daycare selected from optimized MySQL data view:", {
+      name: daycare.operation_name,
+      id: daycare.operation_id,
+      price: daycare.monthly_cost,
+      estimated_price: daycare.estimated_price,
+      fromComparison: fromComparison
+    });
+    
+    // Initialize the global store if needed
+    initializeGlobalStore();
+    
+    // Get the normalized violation data using our helper function
+    const daycareId = daycare.operation_id || daycare.operation_number;
+    const violationData = getDaycareViolationData(daycare);
+    // Create a copy of the daycare to avoid modifying the original in the comparison list
+    const daycareCopy = { ...daycare };
+    // Normalize the rating data to ensure consistent format
+    // This addresses the inconsistency between clicking row vs. View Details button
+    if (daycareCopy.rating !== undefined) {
+      console.log(`Normalizing rating data for daycare ${daycareId}:`, daycareCopy.rating);
+
+      // If rating is a string that can be parsed as a number, convert it
+      if (typeof daycareCopy.rating === 'string' && !isNaN(parseFloat(daycareCopy.rating))) {
+         daycareCopy.rating = parseFloat(daycareCopy.rating);
+         }
+
+      // If rating is a number, convert it to the object format that DaycareDetails expects
+      if (typeof daycareCopy.rating === 'number') {
+        const scoreValue = daycareCopy.rating;
+        console.log(`Converting numeric rating ${scoreValue} to object format`);
+
+        // Create a standardized rating object with correct properties
+        daycareCopy.rating = {
+          score: scoreValue,
+          // Generate class based on score
+          class: scoreValue >= 4.5 ? 'excellent' :
+                 scoreValue >= 3.5 ? 'good' :
+                 scoreValue >= 2.5 ? 'average' :
+                 scoreValue >= 1.5 ? 'poor' : 'poor',
+          // Generate stars based on score
+          stars: scoreValue >= 4.5 ? '★★★★★' :
+                 scoreValue >= 3.5 ? '★★★★' :
+                 scoreValue >= 2.5 ? '★★★' :
+                 scoreValue >= 1.5 ? '★★' : '★'
+         };
+        }
+        console.log(`Normalized rating data:`, daycareCopy.rating);
+       }
+
+       // Apply normalized violation data if available
+
+    if (violationData) {
+      console.log(`Using normalized violation data for daycare ${daycareId}`);
+            
+      // Copy the normalized data to the daycare object
+      daycareCopy.high_risk_violations = violationData.high_risk_violations;
+      daycareCopy.medium_high_risk_violations = violationData.medium_high_risk_violations;
+      daycareCopy.medium_risk_violations = violationData.medium_risk_violations;
+      daycareCopy.medium_low_risk_violations = violationData.medium_low_risk_violations;
+      daycareCopy.low_risk_violations = violationData.low_risk_violations;
+      daycareCopy.total_violations_2yr = violationData.total_violations_2yr;
+    }
+    // Set the selected daycare with all normalized data
+    setSelectedDaycare(daycareCopy);
+
+    setShowDaycareDetails(true);
+    setActiveTab(initialTabView);
+    
+    // Scroll to top of page for better visibility
+    window.scrollTo(0, 0);
+    
+    // Store the scroll position in a data attribute for restoration later
+    document.body.setAttribute('data-previous-scroll', scrollPosition);
+  }, [compareMode, initialTabView, isInComparison, addToComparison, removeFromComparison]);
+  
+  // Handle closing the daycare details modal
+  const handleCloseDetails = useCallback(() => {
+    setShowDaycareDetails(false);
+    setSelectedDaycare(null);
+    
+    // Restore previous scroll position if available
+    const previousScroll = document.body.getAttribute('data-previous-scroll');
+    if (previousScroll) {
+      window.scrollTo(0, parseInt(previousScroll, 10));
+      document.body.removeAttribute('data-previous-scroll');
+    }
+  }, []);
+  
+  // Close comparison modal
+  const closeComparisonModal = useCallback(() => {
+    setShowComparisonModal(false);
+  }, []);
+
+  // Column definitions for the responsive data table
+  const columns = useMemo(() => {
+    // Standard columns
+    const standardColumns = [
+      { key: 'operation_name', label: 'Daycare Name', filterable: false, width: '22%' },
+      { key: 'operation_type', label: 'Type', width: '13%', filterable: false },
+      { key: 'city', label: 'City', width: '13%', filterable: false },
+      { 
+        key: 'monthly_cost', 
+        label: 'Est. Price', 
+        width: '12%',
+        render: (price) => {
+          if (!price) return 'N/A';
+          // Convert to number and round to remove decimals
+          const numPrice = Math.round(parseFloat(price));
+          // Format with dollar sign and no decimal places
+          return isNaN(numPrice) ? 'N/A' : `$${numPrice.toLocaleString('en-US', {maximumFractionDigits: 0})}`;
+        },
+        filterable: false,
+        sortable: true
+      },
+      { 
+        key: 'yearsInOperation', 
+        label: 'Years', 
+        width: '8%',
+        render: (years) => years !== undefined ? Math.round(years) : 'N/A',
+        filterable: false
+      },
+      { 
+        key: 'rating', 
+        label: 'Rating', 
+        width: '18%',
+        render: (rating, row) => {
+        if (!rating) return 'N/A';
+        
+        let scoreValue;
+        let ratingClass;
+        
+        if (typeof rating === 'object') {
+          scoreValue = rating.score;
+          ratingClass = rating.class;
+        } else {
+          scoreValue = parseFloat(rating);
+        }
+        
+        // If score is invalid, return N/A
+        if (isNaN(scoreValue)) return 'N/A';
+        
+        // Determine class if not provided
+        if (!ratingClass) {
+          if (scoreValue >= 4.0) ratingClass = 'excellent';
+          else if (scoreValue >= 3.0) ratingClass = 'good';
+          else if (scoreValue >= 2.0) ratingClass = 'average';
+          else ratingClass = 'poor';
+        }
+        
+        // Calculate star values
+        const fullStars = Math.floor(scoreValue);
+        const hasHalfStar = (scoreValue % 1) >= 0.5;
+        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+        
+        // Generate a simple string representation of stars
+        let starString = '';
+        
+        // Add full stars
+        for (let i = 0; i < fullStars; i++) {
+          starString += '★';
+        }
+        
+        // Add half star if needed
+        if (hasHalfStar) {
+          starString += '½';
+        }
+        
+        // Add empty stars
+        for (let i = 0; i < emptyStars; i++) {
+          starString += '☆';
+        }
+        
+        // When in comparison mode, show visual indicator if daycare is selected
+        const inComparison = compareMode && isInComparison(row);
+        
+        return (
+          <div className={`rating-container ${inComparison ? 'in-comparison' : ''}`}>
+            <span className={`rating ${ratingClass}`}>{starString}</span>
+            <span className="rating-score"> ({scoreValue.toFixed(2)})</span>
+            {inComparison && <span className="comparison-badge">✓</span>}
+          </div>
+        );
+      },
+      filterable: false
+    }
+  ];
+  
+  // Return the standard columns
+  return standardColumns;
+  }, [compareMode, isInComparison]);
+
+  // Filter options for the frontend display
+  const filterOptions = {
+    cities: availableCities.map(city => ({ value: city, label: city })),
+    operationTypes: [
+      { value: 'Licensed Center', label: 'Licensed Center' },
+      { value: 'Licensed Child-Care Home', label: 'Licensed Child-Care Home' },
+      { value: 'Registered Child-Care Home', label: 'Registered Child-Care Home' },
+      { value: 'Listed Family Home', label: 'Listed Family Home' }
+    ],
+    priceRanges: [
+      { value: '0-1000', label: 'Under $1,000 per month' },
+      { value: '1000-1500', label: 'Between $1,000 - $1,500 per month' },
+      { value: '1500-2000', label: 'Between $1,500 - $2,000 per month' },
+      { value: '2000-up', label: 'Over $2,000 per month' }
+    ],
+    ratings: [
+      { value: '4', label: '4+ Stars - Excellent' },
+      { value: '3', label: '3+ Stars - Good' },
+      { value: '2', label: '2+ Stars - Average' },
+      { value: '1', label: '1+ Stars - Any rating' }
+    ],
+    yearsInOperation: [
+      { value: '10', label: '10+ Years - Established' },
+      { value: '5', label: '5+ Years - Experienced' },
+      { value: '2', label: '2+ Years - Developing' },
+      { value: '0', label: 'Under 1 Year - New' }
+    ]
+  };
+
+  // Custom title component with performance stats
+  const CustomTitle = () => (
+    <div className="custom-title-container">
+      <div className="title-section">
+        <h1>Texas Daycare Information Center</h1>
+        <p>Find and compare daycare centers across Texas using our high-performance database.</p>
+      </div>
+      {performanceStats.loadTime > 0 && (
+        <div className="performance-stats">
+          <div className="performance-badge">
+            <span className="performance-value">{performanceStats.loadTime}ms</span>
+            <span className="performance-label">Load Time</span>
+          </div>
+          <div className="performance-badge">
+            <span className="performance-value">{performanceStats.itemsFetched}</span>
+            <span className="performance-label">Items</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      <div className={`daycare-data-container ${compareMode ? 'comparison-mode-active' : ''}`}>
+        {/* Visual indicator for comparison mode */}
+        {compareMode && (
+          <div className="comparison-mode-banner">
+            <p>
+              <strong>Comparison Mode Active</strong> - Click on any daycare to add it to comparison.
+              <br />
+              <span className="comparison-counter">{daycareComparison.length} daycares selected</span>
+            </p>
+          </div>
+        )}
+        
+        <DaycareDataView
+          data={daycares}
+          loading={loading}
+          titleComponent={<CustomTitle />}
+          subtitle=""
+          onSearch={handleSearch}
+          onFilter={handleFilter}
+          onSort={handleSort}
+          columns={columns}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          totalItems={totalItems}
+          paginate={paginate}
+          sortColumn={sortColumn}
+          sortDirection={sortDirection}
+          filterOptions={filters}
+          allFilterOptions={filterOptions}
+          viewType="daycares"
+          expandable={false}
+          headerImage={heroImage}
+          searchPlaceholder="Search by daycare name, city, type, zipcode ..."
+          onDaycareSelect={handleDaycareSelect}
+          dataSource="OptimizedMySQL"
+          enableFavorites={!compareMode} // Disable favorites when in comparison mode
+        />
+      </div>
+      
+      {/* Daycare Details Modal */}
+      {showDaycareDetails && selectedDaycare && (
+        <DaycareDetails 
+          daycare={selectedDaycare} 
+          onClose={handleCloseDetails}
+          initialTab={activeTab}
+          dataSource="OptimizedMySQL"
+        />
+      )}
+      
+      {/* Comparison Mode Indicator */}
+      {compareMode && (
+        <div className="comparison-mode-indicator">
+          <div className="comparison-mode-content">
+            <span>Select daycares to compare ({daycareComparison.length} selected)</span>
+            <div className="comparison-buttons">
+              <Button 
+                variant="outline-light" 
+                size="sm" 
+                onClick={toggleCompareMode}
+                className="me-2"
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="primary" 
+                size="sm" 
+                onClick={openComparisonModal}
+                disabled={daycareComparison.length === 0}
+              >
+                Compare Now
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Daycare Comparison Modal */}
+      {showComparisonModal && (
+        <DaycareComparison 
+          daycares={daycareComparison}
+          onClose={closeComparisonModal}
+          onRemove={removeFromComparison}
+          onViewDetails={(daycare) => {
+            closeComparisonModal();
+            handleDaycareSelect(daycare, true); // Pass true to indicate it's from comparison
+          }}
+        />
+      )}
+    </>
+  );
+};
+
+export default OptimizedMySqlHome;

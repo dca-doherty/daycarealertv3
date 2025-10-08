@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaycareAlert Login Helper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>DaycareAlert Login Helper</h1>
+    
+    <div class="container">
+        <h2>Manual Authentication</h2>
+        <p>Click the button below to automatically log in using the test user:</p>
+        <button id="loginButton">Log In as Test User</button>
+        <button id="checkButton">Check Authentication</button>
+        <button id="logoutButton">Log Out</button>
+        <div id="status"></div>
+    </div>
+
+    <div class="container">
+        <h2>Login Credentials</h2>
+        <p>You can log in with these credentials:</p>
+        <ul>
+            <li><strong>Username:</strong> testuser</li>
+            <li><strong>Email:</strong> test@example.com</li>
+            <li><strong>Password:</strong> Password123!</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <h2>Authentication Token</h2>
+        <p>Current token in localStorage:</p>
+        <pre id="tokenDisplay">None</pre>
+    </div>
+
+    <div class="container">
+        <h2>Authentication Status</h2>
+        <p>Current login status:</p>
+        <div id="authStatus">Not checked</div>
+    </div>
+
+    <script>
+        // Get the latest token from our fix-login.js script
+        const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0MzM3MzczMSwiZXhwIjoxNzQ1OTY1NzMxfQ.Vtel6sdzegsEtgILxTXen3ASFCQOeDn-4ssEibMlS4c';
+        
+        // Update token display
+        function updateTokenDisplay() {
+            const token = localStorage.getItem('token');
+            const tokenDisplay = document.getElementById('tokenDisplay');
+            tokenDisplay.textContent = token || 'None';
+        }
+        
+        // Update authentication status
+        async function checkAuthStatus() {
+            const statusElement = document.getElementById('authStatus');
+            statusElement.innerHTML = 'Checking...';
+            
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    statusElement.innerHTML = '<span class="error">Not logged in</span>';
+                    return;
+                }
+                
+                // Use the dynamically determined backend URL
+                const port = window.location.port;
+                const backendPort = 8081; // default backend port
+                
+                const response = await fetch(`http://localhost:${backendPort}/api/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusElement.innerHTML = `
+                        <span class="success">Logged in</span>
+                        <pre>${JSON.stringify(data.user, null, 2)}</pre>
+                    `;
+                } else {
+                    statusElement.innerHTML = `<span class="error">Authentication failed: ${data.message}</span>`;
+                }
+            } catch (error) {
+                statusElement.innerHTML = `<span class="error">Error checking authentication: ${error.message}</span>`;
+            }
+        }
+        
+        // Login function
+        function login() {
+            localStorage.setItem('token', AUTH_TOKEN);
+            updateTokenDisplay();
+            document.getElementById('status').innerHTML = '<span class="success">Login token set! You should now be logged in.</span>';
+        }
+        
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            updateTokenDisplay();
+            document.getElementById('status').innerHTML = '<span class="error">Logged out!</span>';
+            document.getElementById('authStatus').innerHTML = 'Not checked';
+        }
+        
+        // Set up event listeners
+        document.getElementById('loginButton').addEventListener('click', login);
+        document.getElementById('checkButton').addEventListener('click', checkAuthStatus);
+        document.getElementById('logoutButton').addEventListener('click', logout);
+        
+        // Initialize
+        updateTokenDisplay();
+    </script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+=== Recent Non-Compliance Violations (Last 7 days) ===
+Report Date: 2025-03-28
+
+Total violations in database: 145204
+Violations in the last 7 days: 145204
+Unique daycares with violations: 12707
+High risk violations: 33235
+Medium high risk violations: 60372
+Medium risk violations: 43530
+Low risk violations: 8066
+
+MOST RECENT 5 VIOLATIONS:
+-----------------------------------
+
+ID: 810401978
+Daycare: Unknown (1413902)
+Location: Unknown, TX
+Date: Unknown
+Risk Level: Medium
+Standard: 747.801(7) - Records Maintained and Made Available - Safety Drills Documentation
+Description: The operation did not have documentation of safety drills.
+Corrected at inspection: N
+Last Updated: 3/28/2025, 12:52:39 AM
+-----------------------------------
+
+ID: 810401977
+Daycare: Unknown (1413902)
+Location: Unknown, TX
+Date: Unknown
+Risk Level: Medium
+Standard: 747.401(a)(3) - Posting Requirements-Keeping Children Safe Poster
+Description: The Keeping Children Safe notice was not posted.
+Corrected at inspection: N
+Last Updated: 3/28/2025, 12:52:39 AM
+-----------------------------------
+
+ID: 810401974
+Daycare: Unknown (1317843)
+Location: Unknown, TX
+Date: Unknown
+Risk Level: Medium
+Standard: 749.1541(b) - Medication Record-Must update cumulative medication record within 24 hours of administering medication
+Description: During a heightened monitoring visit to an agency home on 12/19/23, it was learned that a daily vitamin was being given to a child in the home, but the administration was not being documented.  In addition, foster mom indicated a child was given allergy medication the prior week but she had not yet documented the administration.
+Corrected at inspection: N
+Last Updated: 3/28/2025, 12:52:39 AM
+-----------------------------------
+
+ID: 810401969
+Daycare: Unknown (104784)
+Location: Unknown, TX
+Date: Unknown
+Risk Level: High
+Standard: 745.621(a)(7) - AP Initial background checks submitted - At the time you become aware of anyone requiring a background check under 745.605
+Description: Both foster parents did not have an active background check at the time of the inspection.
+Corrected at inspection: N
+Last Updated: 3/28/2025, 12:52:39 AM
+-----------------------------------
+
+ID: 810401968
+Daycare: Unknown (1421236)
+Location: Unknown, TX
+Date: Unknown
+Risk Level: Medium
+Standard: 746.2421(a) - Written Feeding Instructions - Signed and Dated by Parent or Health-Care Professional
+Description: The center continues not to have feeding instructions for infants in care.
+Corrected at inspection: N
+Last Updated: 3/28/2025, 12:52:39 AM
+-----------------------------------
+
+VIOLATIONS BY RISK LEVEL:
+-----------------------------------
+High: 33235
+Medium High: 60372
+Medium: 43530
+Medium Low: 5711
+Low: 2355
+Unknown: 1
+
+TOP DAYCARES WITH VIOLATIONS:
+-----------------------------------
+Unknown (526889)
+Location: Unknown
+Total Violations: 201
+High Risk Violations: 75
+-----------------------------------
+Unknown (1282323)
+Location: Unknown
+Total Violations: 144
+High Risk Violations: 55
+-----------------------------------
+Unknown (1334408)
+Location: Unknown
+Total Violations: 192
+High Risk Violations: 52
+-----------------------------------
+Unknown (195565)
+Location: Unknown
+Total Violations: 122
+High Risk Violations: 48
+-----------------------------------
+Unknown (826389)
+Location: Unknown
+Total Violations: 118
+High Risk Violations: 48
+-----------------------------------
+Unknown (1136115)
+Location: Unknown
+Total Violations: 93
+High Risk Violations: 42
+-----------------------------------
+Unknown (1286817)
+Location: Unknown
+Total Violations: 93
+High Risk Violations: 39
+-----------------------------------
+Unknown (1342129)
+Location: Unknown
+Total Violations: 138
+High Risk Violations: 38
+-----------------------------------
+Unknown (1347828)
+Location: Unknown
+Total Violations: 108
+High Risk Violations: 37
+-----------------------------------
+Unknown (290772)
+Location: Unknown
+Total Violations: 84
+High Risk Violations: 36
+-----------------------------------

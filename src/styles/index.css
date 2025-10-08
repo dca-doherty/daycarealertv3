@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2c3e50;
+  --accent-color: #e74c3c;
+  --background-color: #ecf0f1;
+  --text-color: #34495e;
+  --light-gray: #bdc3c7;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+.main-container {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 140px - 150px); /* Adjusted for taller header (140px) */
+  position: relative;
+  overflow-x: hidden; /* Prevent horizontal scrolling only */
+  padding-bottom: 2rem; /* Add space at bottom */
+  margin-top: 140px; /* Updated for taller header */
+  padding-top: 20px; /* Add padding to separate from header */
+}
+
+.content {
+  flex: 1;
+  padding: 1.5rem;
+  width: 100%;
+  overflow-x: hidden;
+  margin-left: 250px; /* Match menu width */
+  width: calc(100% - 250px); /* Account for menu width */
+  position: relative; /* Create stacking context for position: sticky elements */
+  contain: paint; /* Optimize rendering */
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+    min-height: auto;
+  }
+  
+  .content {
+    padding: 1rem;
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--secondary-color);
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.btn {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #2980b9;
+}
+
+/* Rating styles */
+.rating {
+  color: #ffc107; /* Golden yellow for stars */
+  font-weight: bold;
+}
+
+.rating.excellent {
+  color: #28a745; /* Green for excellent */
+}
+
+.rating.good {
+  color: #007bff; /* Blue for good */
+}
+
+.rating.average {
+  color: #ffc107; /* Yellow for average */
+}
+
+.rating.poor {
+  color: #dc3545; /* Red for poor */
+}
+
+.rating-score {
+  font-size: 0.85em;
+  color: #6c757d; /* Gray for the score */
+}
+
+/* Rating styles */
+.rating {
+  color: #ffc107; /* Golden yellow for stars */
+  font-weight: bold;
+}
+
+.rating.excellent {
+  color: #28a745; /* Green for excellent */
+}
+
+.rating.good {
+  color: #007bff; /* Blue for good */
+}
+
+.rating.average {
+  color: #ffc107; /* Yellow for average */
+}
+
+.rating.poor {
+  color: #dc3545; /* Red for poor */
+}
+
+.rating-score {
+  font-size: 0.85em;
+  color: #6c757d; /* Gray for the score */
+}

@@ -1,0 +1,52 @@
+/* Rating styles */
+.rating {
+  color: #ffc107; /* Golden yellow for stars */
+  font-weight: bold;
+  display: inline-block;
+  font-size: 14px; /* Even smaller size to prevent cutoff */
+  line-height: 1;
+  margin-right: 4px;
+  letter-spacing: -0.5px; /* Reduced letter spacing for better readability */
+  transform-origin: left center;
+  padding-right: 2px; /* Add a bit of padding to ensure all stars are visible */
+}
+
+.rating.excellent {
+  color: #28a745; /* Green for excellent */
+}
+
+.rating.good {
+  color: #007bff; /* Blue for good */
+}
+
+.rating.average {
+  color: #ffc107; /* Yellow for average */
+}
+
+.rating.poor {
+  color: #dc3545; /* Red for poor */
+}
+
+.rating-score {
+  color: #333; /* Darker color for better visibility */
+  font-size: 0.85em; /* Slightly smaller font */
+  font-weight: normal;
+  display: inline-block;
+  margin-left: 2px; /* Add some space between stars and score */
+  white-space: nowrap; /* Prevent breaking */
+  padding-right: 5px; /* Add padding to ensure closing parenthesis is visible */
+}
+
+/* Container for rating to ensure proper spacing */
+.rating-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: visible; /* Changed from hidden to visible to prevent cutoff */
+  padding-right: 8px; /* Add padding to ensure closing parenthesis is visible */
+  min-width: 100px; /* Increased minimum width to prevent truncation */
+  max-width: 150px; /* Added maximum width to maintain table layout */
+  position: relative; /* Ensure proper positioning */
+  font-size: 14px; /* Ensure consistent font size */
+}

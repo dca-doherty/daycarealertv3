@@ -1,0 +1,154 @@
+/* ExpandableContent Component Styles */
+.expandable-container {
+  position: relative;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.expandable-container.card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  border: 1px solid #eaedf2;
+}
+
+.expandable-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.expandable-icon {
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+  font-size: 1.2em;
+}
+
+.expandable-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.expandable-preview {
+  position: relative;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  transition: max-height 0.3s ease;
+  line-height: 1.5;
+}
+
+/* Add gradient fade for truncated content */
+.expandable-preview:not(.expandable-container.expanded .expandable-preview)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+  pointer-events: none;
+}
+
+.expandable-preview-custom {
+  position: relative;
+}
+
+.expandable-full-content {
+  animation: fadeIn 0.3s ease;
+}
+
+.expandable-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  padding: 6px 12px;
+  background-color: #f0f4ff;
+  border: 1px solid #d1ddf7;
+  color: #3b82f6;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: auto;
+}
+
+.expandable-toggle:hover {
+  background-color: #e0e7ff;
+  color: #2563eb;
+}
+
+.expandable-container.expanded .expandable-toggle {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #4b5563;
+}
+
+.toggle-arrow {
+  margin-left: 6px;
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+
+/* Animation for toggle arrow */
+.toggle-arrow.up {
+  transform: rotate(180deg);
+}
+
+/* Animation for content fade in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Card style when expanded */
+.expandable-container.card.expanded {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Media queries for responsive design */
+@media screen and (max-width: 768px) {
+  .expandable-title {
+    font-size: 16px;
+  }
+  
+  .expandable-container.card {
+    padding: 12px;
+  }
+}
+
+/* Focus states for accessibility */
+.expandable-toggle:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Specific styles for different types of expandable content */
+.expandable-container.info {
+  border-left: 4px solid #3b82f6;
+  padding-left: 16px;
+}
+
+.expandable-container.warning {
+  border-left: 4px solid #f59e0b;
+  padding-left: 16px;
+}
+
+.expandable-container.error {
+  border-left: 4px solid #ef4444;
+  padding-left: 16px;
+}
+
+.expandable-container.success {
+  border-left: 4px solid #10b981;
+  padding-left: 16px;
+}

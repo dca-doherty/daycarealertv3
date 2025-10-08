@@ -1,0 +1,45 @@
+/**
+ * Table Headers Fix CSS - v1.0
+ * Ensures Est. Price and Years headers display properly
+ */
+
+/* Ensure non-sortable headers are visible */
+.header, 
+th .header, 
+div.header {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-weight: bold !important;
+  padding: 8px !important;
+  cursor: default !important;
+  font-family: inherit !important;
+  color: #333 !important; /* Explicit dark gray color */
+  text-align: left !important;
+}
+
+/* Specifically target Est. Price and Years columns */
+th:has(div:contains("Est. Price")) .header,
+th:has(div:contains("Years")) .header,
+th:has(div:contains("Monthly Cost")) .header {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure headers in these positions display properly */
+tr th:nth-child(4) .header,
+tr th:nth-child(5) .header {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Prevent any attempt to hide these headers */
+th div:has(span:contains("Est. Price")),
+th div:has(span:contains("Years")),
+th div:has(span:contains("Monthly Cost")) {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}

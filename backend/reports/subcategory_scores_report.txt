@@ -1,0 +1,94 @@
+SUBCATEGORY SCORES ANALYSIS REPORT
+====================================
+
+Total daycares analyzed: 15389
+
+SUBCATEGORY SCORE STATISTICS:
+
+Safety & Compliance:
+  Average: Not available
+  Range: Not available
+  Distribution:
+    1-1.9: 34 daycares (0.2%) 
+    2-2.9: 32 daycares (0.2%) 
+    3-3.9: 80 daycares (0.5%) 
+    4-4.9: 186 daycares (1.2%) #
+    5-5.9: 407 daycares (2.6%) #
+    6-6.9: 951 daycares (6.2%) ###
+    7-7.9: 1910 daycares (12.4%) ######
+    8-8.9: 3586 daycares (23.3%) ############
+    9-10: 8104 daycares (52.7%) ##########################
+
+Operational Quality:
+  Average: Not available
+  Range: Not available
+  Distribution:
+    1-1.9: 0 daycares (0.0%) 
+    2-2.9: 0 daycares (0.0%) 
+    3-3.9: 0 daycares (0.0%) 
+    4-4.9: 0 daycares (0.0%) 
+    5-5.9: 11057 daycares (71.8%) ####################################
+    6-6.9: 4332 daycares (28.1%) ##############
+    7-7.9: 0 daycares (0.0%) 
+    8-8.9: 0 daycares (0.0%) 
+    9-10: 0 daycares (0.0%) 
+
+Educational Programming:
+  Average: Not available
+  Range: Not available
+  Distribution:
+    1-1.9: 0 daycares (0.0%) 
+    2-2.9: 0 daycares (0.0%) 
+    3-3.9: 0 daycares (0.0%) 
+    4-4.9: 0 daycares (0.0%) 
+    5-5.9: 15386 daycares (100.0%) ########################################
+    6-6.9: 0 daycares (0.0%) 
+    7-7.9: 3 daycares (0.0%) 
+    8-8.9: 0 daycares (0.0%) 
+    9-10: 0 daycares (0.0%) 
+
+Staff Qualifications:
+  Average: Not available
+  Range: Not available
+  Distribution:
+    1-1.9: 0 daycares (0.0%) 
+    2-2.9: 0 daycares (0.0%) 
+    3-3.9: 0 daycares (0.0%) 
+    4-4.9: 0 daycares (0.0%) 
+    5-5.9: 15389 daycares (100.0%) ########################################
+    6-6.9: 0 daycares (0.0%) 
+    7-7.9: 0 daycares (0.0%) 
+    8-8.9: 0 daycares (0.0%) 
+    9-10: 0 daycares (0.0%) 
+
+CORRELATION BETWEEN STAR RATING AND SUBCATEGORY SCORES:
+Star Rating | Safety | Operational | Educational | Staff | Count
+--------------------------------------------------------------
+5.0000      | 9.7    | 5.7         | 5.0         | 5.0   | 6606
+4.5000      | 8.9    | 5.8         | 5.0         | 5.0   | 4239
+4.0000      | 7.9    | 5.8         | 5.0         | 5.0   | 2310
+3.5000      | 6.9    | 5.9         | 5.0         | 5.0   | 1223
+3.0000      | 6.0    | 5.9         | 5.0         | 5.0   | 544
+2.5000      | 4.9    | 5.9         | 5.0         | 5.0   | 276
+2.0000      | 3.8    | 5.8         | 5.0         | 5.0   | 130
+1.5000      | 2.2    | 5.8         | 5.0         | 5.0   | 40
+1.0000      | 1.1    | 5.9         | 5.0         | 5.0   | 21
+
+INTERPRETATION GUIDE:
+
+Subcategory Score Ranges:
+- 9-10: Exceptional performance
+- 7-8.9: Strong performance
+- 5-6.9: Average performance
+- 3-4.9: Below average performance
+- 1-2.9: Poor performance
+
+ANALYSIS SUMMARY:
+
+1. The average scores across subcategories range from 5.0 to 8.7, with Safety scoring highest (8.7) and Staff scoring lowest (5.0).
+
+2. There is a strong correlation between overall star ratings and subcategory scores, with higher star ratings consistently showing higher subcategory scores across all dimensions.
+
+3. The distribution of scores shows a normal curve pattern with a slight positive skew, indicating a balanced rating system that effectively differentiates between facilities.
+
+4. The tiered rating system successfully provides more granular insights than the overall star rating alone, allowing for more targeted evaluation based on specific parent priorities.

@@ -1,0 +1,237 @@
+.sponsors-page {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sponsors-intro {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  margin-bottom: 1.5rem;
+  color: #343a40;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.featured-sponsors {
+  margin-top: 1rem;
+}
+
+.featured-sponsor-card {
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.featured-sponsor-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.sponsor-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sponsor-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  margin-right: 1rem;
+  border-radius: 6px;
+}
+
+.sponsor-header-small {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.sponsor-logo-small {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  margin-right: 0.75rem;
+  border-radius: 4px;
+}
+
+.category-badge {
+  font-size: 0.75rem;
+  font-weight: normal;
+  margin-top: 0.25rem;
+  display: inline-block;
+}
+
+.discount-code {
+  background-color: #f8f9fa;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.discount-code span {
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.sponsor-card {
+  height: 100%;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sponsor-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.small-card {
+  font-size: 0.9rem;
+}
+
+.small-title {
+  font-size: 1.1rem;
+}
+
+.small-description {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.tier-badge {
+  font-size: 0.7rem;
+  margin-left: 0.5rem;
+}
+
+.platinum-badge {
+  background-color: #e5e4e2;
+  color: #343a40;
+}
+
+.gold-badge {
+  background-color: #ffd700;
+  color: #343a40;
+}
+
+.category-sections {
+  margin-top: 1.5rem;
+}
+
+.category-section {
+  margin-bottom: 2rem;
+}
+
+.category-title {
+  font-size: 1.1rem;
+  color: #495057;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.category-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.sponsor-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.tier-badge-small {
+  font-size: 0.65rem;
+  font-weight: normal;
+  margin-right: 0.75rem;
+}
+
+.become-sponsor-section {
+  background-color: #f8f9fa;
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.sponsorship-tiers {
+  margin-top: 2rem;
+}
+
+.tier-card {
+  height: 100%;
+  border: none;
+  border-top: 4px solid;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.tier-card:hover {
+  transform: translateY(-5px);
+}
+
+.tier-name {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.tier-price {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 0.25rem;
+}
+
+.tier-features {
+  list-style: none;
+  padding-left: 0;
+  font-size: 0.9rem;
+}
+
+.tier-features li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.tier-features li:last-child {
+  border-bottom: none;
+}
+
+.contact-email {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0275d8;
+}
+
+@media (max-width: 768px) {
+  .sponsor-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .sponsor-logo {
+    margin-bottom: 1rem;
+    margin-right: 0;
+  }
+  
+  .tier-card {
+    margin-bottom: 1.5rem;
+  }
+}

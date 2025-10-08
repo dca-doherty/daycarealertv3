@@ -1,0 +1,38 @@
+STATISTICAL DAYCARE RATING SYSTEM REPORT
+==================================================
+
+SUMMARY:
+Total daycares rated: 11509
+
+DIMENSION STATISTICS:
+Health & Safety: Mean = 9.57, StdDev = 0.47
+Structural Quality: Mean = 4.12, StdDev = 1.47
+Process Quality: Mean = 4.97, StdDev = 0.13
+Management: Mean = 5.66, StdDev = 1.05
+
+JENKS NATURAL BREAKS (Rating Thresholds):
+healthSafety: 8.98, 9.51, 9.75, 9.88, 9.92
+structural: 2.00, 3.50, 4.50, 5.00, 5.50
+process: 5.00, 5.00, 5.00, 5.00, 5.00
+management: 4.00, 5.20, 6.00, 6.50, 7.00
+
+OVERALL RATING DISTRIBUTION:
+
+HEALTH & SAFETY RATING DISTRIBUTION:
+
+STRUCTURAL QUALITY RATING DISTRIBUTION:
+
+PROCESS QUALITY RATING DISTRIBUTION:
+
+MANAGEMENT RATING DISTRIBUTION:
+
+METHODOLOGY OVERVIEW:
+1. Z-score standardization: Raw scores converted to standard deviations from the mean
+2. Multiple dimensions: Separate ratings for Health & Safety, Structural Quality, Process Quality, and Management
+3. Jenks natural breaks: Rating thresholds set using natural clustering in the data
+4. Confidence intervals: Ratings include uncertainty based on data completeness
+5. Dimension weights:
+   - HEALTH_SAFETY: 40%
+   - STRUCTURAL: 25%
+   - PROCESS: 20%
+   - MANAGEMENT: 15%

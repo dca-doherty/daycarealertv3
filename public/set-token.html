@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Authentication Token</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Authentication Token Setter</h1>
+    
+    <div class="card">
+        <h2>Current Token Status</h2>
+        <div id="current-token">Checking...</div>
+    </div>
+    
+    <div class="card">
+        <h2>Set Authentication Token</h2>
+        <p>Click the button below to set a valid authentication token in your browser's localStorage:</p>
+        <button id="setToken">Set Authentication Token</button>
+        <div id="tokenStatus"></div>
+    </div>
+    
+    <div class="card">
+        <h2>Login Instructions</h2>
+        <p>You can now login with these credentials:</p>
+        <ul>
+            <li><strong>Email:</strong> test@example.com</li>
+            <li><strong>Password:</strong> Password123!</li>
+        </ul>
+        <p>After setting the token, refresh the main app and you should be automatically logged in.</p>
+    </div>
+
+    <script>
+        // Token created by our fix-login.js script
+        const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0MzM3MzczMSwiZXhwIjoxNzQ1OTY1NzMxfQ.Vtel6sdzegsEtgILxTXen3ASFCQOeDn-4ssEibMlS4c';
+        
+        // Check current token status
+        function checkCurrentToken() {
+            const tokenElement = document.getElementById('current-token');
+            const token = localStorage.getItem('token');
+            
+            if (token) {
+                tokenElement.innerHTML = `
+                    <p class="success">Token is set!</p>
+                    <pre>${token}</pre>
+                `;
+            } else {
+                tokenElement.innerHTML = '<p>No token found in localStorage.</p>';
+            }
+        }
+        
+        // Set the token
+        document.getElementById('setToken').addEventListener('click', function() {
+            localStorage.setItem('token', AUTH_TOKEN);
+            
+            const statusElement = document.getElementById('tokenStatus');
+            statusElement.innerHTML = `
+                <p class="success">Token set successfully!</p>
+                <p>Refresh the main application page to use this token.</p>
+            `;
+            
+            checkCurrentToken();
+        });
+        
+        // Initialize
+        checkCurrentToken();
+    </script>
+</body>
+</html>

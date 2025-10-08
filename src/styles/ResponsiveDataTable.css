@@ -1,0 +1,948 @@
+/* Responsive Data Table - Main Container */
+.responsive-table-container {
+  margin-bottom: 2rem;
+  width: 100%;
+  padding: 0 4px; /* Add a small horizontal padding */
+}
+
+/* Filters Row */
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.filter-dropdown {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.filter-dropdown label {
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #555;
+  font-weight: 500;
+}
+
+.filter-dropdown select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 14px;
+}
+
+/* Desktop Table Styles */
+.desktop-table-container {
+  overflow-x: auto;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.responsive-table {
+  width: 100%;
+  min-width: 100%;
+  table-layout: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: relative; /* Important for sticky header context */
+  overflow-x: auto; /* Ensure horizontal scrolling works */
+  display: block; /* Ensure scrolling container */
+}
+
+.responsive-table-head th {
+  background-color: #f5f7fa;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #eaedf2;
+}
+
+.responsive-table-head th.clickable-header {
+  cursor: pointer;
+  transition: background-color 0.2s ease-out;
+}
+
+.responsive-table-head th.clickable-header:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Sticky header styles */
+.sticky-header-table th {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #f5f7fa;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.responsive-table th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.responsive-table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.responsive-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eaedf2;
+  transition: background-color 0.2s;
+}
+
+.responsive-table tbody tr:hover {
+  background-color: #f8faff;
+}
+
+.responsive-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.responsive-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.responsive-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+/* Sort Header Styles */
+.sort-header {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  transition: all 0.2s ease-out;
+  border-radius: 4px;
+  position: relative;
+}
+
+.sort-header.sortable {
+  padding: 8px 4px;
+  min-height: 36px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.sort-header:hover {
+  color: #2563eb;
+  background-color: rgba(59, 130, 246, 0.15);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.sort-header.active-sort {
+  color: #2563eb;
+  font-weight: 600;
+  background-color: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.sort-icon {
+  margin-left: 8px;
+  font-size: 16px;
+  opacity: 0.5;
+  transition: opacity 0.2s, color 0.2s, transform 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.sort-icon.visible {
+  opacity: 1;
+  color: #2563eb;
+  font-weight: bold;
+  transform: scale(1.2);
+}
+
+.sort-header:hover .sort-icon {
+  opacity: 1;
+}
+
+.default-sort-icon {
+  opacity: 0.4;
+  font-size: 14px;
+  color: #666;
+}
+
+.sort-header:hover .default-sort-icon {
+  opacity: 0.8;
+  color: #2563eb;
+}
+
+/* Add a slight highlight effect to sortable headers */
+.sort-header.sortable::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(59, 130, 246, 0.05);
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 0;
+}
+
+.sort-header.sortable:hover::after {
+  opacity: 1;
+}
+
+.header-label {
+  position: relative;
+  z-index: 1;
+}
+
+/* Cell Content */
+.cell-content {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.cell-content:hover {
+  white-space: normal;
+  overflow: visible;
+  z-index: 1; /* Ensure content appears above other elements */
+}
+
+/* Special handling for rating cells */
+.cell-content .rating-container {
+  overflow: visible !important; /* Force visibility */
+  min-width: 120px; /* Ensure enough space */
+  max-width: 150px; /* Add max width to maintain layout */
+  display: flex !important; /* Ensure flex display */
+  align-items: center !important; /* Center align items vertically */
+  line-height: 1; /* Ensure proper line height */
+}
+
+/* Programs column specific styling */
+.truncate-program {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  position: relative;
+}
+
+.truncate-program:hover {
+  white-space: normal;
+  overflow: visible;
+  position: absolute;
+  z-index: 20;
+  background-color: #f8faff;
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  max-width: 400px;
+  width: auto;
+  left: 0;
+  top: -5px;
+}
+
+/* Expandable Row Styling */
+.expand-column {
+  width: 50px;
+  padding-right: 10px;
+}
+
+.expand-cell {
+  width: 50px;
+  text-align: center;
+  padding-right: 10px;
+}
+
+.action-cell {
+  width: auto !important;
+  min-width: 100px !important;
+}
+
+.action-content {
+  width: auto !important;
+  white-space: normal !important;
+}
+
+.expand-button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #f0f4ff;
+  border: 1px solid #d1ddf7;
+  color: #3b82f6;
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: 10px; /* Add margin to prevent being cut off */
+  position: relative; /* Ensure proper positioning */
+  left: -5px; /* Shift slightly to the left */
+}
+
+.expand-button:hover {
+  background-color: #e0e7ff;
+  color: #2563eb;
+}
+
+.expand-button.expanded {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.expanded-row {
+  background-color: #f8faff;
+}
+
+.expanded-content-row {
+  background-color: #f0f4ff;
+}
+
+.expanded-content {
+  padding: 16px;
+  animation: fadeIn 0.3s ease-in-out;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 8px;
+  margin-right: 16px; /* Add more margin on the right to prevent being cut off */
+  width: calc(100% - 24px); /* Adjust width to account for margins */
+}
+
+/* Grid layout for expanded content */
+.expanded-content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+/* Risk analysis section */
+.risk-analysis-section {
+  grid-column: 1 / -1; /* Span all columns */
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eaedf2;
+}
+
+.risk-analysis-section p:first-child {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.risk-analysis-section p:last-child {
+  color: #4b5563;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* Mobile Card View */
+.mobile-cards {
+  display: none;
+}
+
+.data-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+}
+
+.data-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-field {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.field-label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.field-value {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.card-expand-button {
+  width: 100%;
+  padding: 8px;
+  margin-top: 12px;
+  background-color: #f0f4ff;
+  border: 1px solid #d1ddf7;
+  color: #3b82f6;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.card-expand-button:hover {
+  background-color: #e0e7ff;
+  color: #2563eb;
+}
+
+.card-expand-button.expanded {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.card-expanded-content {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eaedf2;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Media Queries for Responsive Design */
+@media screen and (max-width: 992px) {
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-dropdown {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .responsive-table-head th {
+    top: 0; /* Adjust sticky position for mobile */
+  }
+
+   /* Keep the desktop view but with scrolling for mobile */  
+  .desktop-table-container {
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  .responsive-table table {
+    min-width: 800px; /* Ensure table has enough width */
+  }
+  
+  /* Make sure columns have appropriate minimum widths */
+  .responsive-table th,
+  .responsive-table td {
+    min-width: 100px; /* Base minimum width */
+    white-space: normal;
+    word-wrap: break-word;
+  }
+  
+  /* Special width adjustments for specific columns */
+  .responsive-table th:first-child, 
+  .responsive-table td:first-child {
+    min-width: 120px;
+  }
+  
+  /* Operation name column needs more width */
+  .responsive-table th.operation_name, 
+  .responsive-table td.operation_name {
+    min-width: 180px;
+  }
+  
+  /* Make description columns have more space */
+  .responsive-table td.description-column,
+  .responsive-table th.description-column {
+    min-width: 250px;
+    max-width: 300px;
+  }
+  
+  /* Keep status column visible while scrolling */
+  .responsive-table table.violations-table th:first-child,
+  .responsive-table table.violations-table td:first-child {
+    position: sticky;
+    left: 0;
+    background-color: white;
+    z-index: 2;
+    min-width: 100px;
+    max-width: 120px;
+    box-shadow: 2px 0px 3px rgba(0,0,0,0.1);
+  }
+  
+  .responsive-table table.violations-table thead th:first-child {
+    background-color: #f8f9fa;
+    z-index: 3;
+  }
+  
+  /* Adjust card view for when we do switch to cards */
+
+  .mobile-cards {
+    display: none;
+  }
+  
+  .card-field {
+    margin-bottom: 12px;
+    border-bottom: 1px solid #eaedf2;
+    padding-bottom: 12px;
+  }
+  
+  .card-field:last-of-type {
+    border-bottom: none;
+  }
+  
+  /* Mobile programs column truncation */
+  .card-field .truncate-program {
+    max-width: 100%;
+    white-space: normal;
+    overflow: visible;
+    display: block;
+    position: relative;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  /* Long program text truncation for mobile */
+  .card-field .field-value {
+    max-height: 80px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .card-field .field-value:after {
+    content: "";
+    text-align: right;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 30%;
+    height: 20px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 80%);
+    pointer-events: none;
+  }
+}
+
+/* Zebra Striping for Mobile Cards */
+.data-card:nth-child(even) {
+  background-color: #fcfcfc;
+}
+
+/* Rating Styles */
+.rating {
+  color: #ffc107; /* Golden yellow for stars */
+  font-weight: bold;
+  display: inline-block;
+  font-size: 16px; /* Slightly larger for better visibility */
+  line-height: 1;
+  letter-spacing: -1px; /* Tighten spacing between stars */
+  white-space: nowrap; /* Prevent line breaks in rating */
+  padding-right: 3px; /* Add some padding to ensure all stars are visible */
+  min-width: 100px; /* Ensure enough width for rating display */
+  overflow: visible; /* Make sure stars don't get cut off */
+  position: relative; /* For positioning stars */
+}
+
+/* Add a special class for half-stars */
+.rating .half-star {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  width: 0.5em;
+}
+
+/* Create half-star effect by showing only half of the star */
+.rating .half-star:before {
+  content: '★';
+  position: absolute;
+  left: 0;
+  width: 50%;
+  overflow: hidden;
+}
+
+.rating.excellent {
+  color: #28a745; /* Green for excellent */
+}
+
+.rating.good {
+  color: #007bff; /* Blue for good */
+}
+
+.rating.average {
+  color: #ffc107; /* Yellow for average */
+}
+
+.rating.poor {
+  color: #dc3545; /* Red for poor */
+}
+
+.rating-score {
+  color: #6c757d; /* Gray for score */
+  font-size: 0.85em; /* Slightly smaller font */
+  font-weight: normal;
+  white-space: nowrap; /* Prevent breaking */
+  padding-right: 5px; /* Add padding to ensure closing parenthesis is visible */
+  margin-left: 2px; /* Add some space between stars and score */
+}
+
+/* Improve display of rating container */
+.rating-container {
+  display: flex;
+  align-items: center;
+  min-width: 120px;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+/* Make sure ratings don't get cut off in table cells */
+td.rating .rating-container {
+  min-width: 100%;
+  display: block;
+}
+
+/* Half star symbol styling */
+.rating span {
+  letter-spacing: -2px; /* Tighten all stars */
+}
+
+/* Half-star implementation - using the fraction symbol directly */
+.rating {
+  display: inline-block;
+  font-size: 16px;
+}
+
+.rating .star, 
+.rating .half-star, 
+.rating .empty-star {
+  letter-spacing: -1px;
+}
+
+/* Improve half-star display */
+.rating ½ {
+  display: inline-block;
+  color: #ffc107; /* Same golden color as full stars */
+  font-size: 15px; /* Slightly smaller than full stars */
+  margin: 0 -1px;
+  vertical-align: baseline;
+  line-height: 1;
+}
+
+/* Performance optimizations for large datasets */
+.responsive-table-container {
+  contain: content;
+}
+
+.desktop-table-container, .mobile-cards {
+  contain: layout;
+}
+
+/* Visual indicator for clickable rows */
+.responsive-table tbody tr[role="button"],
+.data-card[role="button"] {
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.responsive-table tbody tr[role="button"]:hover,
+.data-card[role="button"]:hover {
+  transform: translateY(-2px);
+}
+
+/* Focus states for accessibility */
+.responsive-table tbody tr:focus-within,
+.data-card:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Loading state */
+.table-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Recently updated rating styles */
+.recently-updated-row {
+  animation: highlight-row 5s ease-out;
+}
+
+.recently-updated-card {
+  animation: highlight-card 5s ease-out;
+}
+
+.updated-cell, .updated-field {
+  position: relative;
+  animation: highlight-cell 5s ease-out;
+}
+
+.update-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 5px;
+  width: 18px;
+  height: 18px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 50%;
+  font-size: 14px;
+  opacity: 0.9;
+  animation: pulse 2s infinite;
+  font-weight: bold;
+  line-height: 1;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.6);
+  transition: all 0.3s;
+}
+
+.update-indicator:hover {
+  transform: scale(1.2);
+  background-color: #3d8b40;
+  cursor: help;
+}
+
+/* Rating update notification */
+.rating-update-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #fff;
+  border-left: 4px solid #4caf50;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 12px 16px;
+  z-index: 1000;
+  max-width: 300px;
+  animation: slide-in 0.5s ease-out, fade-out 0.5s ease-in 4.5s forwards;
+}
+
+.notification-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.notification-message {
+  font-size: 14px;
+  color: #555;
+}
+
+.rating-change {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.old-rating {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 10px;
+}
+
+.new-rating {
+  font-weight: bold;
+  color: #4caf50;
+}
+
+.change-arrow {
+  margin: 0 8px;
+  color: #4caf50;
+}
+
+@keyframes highlight-row {
+  0% { background-color: rgba(76, 175, 80, 0.3); }
+  100% { background-color: transparent; }
+}
+
+@keyframes highlight-card {
+  0% { box-shadow: 0 0 15px rgba(76, 175, 80, 0.6); }
+  100% { box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
+}
+
+@keyframes highlight-cell {
+  0% { background-color: rgba(76, 175, 80, 0.2); }
+  100% { background-color: transparent; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes slide-in {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Favorite heart icon - enhanced with better visibility and feedback */
+.favorite-icon {
+  cursor: pointer !important;
+  font-size: 1.5rem;
+  transition: transform 0.2s ease, color 0.2s ease, text-shadow 0.2s ease;
+  color: #ccc;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  z-index: 10; /* Ensure it's above other elements */
+  position: relative; /* Create stacking context */
+  user-select: none; /* Prevent text selection */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  border-radius: 50%;
+  box-shadow: 0 0 0 transparent;
+}
+
+.favorite-icon.favorited {
+  color: #ff5a5f;
+  text-shadow: 0 0 5px rgba(255, 90, 95, 0.5);
+  transform: scale(1.05);
+}
+
+.favorite-icon:hover {
+  transform: scale(1.2);
+  color: #ff5a5f;
+  text-shadow: 0 0 8px rgba(255, 90, 95, 0.3);
+  background-color: rgba(255, 90, 95, 0.08);
+  box-shadow: 0 0 5px rgba(255, 90, 95, 0.2);
+}
+
+/* Active/focus state for accessibility and mobile */
+.favorite-icon:active {
+  transform: scale(0.95);
+  background-color: rgba(255, 90, 95, 0.15);
+}
+
+.favorite-icon.pending {
+  animation: pulse 1s infinite;
+  opacity: 0.7;
+  pointer-events: none; /* Prevent clicks while pending */
+}
+
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.4; }
+}
+
+.favorite-cell {
+  width: 40px !important;
+  text-align: center !important;
+}
+
+.favorite-column {
+  width: 40px !important;
+  text-align: center !important;
+  position: relative;
+  display: none;
+}
+
+.favorite-column.clickable-header {
+  cursor: pointer;
+  transition: background-color 0.2s ease-out;
+}
+
+.favorite-column.clickable-header:hover {
+  background-color: rgba(255, 90, 95, 0.1);
+}
+
+.heart-icon {
+  color: #ff5a5f;
+  font-size: 16px;
+  display: inline-block;
+  margin-right: 2px;
+  transition: transform 0.2s;
+}
+
+.favorite-column:hover .heart-icon {
+  transform: scale(1.2);
+}
+
+/* For mobile view */
+.favorite-field {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* For when a row is clickable */
+.responsive-table tbody tr {
+  cursor: pointer;
+}
+ /* Improved view details button */
+.view-details-btn {
+  white-space: nowrap;
+  min-width: 80px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+    .view-details-btn {
+      font-size: 12px !important;
+      padding: 4px 8px !important;
+      min-width: 70px !important;
+    }
+
+    /* Make sure Details column is visible */
+    th:last-child, td:last-child {
+      position: sticky;
+      right: 0;
+      background-color: white;
+      box-shadow: -4px 0 5px rgba(0,0,0,0.1);
+      min-width: 90px;
+      z-index: 1;
+    }
+
+    th:last-child {
+      background-color: #f5f7fa;
+    }
+  }

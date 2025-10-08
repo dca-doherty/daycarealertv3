@@ -1,0 +1,91 @@
+REVISED NON-COMPLIANCE VIOLATIONS SUMMARY
+==================================================
+
+OVERVIEW
+------------------------------
+Total Violations: 145204
+Total Daycares: 12707
+Violations with Changed Risk Levels: 25307 (17.43%)
+
+RISK LEVEL COMPARISON
+------------------------------
+| Risk Level   | Original  | Revised   | Change     |
+|--------------|-----------|-----------|------------|
+| High         | 33235     | 28502     | -4733 (-14.24%) |
+| Medium High  | 60372     | 56475     | -3897 (-6.45%) |
+| Medium       | 43530     | 49375     | +5845 (13.43%) |
+| Medium Low   | 5711      | 8528      | +2817 (49.33%) |
+| Low          | 2355      | 2323      | -32 (-1.36%) |
+| Unknown      | 1         | 1         | 0 (0.00%) |
+
+VIOLATION CATEGORIES
+------------------------------
+| Category          | Total     | Changed   | % Changed |
+|-------------------|-----------|-----------|----------|
+| Administrative    | 34378     | 7514      | 21.86% |
+| Paperwork         | 32154     | 12277     | 38.18% |
+| Safety            | 30516     | 2950      | 9.67% |
+| Health            | 21516     | 2009      | 9.34% |
+| Facility          | 9367      | 2         | 0.02% |
+| Unknown           | 7288      | 0         | 0.00% |
+| Child Well-being  | 6105      | 540       | 8.85% |
+| Sleep/Rest        | 2744      | 15        | 0.55% |
+| Transportation    | 1136      | 0         | 0.00% |
+
+TOP RISK LEVEL CHANGES
+------------------------------
+High → Medium High: 7348 violations (29.04%)
+Medium High → Medium: 6904 violations (27.28%)
+Medium High → High: 4546 violations (17.96%)
+Medium → Medium Low: 2847 violations (11.25%)
+High → Medium: 2694 violations (10.65%)
+Medium → High: 701 violations (2.77%)
+Medium → Medium High: 205 violations (0.81%)
+Low → High: 32 violations (0.13%)
+Medium Low → High: 30 violations (0.12%)
+
+RISK LEVEL CHANGE TYPES
+------------------------------
+Downgraded from High: 10042 violations (39.68%)
+Other Change: 7393 violations (29.21%)
+Downgraded from Medium High: 6904 violations (27.28%)
+Upgraded to High: 763 violations (3.01%)
+Upgraded to Medium High: 205 violations (0.81%)
+
+TOP STANDARDS BY CATEGORY
+------------------------------
+
+Safety Category:
+- 746.5101(a) - Annual Fire Inspection - Before Initial Permit Issued and Every 12 Months: 2140 violations
+- 746.1205(a)(4) - Supervision ensures each child?s safety, well-being, including physical proximity and auditory or visual awareness of each child?s on going activity: 1841 violations
+- 746.3701 - Safety - Areas Free From Hazards: 1389 violations
+- 746.1203(4) - Responsibilities of Caregivers- Supervision of Children: 1320 violations
+- 746.1315(a) - Each Caregiver and the Director Must Have Current Training in pediatric first aid with rescue breathing and choking.: 1058 violations
+
+Health Category:
+- 746.603(a)(4) - Children's Records - Immunizations: 1550 violations
+- 746.2421(b) - Written Feeding Instructions - Review and Update Every 30 Days: 1318 violations
+- 746.3819 - Food Allergy Emergency Plan Signed by Parents and Health Care Professional: 1015 violations
+- 746.613(b) - Immunization Records, Exceptions, and Exemptions Current: 855 violations
+- 746.3407(12) - Mark Cleaning Supplies, Toxic Materials; Keep Separate from Food and Inaccessible to Children: 785 violations
+
+Paperwork Category:
+- 746.303(b) - Report Number of Employees: 1471 violations
+- 746.603(a)(3) - Children's Records - Health Statement: 1165 violations
+- 746.605(6) - Required Admission Information - Emergency Contact: 1011 violations
+- 746.901 - Required Personnel Records: 789 violations
+- 746.901(4) - Required Personnel Records - Required Affidavit: 781 violations
+
+Administrative Category:
+- 745.641 - AP Background check results - Must receive notification prior to allowing subject to be present at your operation: 3191 violations
+- 746.1201(1) - Responsibilities of Employees and Caregivers -Demonstrate Competency, Good Judgment, Self-control: 1792 violations
+- 746.1601 - Child/ Caregiver Ratio - 13 or More Children: 1644 violations
+- 746.1309(e) - Documented Annual Training- Required Content: 1294 violations
+- 746.3401(a) - Annual Sanitation Inspection: 1262 violations
+
+Child Well-being Category:
+- 746.2805 - Prohibited Punishments - No Harsh, Cruel or Unusual: 483 violations
+- 746.1201(4) - AP Responsibilities of Employees and Caregivers -Ensure No Child Abused, Neglected, or Exploited: 418 violations
+- 746.2805(3) - Prohibited Punishments - Grabbing and Pulling: 416 violations
+- 746.2805(1) - Prohibited Punishments - Corporal Punishment: 315 violations
+- 748.1101(b)(1)(B) - Children's rights-Adhere to the child's rights to be free of abuse, neglect, and exploitation: 222 violations

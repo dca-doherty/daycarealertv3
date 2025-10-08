@@ -1,0 +1,132 @@
+.resources-content {
+  margin-bottom: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.resources-body {
+  padding: 2rem;
+}
+
+.resources-intro {
+  font-size: 1.1rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* New Accordion Layout */
+.resource-accordion {
+  margin-bottom: 2rem;
+}
+
+.resource-section {
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.resource-section:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.resource-header {
+  background-color: #f8f9fa;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border-left: 4px solid var(--primary-color, #0275d8);
+  transition: background-color 0.3s ease;
+}
+
+.resource-header:hover {
+  background-color: #e9ecef;
+}
+
+.resource-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-color, #0275d8);
+}
+
+.expand-icon {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color, #0275d8);
+  transition: transform 0.3s ease;
+}
+
+.expand-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.resource-content {
+  max-height: 0;
+  overflow: hidden;
+  background-color: white;
+  transition: max-height 0.5s ease, padding 0.3s ease;
+  padding: 0 1.5rem;
+}
+
+.resource-content.expanded {
+  max-height: 1000px; /* Arbitrary large value */
+  padding: 1.5rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.resource-description {
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+}
+
+.resource-full-content p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  color: #666;
+}
+
+.resources-footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+  text-align: center;
+  font-style: italic;
+  color: #666;
+}
+
+.resources-footer a {
+  color: var(--primary-color, #0275d8);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.resources-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .resources-body {
+    padding: 1rem;
+  }
+  
+  .resource-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .resource-header h2 {
+    font-size: 1.1rem;
+  }
+  
+  .resource-content.expanded {
+    padding: 1rem;
+  }
+}

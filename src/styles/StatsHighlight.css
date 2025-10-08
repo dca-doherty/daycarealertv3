@@ -1,0 +1,50 @@
+.stats-highlight {
+  padding: 40px 0;
+  background-color: #343a40;
+  color: white;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s, transform 0.8s;
+}
+
+.stats-highlight.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stat-item {
+  padding: 20px;
+  transition: transform 0.3s;
+}
+
+.stat-item:hover {
+  transform: translateY(-5px);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #17a2b8;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: #f8f9fa;
+  font-weight: 400;
+}
+
+@media (max-width: 768px) {
+  .stat-number {
+    font-size: 2rem;
+  }
+  
+  .stat-label {
+    font-size: 0.9rem;
+  }
+  
+  .stat-item {
+    padding: 15px 10px;
+  }
+}

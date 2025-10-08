@@ -1,0 +1,156 @@
+.alerts-tab-content {
+  padding: 1rem 0;
+}
+
+.alerts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.alerts-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #212529;
+}
+
+.alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.alert-item {
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.alert-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.alert-item.unread {
+  border-left: 4px solid #0275d8;
+}
+
+.alert-item.read {
+  opacity: 0.8;
+}
+
+.alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.alert-icon {
+  font-size: 1.5rem;
+  color: #6c757d;
+  margin-right: 1rem;
+}
+
+.alert-icon.violation {
+  color: #dc3545;
+}
+
+.alert-icon.rating {
+  color: #28a745;
+}
+
+.alert-icon.pricing {
+  color: #ffc107;
+}
+
+.alert-icon.news {
+  color: #17a2b8;
+}
+
+.alert-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.alert-time {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+.alert-content {
+  margin-bottom: 1rem;
+}
+
+.alert-source {
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 0.25rem;
+}
+
+.alert-message {
+  color: #495057;
+}
+
+.alert-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.no-unread-alerts,
+.no-alerts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  color: #dee2e6;
+  margin-bottom: 1rem;
+}
+
+.loading-alerts {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+@media (max-width: 576px) {
+  .alerts-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .alert-header {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .alert-meta {
+    align-items: flex-start;
+  }
+  
+  .alert-actions {
+    flex-direction: column;
+  }
+  
+  .alert-actions button {
+    width: 100%;
+  }
+}

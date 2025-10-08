@@ -1,0 +1,197 @@
+/* Auth.css - Styles for authentication components */
+
+/* Login Button in header */
+.login-button {
+  margin-right: 15px;
+}
+
+/* Auth Modal */
+.auth-tabs .nav-tabs {
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 20px;
+}
+
+.auth-tabs .nav-link {
+  font-weight: 500;
+  color: #495057;
+  border: none;
+  padding: 10px 15px;
+}
+
+.auth-tabs .nav-link.active {
+  color: #007bff;
+  background-color: transparent;
+  border-bottom: 2px solid #007bff;
+}
+
+.auth-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.auth-form .form-group {
+  margin-bottom: 15px;
+}
+
+.auth-form label {
+  font-weight: 500;
+}
+
+.auth-form .form-control {
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  padding: 10px 12px;
+}
+
+.auth-form .btn-primary {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.auth-form .forgot-password {
+  text-align: right;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.auth-form .form-text {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+/* User menu */
+.user-menu {
+  position: relative;
+  margin-right: 10px;
+}
+
+.user-menu .dropdown-toggle {
+  color: white !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.user-menu .dropdown-toggle:hover, 
+.user-menu .dropdown-toggle:focus {
+  color: var(--accent-color) !important;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-menu .dropdown-toggle::after {
+  margin-left: 0.5em;
+}
+
+.user-menu .dropdown-menu {
+  min-width: 220px;
+  padding: 0;
+  background-color: white;
+  right: 0;
+  left: auto !important;
+  margin-top: 5px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  border: none;
+}
+
+.user-menu .dropdown-item {
+  padding: 10px 15px;
+  color: var(--text-color);
+}
+
+.user-menu .dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: var(--text-color);
+}
+
+.user-menu .dropdown-divider {
+  margin: 0;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+}
+
+/* Authentication forms */
+.auth-tabs {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.auth-footer a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Password strength indicator */
+.password-strength {
+  height: 4px;
+  margin-top: 5px;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.password-strength.weak {
+  background-color: #dc3545;
+  width: 25%;
+}
+
+.password-strength.fair {
+  background-color: #ffc107;
+  width: 50%;
+}
+
+.password-strength.good {
+  background-color: #28a745;
+  width: 75%;
+}
+
+.password-strength.strong {
+  background-color: #20c997;
+  width: 100%;
+}
+
+/* Loading spinner */
+.auth-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.spinner-border {
+  margin-right: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .auth-form {
+    padding: 0 10px;
+  }
+  
+  .modal-title {
+    font-size: 1.25rem;
+  }
+}
