@@ -1,142 +1,190 @@
 .menu-container {
-    width: 250px;
-    min-width: 250px;
-    background-color: white;
-    box-shadow: 2px 0 4px rgba(0,0,0,0.1);
-    padding-top: 160px; /* Top padding adjusted for header height */
-    padding-left: 1rem;
-    padding-right: 1rem;
-    padding-bottom: 1rem;
-    display: flex;
-    flex-direction: column;
-    z-index: 100; /* Lower than header z-index */
-    position: fixed; /* Fixed positioning instead of sticky */
+  width: 250px;
+  min-width: 250px;
+  background-color: white;
+  box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+  padding-top: 160px; /* Top padding adjusted for header height */
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  z-index: 100; /* Lower than header z-index */
+  position: fixed; /* Fixed positioning instead of sticky */
+  top: 0;
+  left: 0;
+  bottom: 0; /* Ensure full height */
+  height: 100vh; /* Use viewport height */
+  overflow-y: auto;
+  margin-top: 0; /* Ensure no additional margin */
+  box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 20px; /* Extra padding at the top of menu items */
+  margin-top: 10px; /* Add margin to push down from container top */
+  width: 100%; /* Ensure full width */
+  position: relative; /* Create stacking context */
+  z-index: 101; /* Ensure above potential overlapping elements */
+}
+
+.menu-items a {
+  color: var(--secondary-color);
+  text-decoration: none;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  display: block; /* Ensure full width clickable area */
+  margin-bottom: 4px; /* Increased spacing between items */
+  position: relative; /* Ensure proper stacking */
+  z-index: 101; /* Ensure it's above potential overlapping elements */
+}
+
+/* Special styling for the first menu item to ensure visibility */
+.menu-items a:first-child {
+  margin-top: 0; /* Remove any top margin */
+  position: relative; /* Ensure proper stacking */
+  z-index: 102; /* Higher than other menu items */
+  background-color: white; /* Ensure background covers any overlapping elements */
+}
+
+.menu-items a:hover {
+  background-color: var(--background-color);
+  color: var(--primary-color);
+}
+
+.menu-items a.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Menu separator for Business Services section */
+.menu-separator {
+  margin: 1.5rem 0 0.5rem 0;
+  padding: 0.5rem 0;
+  border-top: 2px solid var(--background-color);
+}
+
+.menu-separator .separator-text {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0.25rem 1rem;
+}
+
+/* Enterprise and API links - highlighted styling */
+.enterprise-link,
+.api-link {
+  font-weight: 600;
+  color: var(--primary-color) !important;
+  border-left: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.enterprise-link:hover,
+.api-link:hover {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white !important;
+  border-left-color: var(--accent-color);
+}
+
+.enterprise-link.active,
+.api-link.active {
+  background: var(--primary-color);
+  color: white !important;
+  border-left-color: var(--accent-color);
+}
+
+.hamburger-icon {
+  display: none;
+  cursor: pointer;
+  width: 30px;
+  height: 24px;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.hamburger-line {
+  width: 30px;
+  height: 3px;
+  background-color: var(--secondary-color);
+  position: absolute;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.hamburger-line:nth-child(1) {
+  top: 0;
+}
+
+.hamburger-line:nth-child(2) {
+  top: 10px;
+}
+
+.hamburger-line:nth-child(3) {
+  top: 20px;
+}
+
+.hamburger-line.open:nth-child(1) {
+  transform: rotate(45deg);
+  top: 10px;
+}
+
+.hamburger-line.open:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-line.open:nth-child(3) {
+  transform: rotate(-45deg);
+  top: 10px;
+}
+
+@media (max-width: 768px) {
+  .menu-container {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    padding: 1rem;
+    position: relative;
     top: 0;
+    bottom: auto;
     left: 0;
-    bottom: 0; /* Ensure full height */
-    height: 100vh; /* Use viewport height */
-    overflow-y: auto;
-    margin-top: 0; /* Ensure no additional margin */
-    box-sizing: border-box; /* Include padding in height calculation */
-  }
-  
-  .menu-items {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding-top: 20px; /* Extra padding at the top of menu items */
-    margin-top: 10px; /* Add margin to push down from container top */
-    width: 100%; /* Ensure full width */
-    position: relative; /* Create stacking context */
-    z-index: 101; /* Ensure above potential overlapping elements */
-  }
-  
-  .menu-items a {
-    color: var(--secondary-color);
-    text-decoration: none;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    display: block; /* Ensure full width clickable area */
-    margin-bottom: 4px; /* Increased spacing between items */
-    position: relative; /* Ensure proper stacking */
-    z-index: 101; /* Ensure it's above potential overlapping elements */
-  }
-  
-  /* Special styling for the first menu item to ensure visibility */
-  .menu-items a:first-child {
-    margin-top: 0; /* Remove any top margin */
-    position: relative; /* Ensure proper stacking */
-    z-index: 102; /* Higher than other menu items */
-    background-color: white; /* Ensure background covers any overlapping elements */
-  }
-  
-  .menu-items a:hover {
-    background-color: var(--background-color);
-    color: var(--primary-color);
-  }
-  
-  .menu-items a.active {
-    background-color: var(--primary-color);
-    color: white;
+    right: 0;
+    box-shadow: none;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding-top: 1rem; /* Reset padding for mobile */
   }
   
   .hamburger-icon {
+    display: block;
+  }
+  
+  .menu-items {
     display: none;
-    cursor: pointer;
-    width: 30px;
-    height: 24px;
-    position: relative;
-    margin-bottom: 1rem;
+    padding-top: 1rem; /* Add space after hamburger icon */
   }
   
-  .hamburger-line {
-    width: 30px;
-    height: 3px;
-    background-color: var(--secondary-color);
-    position: absolute;
-    border-radius: 3px;
-    transition: all 0.3s ease;
+  .menu-items.open {
+    display: flex;
   }
   
-  .hamburger-line:nth-child(1) {
-    top: 0;
+  .menu-items a {
+    margin-bottom: 0.5rem; /* More spacing for touch targets */
+    padding: 0.75rem 1rem;
   }
   
-  .hamburger-line:nth-child(2) {
-    top: 10px;
+  .menu-separator {
+    margin: 1rem 0 0.5rem 0;
   }
   
-  .hamburger-line:nth-child(3) {
-    top: 20px;
+  .menu-separator .separator-text {
+    font-size: 0.7rem;
   }
-  
-  .hamburger-line.open:nth-child(1) {
-    transform: rotate(45deg);
-    top: 10px;
-  }
-  
-  .hamburger-line.open:nth-child(2) {
-    opacity: 0;
-  }
-  
-  .hamburger-line.open:nth-child(3) {
-    transform: rotate(-45deg);
-    top: 10px;
-  }
-  
-  @media (max-width: 768px) {
-    .menu-container {
-      width: 100%;
-      height: auto;
-      max-height: none;
-      padding: 1rem;
-      position: relative;
-      top: 0;
-      bottom: auto;
-      left: 0;
-      right: 0;
-      box-shadow: none;
-      border-bottom: 1px solid rgba(0,0,0,0.1);
-      padding-top: 1rem; /* Reset padding for mobile */
-    }
-    
-    .hamburger-icon {
-      display: block;
-    }
-    
-    .menu-items {
-      display: none;
-      padding-top: 1rem; /* Add space after hamburger icon */
-    }
-    
-    .menu-items.open {
-      display: flex;
-    }
-    
-    .menu-items a {
-      margin-bottom: 0.5rem; /* More spacing for touch targets */
-      padding: 0.75rem 1rem;
-    }
-  }
+}
