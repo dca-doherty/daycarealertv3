@@ -75,4 +75,43 @@
   .footer-section {
     margin-bottom: 2rem;
   }
+
+}
+.enterprise-footer-link {
+  font-weight: 600;
+  color: var(--primary-color) !important;
+}
+
+.enterprise-footer-link:hover {
+  color: var(--accent-color) !important;
+  text-decoration: underline;
+}
+
+/* Enterprise contact email */
+.enterprise-contact {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+/* Optional: Add a subtle distinction for business services links */
+.footer-links a[href="/enterprise"],
+.footer-links a[href="/api-docs"] {
+  position: relative;
+  padding-left: 1.2rem;
+}
+
+.footer-links a[href="/enterprise"]::before {
+  content: "💼";
+  position: absolute;
+  left: 0;
+  font-size: 0.9rem;
+}
+
+.footer-links a[href="/api-docs"]::before {
+  content: "📘";
+  position: absolute;
+  left: 0;
+  font-size: 0.9rem;
 }
