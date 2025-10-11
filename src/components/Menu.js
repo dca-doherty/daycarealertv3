@@ -94,6 +94,17 @@ function Menu() {
           Terms of Service
         </NavLink>
         
+        {/* Enterprise & API Documentation - B2B Services */}
+        <div className="menu-separator">
+          <span className="separator-text">Business Services</span>
+        </div>
+        <NavLink to="/enterprise" onClick={closeMenu} className={({ isActive }) => `enterprise-link ${isActive ? 'active' : ''}`}>
+          Enterprise Services
+        </NavLink>
+        <NavLink to="/api-docs" onClick={closeMenu} className={({ isActive }) => `api-link ${isActive ? 'active' : ''}`}>
+          API Documentation
+        </NavLink>
+        
         {isAdmin() && (
           <NavLink to="/admin" onClick={closeMenu} className={({ isActive }) => isActive ? 'active' : ''}>
             Admin Dashboard
