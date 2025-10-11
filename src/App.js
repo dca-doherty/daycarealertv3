@@ -14,6 +14,8 @@ import About from './pages/About';
 import LegalResources from './pages/LegalResources';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import Enterprise from './pages/Enterprise';
+import ApiDocs from './pages/ApiDocs';
 import Alerts from './pages/Alerts';
 import Profile from './pages/Profile';
 import Marketplace from './pages/Marketplace';
@@ -148,20 +150,29 @@ function App() {
                         <Route path="/marketplace" element={<Marketplace />} />
                         <Route path="/sponsors" element={<Sponsors />} />
                         <Route path="/resources" element={<Resources />} />
-						<Route path="/legal-resources" element={<LegalResources />} />
+                        <Route path="/legal-resources" element={<LegalResources />} />
                         <Route path="/statistics" element={<Statistics />} />
-			<Route path="/benefits" element={<Benefits />} />
+                        <Route path="/benefits" element={<Benefits />} />
                         <Route path="/about" element={<About />} />
                         <Route path="/privacy" element={<Privacy />} />
                         <Route path="/terms" element={<Terms />} />
+                        
+                        {/* Enterprise & API Documentation - B2B Services */}
+                        <Route path="/enterprise" element={<Enterprise />} />
+                        <Route path="/api-docs" element={<ApiDocs />} />
+                        
                         <Route path="/buttonpres" element={<ButtonPresentation />} />
-			<Route path="/enhancedpres" element={<EnhancedButtonPresentation />} />
-			{/* Daycare Portal */}
-			<Route path="/daycare-portal/*" element={<DaycarePortal />} />
-			<Route path="/forgot-password" element={<ForgotPassword />} />
+                        <Route path="/enhancedpres" element={<EnhancedButtonPresentation />} />
+                        
+                        {/* Daycare Portal */}
+                        <Route path="/daycare-portal/*" element={<DaycarePortal />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
                         <Route path="/reset-password/:token" element={<ResetPassword />} />
-			{/* Catch-all route - excludes sitemap.xml and robots.txt */}
+                        
+                        {/* Email verification */}
                         <Route path="/verify/:token" element={<VerifyEmail />} />
+                        
+                        {/* Catch-all route - excludes sitemap.xml and robots.txt */}
                         <Route path="*" element={<Navigate to="/mysql" replace />} />
                       </Routes>
                     </main>
