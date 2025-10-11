@@ -34,12 +34,15 @@ const Footer = () => {
             <Link to="/resources">Resources</Link>
             <Link to="/privacy">Privacy Policy</Link>
             <Link to="/terms">Terms of Service</Link>
+            <Link to="/enterprise" className="enterprise-footer-link">Enterprise Services</Link>
+            <Link to="/api-docs">API Documentation</Link>
           </nav>
         </div>
         
         <div className="footer-section">
           <h4>Contact Us</h4>
           <p>Email: info@daycarealert.com</p>
+          <p className="enterprise-contact">Enterprise: enterprise@daycarealert.com</p>
           <div className="social-links">
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
               <i className="fab fa-facebook-square" aria-hidden="true"></i>
