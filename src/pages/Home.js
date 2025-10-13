@@ -2086,111 +2086,108 @@ const Home = ({ tabView, profileId }) => {
       sortable: true
     },
     { 
-      key: 'rating', 
-      label: 'Rating', 
-      width: '18%', // Further increased to ensure enough space
-      sortable: true,
-      render: (rating, row) => {
-        // Always check global store first for the latest rating
-        let scoreValue;
-        let starDisplay;
-        let ratingClass;
-        let key = `rating-${row?.operation_number || Math.random()}-${Date.now()}`;
-        
-        // If we have a row with operation_number, try to get data from global store
-        if (row && row.operation_number && window.daycareDataStore && window.daycareDataStore[row.operation_number]) {
-          const storeDaycare = window.daycareDataStore[row.operation_number];
-          
-          // If we have a rating in the store, use that instead of the passed rating
-          if (storeDaycare.rating) {
-            const storeRating = storeDaycare.rating;
-            
-            // Extract score based on type
-            if (typeof storeRating === 'object') {
-              scoreValue = storeRating.score;
-              starDisplay = storeRating.stars;
-              ratingClass = storeRating.class;
-            } else {
-              scoreValue = parseFloat(storeRating);
-            }
-            
-            // Log if there's a difference between props and store
-            if (rating) {
-              const currentScore = typeof rating === 'object' ? rating.score : parseFloat(rating);
-              if (Math.abs(currentScore - scoreValue) > 0.01) {
-                console.log(`[Home] Rating difference for ${row.operation_name}: props=${currentScore}, store=${scoreValue}`);
-              }
-            }
-          }
-        }
-        
-        // If we couldn't get rating from store, use the passed rating
-        if (scoreValue === undefined) {
-          if (!rating) return 'N/A';
-          
-          if (typeof rating === 'object') {
-            scoreValue = rating.score;
-            starDisplay = rating.stars;
-            ratingClass = rating.class;
-          } else {
-            scoreValue = parseFloat(rating);
-          }
-        }
-        
-        // If score is invalid, return N/A
-        if (isNaN(scoreValue)) return 'N/A';
-        
-        // CRITICAL FIX: Always generate star display for consistency
-        // This ensures that the stars match the actual rating value
-        
-        // Normalize to 1-5 scale if needed
-        if (scoreValue > 0 && scoreValue <= 1) {
-          scoreValue = scoreValue * 5;
-          console.log(`[Rating Display] Normalized rating from 0-1 scale to 1-5 scale: ${scoreValue}`);
-        }
-        
-        // Generate star display based on score
-        if (scoreValue >= 4.5) {
-          starDisplay = '★★★★★'; // 5 stars for 4.5+
-          ratingClass = 'excellent';
-        } else if (scoreValue >= 4.0) {
-          starDisplay = '★★★★'; // 4 stars for 4.0-4.49
-          ratingClass = 'excellent';
-        } else if (scoreValue >= 3.5) {
-          starDisplay = '★★★★'; // 4 stars for 3.5-3.99
-          ratingClass = 'good';
-        } else if (scoreValue >= 3.0) {
-          starDisplay = '★★★'; // 3 stars for 3.0-3.49
-          ratingClass = 'good';
-        } else if (scoreValue >= 2.5) {
-          starDisplay = '★★★'; // 3 stars for 2.5-2.99
-          ratingClass = 'average';
-        } else if (scoreValue >= 2.0) {
-          starDisplay = '★★'; // 2 stars for 2.0-2.49
-          ratingClass = 'average';
-        } else if (scoreValue >= 1.5) {
-          starDisplay = '★★'; // 2 stars for 1.5-1.99
-          ratingClass = 'poor';
-        } else if (scoreValue >= 1.0) {
-          starDisplay = '★'; // 1 star for 1.0-1.49
-          ratingClass = 'poor';
+  key: 'rating', 
+  label: 'Rating', 
+  width: '18%',
+  sortable: true,
+  render: (rating, row) => {
+    let scoreValue;
+    let starDisplay;
+    let ratingClass;
+    let key = `rating-${row?.operation_number || Math.random()}-${Date.now()}`;
+    
+    // Check global store first
+    if (row && row.operation_number && window.daycareDataStore && window.daycareDataStore[row.operation_number]) {
+      const storeDaycare = window.daycareDataStore[row.operation_number];
+      if (storeDaycare.rating) {
+        const storeRating = storeDaycare.rating;
+        if (typeof storeRating === 'object') {
+          scoreValue = storeRating.score;
+          starDisplay = storeRating.stars;
+          ratingClass = storeRating.class;
         } else {
-          starDisplay = '☆'; // Empty star for anything below 1.0
-          ratingClass = 'poor';
+          scoreValue = parseFloat(storeRating);
         }
-        
-        // Log the rating display generation
-        console.log(`[Rating Display] Generated display for ${row.operation_name}: Score=${scoreValue}, Stars=${starDisplay}, Class=${ratingClass}`);
-        
+      }
+    }
+    
+    // If we couldn't get rating from store, use the passed rating
+    if (scoreValue === undefined) {
+      if (!rating) {
+        // FIX: Don't default to any stars, show N/A
         return (
           <div className="rating-container" key={key}>
-            <span className={`rating ${ratingClass}`}>{starDisplay}</span>
-            <span className="rating-score"> ({scoreValue.toFixed(2)})</span>
+            <span className="rating not-rated">☆☆☆☆☆</span>
+            <span className="rating-score"> (N/A)</span>
           </div>
         );
-      },
-      filterable: false // Controls whether this column has filtering options
+      }
+      
+      if (typeof rating === 'object') {
+        scoreValue = rating.score;
+        starDisplay = rating.stars;
+        ratingClass = rating.class;
+      } else {
+        scoreValue = parseFloat(rating);
+      }
     }
+    
+    // If score is invalid or 0, return N/A
+    if (isNaN(scoreValue) || scoreValue === 0) {
+      return (
+        <div className="rating-container" key={key}>
+          <span className="rating not-rated">☆☆☆☆☆</span>
+          <span className="rating-score"> (N/A)</span>
+        </div>
+      );
+    }
+    
+    // Normalize to 1-5 scale if needed
+    if (scoreValue > 0 && scoreValue <= 1) {
+      scoreValue = scoreValue * 5;
+    }
+    
+    // Generate star display based on score
+    if (!starDisplay) {
+      if (scoreValue >= 4.5) {
+        starDisplay = '★★★★★';
+        ratingClass = 'excellent';
+      } else if (scoreValue >= 4.0) {
+        starDisplay = '★★★★☆';
+        ratingClass = 'excellent';
+      } else if (scoreValue >= 3.5) {
+        starDisplay = '★★★½☆';
+        ratingClass = 'good';
+      } else if (scoreValue >= 3.0) {
+        starDisplay = '★★★☆☆';
+        ratingClass = 'good';
+      } else if (scoreValue >= 2.5) {
+        starDisplay = '★★½☆☆';
+        ratingClass = 'average';
+      } else if (scoreValue >= 2.0) {
+        starDisplay = '★★☆☆☆';
+        ratingClass = 'average';
+      } else if (scoreValue >= 1.5) {
+        starDisplay = '★½☆☆☆';
+        ratingClass = 'poor';
+      } else if (scoreValue >= 1.0) {
+        starDisplay = '★☆☆☆☆';
+        ratingClass = 'poor';
+      } else {
+        starDisplay = '☆☆☆☆☆';
+        ratingClass = 'poor';
+      }
+    }
+    
+    return (
+      <div className="rating-container" key={key}>
+        <span className={`rating ${ratingClass}`}>{starDisplay}</span>
+        <span className="rating-score"> ({scoreValue.toFixed(2)})</span>
+      </div>
+    );
+  },
+  filterable: false
+}
   ];
 
   // Log all filters before rendering to ensure they're being passed correctly
