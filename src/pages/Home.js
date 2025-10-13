@@ -2113,8 +2113,8 @@ const Home = ({ tabView, profileId }) => {
     
     // If we couldn't get rating from store, use the passed rating
     if (scoreValue === undefined) {
-      if (!rating) {
-        // FIX: Don't default to any stars, show N/A
+      if (!rating || (typeof rating === 'object' && (!rating.score || rating.score === 0))) {
+        // FIX: Show empty stars for no rating or 0 rating
         return (
           <div className="rating-container" key={key}>
             <span className="rating not-rated">☆☆☆☆☆</span>
@@ -2148,35 +2148,27 @@ const Home = ({ tabView, profileId }) => {
     }
     
     // Generate star display based on score
-    if (!starDisplay) {
-      if (scoreValue >= 4.5) {
-        starDisplay = '★★★★★';
-        ratingClass = 'excellent';
-      } else if (scoreValue >= 4.0) {
-        starDisplay = '★★★★☆';
-        ratingClass = 'excellent';
-      } else if (scoreValue >= 3.5) {
-        starDisplay = '★★★½☆';
-        ratingClass = 'good';
-      } else if (scoreValue >= 3.0) {
-        starDisplay = '★★★☆☆';
-        ratingClass = 'good';
-      } else if (scoreValue >= 2.5) {
-        starDisplay = '★★½☆☆';
-        ratingClass = 'average';
-      } else if (scoreValue >= 2.0) {
-        starDisplay = '★★☆☆☆';
-        ratingClass = 'average';
-      } else if (scoreValue >= 1.5) {
-        starDisplay = '★½☆☆☆';
-        ratingClass = 'poor';
-      } else if (scoreValue >= 1.0) {
-        starDisplay = '★☆☆☆☆';
-        ratingClass = 'poor';
-      } else {
-        starDisplay = '☆☆☆☆☆';
-        ratingClass = 'poor';
-      }
+    const fullStars = Math.floor(scoreValue);
+    const hasHalfStar = (scoreValue - fullStars) >= 0.5;
+    
+    starDisplay = '';
+    for (let i = 0; i < fullStars; i++) {
+      starDisplay += '★';
+    }
+    if (hasHalfStar && fullStars < 5) {
+      starDisplay += '½';
+    }
+    for (let i = fullStars + (hasHalfStar ? 1 : 0); i < 5; i++) {
+      starDisplay += '☆';
+    }
+    
+    // Determine rating class
+    if (!ratingClass) {
+      if (scoreValue >= 4.5) ratingClass = 'excellent';
+      else if (scoreValue >= 3.5) ratingClass = 'good';
+      else if (scoreValue >= 2.5) ratingClass = 'average';
+      else if (scoreValue >= 1.5) ratingClass = 'below-average';
+      else ratingClass = 'poor';
     }
     
     return (
