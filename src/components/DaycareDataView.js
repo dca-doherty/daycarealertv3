@@ -277,98 +277,105 @@ const DaycareDataView = ({
       width: '7%'
     },
     {
-      key: 'rating',
-      label: 'Rating',
-      sortable: true,
-      filterable: true,
-      width: '8%',
-      render: (value, row) => {
-        // Always check global store first for the latest rating
-        let ratingValue;
-        let ratingClass;
-        let key = `rating-${row?.operation_number || Math.random()}-${Date.now()}`;
+  key: 'rating',
+  label: 'Rating',
+  sortable: true,
+  filterable: true,
+  width: '8%',
+  render: (value, row) => {
+    // Always check global store first for the latest rating
+    let ratingValue;
+    let ratingClass;
+    let starString;
+    let key = `rating-${row?.operation_number || Math.random()}-${Date.now()}`;
+    
+    // If we have a row with operation_number, try to get data from global store
+    if (row && row.operation_number && window.daycareDataStore && window.daycareDataStore[row.operation_number]) {
+      const storeDaycare = window.daycareDataStore[row.operation_number];
+      
+      // If we have a rating in the store, use that instead of the passed value
+      if (storeDaycare.rating) {
+        const storeRating = storeDaycare.rating;
         
-        // If we have a row with operation_number, try to get data from global store
-        if (row && row.operation_number && window.daycareDataStore && window.daycareDataStore[row.operation_number]) {
-          const storeDaycare = window.daycareDataStore[row.operation_number];
-          
-          // If we have a rating in the store, use that instead of the passed value
-          if (storeDaycare.rating) {
-            const storeRating = storeDaycare.rating;
-            
-            // Extract values based on type
-            if (typeof storeRating === 'object') {
-              ratingValue = storeRating.score;
-              ratingClass = storeRating.class;
-            } else {
-              ratingValue = parseFloat(storeRating);
-            }
-            
-            // Log if there's a difference between props and store
-            if (value) {
-              const currentValue = typeof value === 'object' ? value.score : parseFloat(value);
-              if (Math.abs(currentValue - ratingValue) > 0.01) {
-                console.log(`[DaycareDataView] Rating difference for ${row.operation_name}: props=${currentValue}, store=${ratingValue}`);
-              }
-            }
-          }
+        // Extract values based on type
+        if (typeof storeRating === 'object') {
+          ratingValue = storeRating.score;
+          ratingClass = storeRating.class;
+        } else {
+          ratingValue = parseFloat(storeRating);
         }
-        
-        // If we couldn't get rating from store, use the passed value
-        if (ratingValue === undefined) {
-          if (!value && value !== 0) return "N/A";
-          
-          if (typeof value === 'object' && value !== null) {
-            ratingValue = value.score || 0;
-            ratingClass = value.class || '';
-          } else {
-            ratingValue = parseFloat(value);
-          }
-        }
-        
-        // Handle invalid ratings
-        if (isNaN(ratingValue)) return "N/A";
-        
-        // Determine class if not provided
-        if (!ratingClass) {
-          if (ratingValue >= 4.0) ratingClass = 'excellent';
-          else if (ratingValue >= 3.0) ratingClass = 'good';
-          else if (ratingValue >= 2.0) ratingClass = 'average';
-          else ratingClass = 'poor';
-        }
-        
-        // NEW APPROACH: Generate the star display as an array of elements
-        // Calculate star values
-        const fullStars = Math.floor(ratingValue);
-        const hasHalfStar = ratingValue % 1 >= 0.5;
-        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-        
-        // Generate a simple string representation of stars
-        let starString = '';
-        
-        // Add full stars
-        for (let i = 0; i < fullStars; i++) {
-          starString += '★';
-        }
-        
-        // Add half star if needed
-        if (hasHalfStar) {
-          starString += '½';
-        }
-        
-        // Add empty stars
-        for (let i = 0; i < emptyStars; i++) {
-          starString += '☆';
-        }
-        
+      }
+    }
+    
+    // If we couldn't get rating from store, use the passed value
+    if (ratingValue === undefined) {
+      if (!value) {
+        // FIX: Show empty stars for no rating
         return (
           <div className="rating-container" key={key}>
-            <span className={`rating ${ratingClass}`}>{starString}</span>
-            <span className="rating-score"> ({ratingValue.toFixed(2)})</span>
+            <span className="rating not-rated">☆☆☆☆☆</span>
+            <span className="rating-score"> (N/A)</span>
           </div>
         );
       }
-    },
+      
+      if (typeof value === 'object' && value !== null) {
+        ratingValue = value.score || 0;
+        ratingClass = value.class || '';
+      } else {
+        ratingValue = parseFloat(value);
+      }
+    }
+    
+    // Handle invalid or zero ratings
+    if (isNaN(ratingValue) || ratingValue === 0) {
+      return (
+        <div className="rating-container" key={key}>
+          <span className="rating not-rated">☆☆☆☆☆</span>
+          <span className="rating-score"> (N/A)</span>
+        </div>
+      );
+    }
+    
+    // Determine class based on score
+    if (!ratingClass) {
+      if (ratingValue >= 4.5) ratingClass = 'excellent';
+      else if (ratingValue >= 3.5) ratingClass = 'good';
+      else if (ratingValue >= 2.5) ratingClass = 'average';
+      else if (ratingValue >= 1.5) ratingClass = 'below-average';
+      else ratingClass = 'poor';
+    }
+    
+    // Generate star display based on actual score
+    const fullStars = Math.floor(ratingValue);
+    const hasHalfStar = (ratingValue - fullStars) >= 0.5;
+    
+    starString = '';
+    
+    // Add full stars
+    for (let i = 0; i < fullStars; i++) {
+      starString += '★';
+    }
+    
+    // Add half star if needed
+    if (hasHalfStar && fullStars < 5) {
+      starString += '½';
+    }
+    
+    // Add empty stars to fill up to 5
+    const totalStars = fullStars + (hasHalfStar ? 1 : 0);
+    for (let i = totalStars; i < 5; i++) {
+      starString += '☆';
+    }
+    
+    return (
+      <div className="rating-container" key={key}>
+        <span className={`rating ${ratingClass}`}>{starString}</span>
+        <span className="rating-score"> ({ratingValue.toFixed(2)})</span>
+      </div>
+    );
+  }
+},
     {
       key: 'violations_summary',
       label: 'Violations',
