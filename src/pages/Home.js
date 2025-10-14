@@ -603,6 +603,15 @@ const Home = ({ tabView, profileId }) => {
         
         // Process each daycare to normalize fields
         const processedDaycares = data.map(daycare => {
+			console.log(`[API->Home] Daycare: ${daycare.operation_name}`);
+          	console.log(`[API->Home] Raw rating from API:`, daycare.rating);
+          	console.log(`[API->Home] overall_rating:`, daycare.overall_rating);
+          	console.log(`[API->Home] All rating-related fields:`, {
+	            rating: daycare.rating,
+	            overall_rating: daycare.overall_rating,
+	            rating_details: daycare.rating_details
+	        });
+			
           // Force no caching by adding a timestamp
           daycare._timestamp = Date.now();
 
