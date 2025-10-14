@@ -290,7 +290,22 @@ const DaycareDataView = ({
     let key = `rating-${row?.operation_number || Math.random()}-${Date.now()}`;
     
     // If we have a row with operation_number, try to get data from global store
-    // Cache check disabled - always use fresh API data
+    if (row && row.operation_number && window.daycareDataStore && window.daycareDataStore[row.operation_number]) {
+      const storeDaycare = window.daycareDataStore[row.operation_number];
+      
+      // If we have a rating in the store, use that instead of the passed value
+      if (storeDaycare.rating) {
+        const storeRating = storeDaycare.rating;
+        
+        // Extract values based on type
+        if (typeof storeRating === 'object') {
+          ratingValue = storeRating.score;
+          ratingClass = storeRating.class;
+        } else {
+          ratingValue = parseFloat(storeRating);
+        }
+      }
+    }
     
     // If we couldn't get rating from store, use the passed value
     if (ratingValue === undefined) {

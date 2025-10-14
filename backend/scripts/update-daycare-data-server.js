@@ -11,7 +11,7 @@ const axios = require('axios');
 
 // Create connection to MySQL - PRODUCTION SERVER CONFIGURATION
 const pool = mysql.createPool({
-  host: 'localhost',  // Use localhost for production server
+  socketPath: '/var/run/mysqld/mysqld.sock',  // Use localhost for production server
   user: 'root',
   password: 'Bd03021988!!',
   database: 'daycarealert',
