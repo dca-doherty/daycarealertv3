@@ -191,7 +191,7 @@ const Home = ({ tabView, profileId }) => {
         const daycare = { ...daycareFromState, _timestamp: Date.now() };
         
         // Use the hardcoded rating and price directly from the database - MODIFIED: Default to 0 stars, not 3
-        const ratingInfo = daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
+        const ratingInfo = daycare.overall_rating || daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
         // Log the rating to debug
         console.log(`Rating for ${daycare.operation_name}: `, ratingInfo);
             
@@ -238,7 +238,7 @@ const Home = ({ tabView, profileId }) => {
               });
               
               // Use the hardcoded rating and price directly from the database - MODIFIED: Default to 0 stars, not 3
-              const ratingInfo = daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
+              const ratingInfo = daycare.overall_rating || daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
               // Log the rating to debug
               console.log(`Rating for ${daycare.operation_name}: `, ratingInfo);
               
@@ -451,7 +451,7 @@ const Home = ({ tabView, profileId }) => {
           };
           
           // Use the hardcoded rating and price directly from the database - MODIFIED: Default to 0 stars, not 3
-          const ratingInfo = daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
+          const ratingInfo = daycare.overall_rating || daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
           const estimatedPrice = daycare.monthly_cost || daycare.price_est || daycare.estimated_price || 1200;
           
           return {
@@ -629,7 +629,7 @@ const Home = ({ tabView, profileId }) => {
           };
           
           // Use the hardcoded rating and price directly from the database - MODIFIED: Default to 0 stars, not 3
-          const ratingInfo = daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
+          const ratingInfo = daycare.overall_rating || daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
           const estimatedPrice = daycare.monthly_cost || daycare.price_est || daycare.estimated_price || 1200;
           
           // Debug log for Meadow Oaks Academy
