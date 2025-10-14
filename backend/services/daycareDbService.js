@@ -293,6 +293,7 @@ const getDaycareOperations = async (limit = 20, offset = 0, filters = {}, sortCo
           
           // Rating and cost data - use values directly from the database tables
           rating: ratingData,
+          overall_rating: ratingData,
           risk_score: row.risk_score,
           estimated_price: row.monthly_cost || null, // From the daycare_cost_estimates table
           monthly_cost: row.monthly_cost || null,
@@ -568,6 +569,7 @@ const getDaycareById = async (operationId) => {
           
           // Rating and cost data - use values directly from the database tables
           rating: ratingData,
+          overall_rating: ratingData,
           risk_score: daycare.risk_score,
           estimated_price: daycare.monthly_cost || null, // From the daycare_cost_estimates table
           price_est: daycare.monthly_cost || null, // alias for frontend compatibility
