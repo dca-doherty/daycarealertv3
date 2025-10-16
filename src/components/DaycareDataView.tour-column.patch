@@ -1,0 +1,27 @@
+Add this column definition to the columns array in DaycareDataView.js:
+
+{
+  key: 'tour',
+  label: 'Tour',
+  sortable: false,
+  filterable: false,
+  width: '6%',
+  render: (value, row) => {
+    const isSelected = selectedForTour?.includes(row.operation_id);
+    const disabled = !canSelectMore && !isSelected;
+    
+    return (
+      <button
+        className={`tour-select-btn ${isSelected ? 'selected' : ''}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          onTourSelection?.(row);
+        }}
+        disabled={disabled}
+        title={isSelected ? 'Remove from tour list' : disabled ? 'Maximum 5 daycares selected' : 'Add to tour list'}
+      >
+        {isSelected ? '✓' : '+'}
+      </button>
+    );
+  }
+}

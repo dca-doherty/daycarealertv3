@@ -643,3 +643,37 @@
     width: 100%;
   }
 }
+
+/* Tour Selection Button */
+.tour-select-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #4CAF50;
+  background: white;
+  color: #4CAF50;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tour-select-btn:hover:not(:disabled) {
+  background: #4CAF50;
+  color: white;
+  transform: scale(1.1);
+}
+
+.tour-select-btn.selected {
+  background: #4CAF50;
+  color: white;
+}
+
+.tour-select-btn:disabled {
+  border-color: #ccc;
+  color: #ccc;
+  cursor: not-allowed;
+}

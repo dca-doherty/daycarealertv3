@@ -460,3 +460,15 @@ process.on('SIGTERM', () => {
 });
 
 module.exports = app;
+
+// Tour Scheduling Routes
+const tourRoutes = require('./routes/tourScheduling/tourRoutes');
+app.use('/api/tour-requests', tourRoutes);
+
+console.log('Tour scheduling routes initialized');
+
+// Start automated follow-up processor
+const followupProcessor = require('./jobs/followupProcessor');
+followupProcessor.start();
+
+console.log('✅ Automated follow-up processor started');

@@ -1,0 +1,6 @@
+Add to your src/App.js routes:
+
+import CommissionDashboard from './pages/CommissionDashboard';
+
+// Inside your Routes:
+<Route path="/admin/commissions" element={<CommissionDashboard />} />

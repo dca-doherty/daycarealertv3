@@ -1,0 +1,27 @@
+--- a/src/pages/Home.js
++++ b/src/pages/Home.js
+@@ -1,6 +1,10 @@
+ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+ import { useParams, useLocation } from 'react-router-dom';
+ import DaycareDataView from '../components/DaycareDataView';
++import TourSelectionCart from '../components/TourScheduling/TourSelectionCart';
++import TourRequestModal from '../components/TourScheduling/TourRequestModal';
++import TourSuccessModal from '../components/TourScheduling/TourSuccessModal';
++import { useTourSelection } from '../hooks/useTourSelection';
+ import DaycareDetails from '../components/DaycareDetails';
+ import SortFilterWrapper from '../components/SortFilterWrapper';
+ import { fetchTotalDaycareCount, fetchFilteredDaycareData, fetchDaycareById } from '../utils/api';
+@@ -43,6 +47,14 @@
+   // eslint-disable-next-line no-unused-vars
+   const [dataSourcePref, setDataSourcePref] = useState('Optimized MySQL');
+ 
++  // Tour scheduling state
++  const tourSelection = useTourSelection();
++  const [showTourModal, setShowTourModal] = useState(false);
++  const [showSuccessModal, setShowSuccessModal] = useState(false);
++  const [submittedTourId, setSubmittedTourId] = useState(null);
++  const [submittedDaycares, setSubmittedDaycares] = useState([]);
++  const [tourSubmitting, setTourSubmitting] = useState(false);
++
+   // Check if specific daycare ID was provided
+   // Utility function to ensure all daycares have normalized violation counts

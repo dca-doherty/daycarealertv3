@@ -1,0 +1,73 @@
+Update the action buttons section in CommissionDashboard.js to add invoice download:
+
+<div className="action-buttons">
+  {enrollment.commission_status === 'pending' && (
+    <button 
+      className="approve-btn"
+      onClick={() => handleApproveCommission(enrollment.id)}
+      title="Approve for payment"
+    >
+      ✓ Approve
+    </button>
+  )}
+  
+  {enrollment.commission_status === 'approved' && (
+    <>
+      <button 
+        className="pay-btn"
+        onClick={() => handleMarkPaid(enrollment.id)}
+        title="Mark as paid"
+      >
+        💵 Mark Paid
+      </button>
+      <button 
+        className="invoice-btn"
+        onClick={() => handleDownloadInvoice(enrollment.id)}
+        title="Download invoice"
+      >
+        📄 Invoice
+      </button>
+    </>
+  )}
+  
+  {enrollment.commission_status === 'paid' && (
+    <>
+      <span className="paid-indicator">✓ Paid {formatDate(enrollment.commission_paid_date)}</span>
+      <button 
+        className="invoice-btn"
+        onClick={() => handleDownloadInvoice(enrollment.id)}
+        title="Download invoice"
+      >
+        📄 Invoice
+      </button>
+    </>
+  )}
+  
+  <button 
+    className="view-btn"
+    onClick={() => window.location.href = `/admin/enrollment/${enrollment.id}`}
+    title="View details"
+  >
+    👁 View
+  </button>
+</div>
+
+Add this function to the component:
+
+const handleDownloadInvoice = async (enrollmentId) => {
+  try {
+    // Get invoice ID for this enrollment
+    const response = await fetch(`/api/enrollments/${enrollmentId}/invoice-id`);
+    const data = await response.json();
+    
+    if (data.success && data.invoiceId) {
+      // Open invoice PDF in new tab
+      window.open(`/api/enrollments/invoice/${data.invoiceId}/pdf`, '_blank');
+    } else {
+      alert('Invoice not found for this enrollment');
+    }
+  } catch (error) {
+    console.error('Error downloading invoice:', error);
+    alert('Failed to download invoice');
+  }
+};

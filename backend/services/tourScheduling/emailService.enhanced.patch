@@ -1,0 +1,15 @@
+Update the sendCommissionInvoiceEmail function to include a direct download link:
+
+Add this in the payment section of the email HTML:
+
+<center>
+  <a href="https://daycarealert.com/api/enrollments/invoice/by-number/${invoice.invoice_number}/pdf" class="payment-button">
+    Download Invoice PDF
+  </a>
+</center>
+
+<center>
+  <a href="https://daycarealert.com/pay-invoice/${invoice.invoice_number}" class="payment-button" style="background: #2196F3;">
+    Pay Invoice Online
+  </a>
+</center>

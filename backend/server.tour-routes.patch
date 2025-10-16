@@ -1,0 +1,6 @@
+Add to your backend/server.js or backend/app.js:
+
+const tourRoutes = require('./routes/tourScheduling/tourRoutes');
+
+// Add this with your other routes
+app.use('/api/tour-requests', tourRoutes);

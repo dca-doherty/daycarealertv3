@@ -1,0 +1,166 @@
+.tour-cart {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  max-height: 80vh;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.tour-cart.closed {
+  max-height: 60px;
+}
+
+.tour-cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: #4CAF50;
+  color: white;
+  border-radius: 12px 12px 0 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tour-cart-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.tour-cart-title .icon {
+  font-size: 20px;
+}
+
+.toggle-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.toggle-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.tour-cart-content {
+  padding: 16px;
+  max-height: calc(80vh - 60px);
+  overflow-y: auto;
+}
+
+.empty-message {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+  font-size: 14px;
+}
+
+.selected-daycares {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.cart-daycare-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.cart-daycare-item:hover {
+  background: #ebebeb;
+}
+
+.daycare-info {
+  flex: 1;
+}
+
+.daycare-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.daycare-city {
+  font-size: 12px;
+  color: #666;
+}
+
+.remove-btn {
+  background: #ff4444;
+  color: white;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.remove-btn:hover {
+  background: #cc0000;
+}
+
+.schedule-tour-btn {
+  width: 100%;
+  padding: 14px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.schedule-tour-btn:hover:not(:disabled) {
+  background: #45a049;
+}
+
+.schedule-tour-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.limit-message {
+  text-align: center;
+  font-size: 12px;
+  color: #ff6b6b;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .tour-cart {
+    width: calc(100% - 40px);
+    right: 20px;
+    left: 20px;
+  }
+}

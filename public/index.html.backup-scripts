@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script src="%PUBLIC_URL%/js/console-suppressor.js"></script>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -35,6 +36,14 @@
     <link rel="stylesheet" href="%PUBLIC_URL%/css/buy-me-coffee.css" />
   
     <!-- *** CRITICAL JS - HIGH PRIORITY - Load immediately *** -->
+    <script src="%PUBLIC_URL%/js/cost-estimator-direct-fix.js"></script>
+    <script src="%PUBLIC_URL%/js/cost-estimator-immediate-fix.js"></script>
+    <script src="%PUBLIC_URL%/js/city-input-immediate.js"></script>
+    <script src="%PUBLIC_URL%/js/city-search-extreme-fix.js"></script>
+    <script src="%PUBLIC_URL%/js/search-input-fix.js"></script>
+    <script src="%PUBLIC_URL%/js/unifiedsearch-fix.js"></script>
+    <script src="%PUBLIC_URL%/js/table-headers-fix.js"></script>
+    <script src="%PUBLIC_URL%/js/headers-extreme-fix.js"></script>
     <!-- Ensure html2pdf is available -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <title>DaycareAlert - Find Safe, Affordable Daycares in Texas | Compare Ratings & Prices</title>
@@ -79,11 +88,17 @@
     <div id="root"></div>
 
     <!-- Fix for cost estimator (priority loading) -->
+    <script src="%PUBLIC_URL%/js/cost-estimator-fix.js"></script>
 
     <!-- Fix for favorite notifications -->
+    <script src="%PUBLIC_URL%/js/direct-favorite-fix.js" defer></script>
     <!-- Fix for mobile violations table --> 
+    <script src="%PUBLIC_URL%/js/mobile-violations-fix.js" defer></script>
     <!-- Simple select fix for mobile (lower priority) -->
+    <script src="%PUBLIC_URL%/js/simple-select-fix.js" defer></script>
     <!-- Fix for PDF export functionality -->
+    <script src="%PUBLIC_URL%/js/fix-pdf-export.js" defer></script>
     <!-- Buy Me a Coffee donation button -->
+    <script src="%PUBLIC_URL%/js/buy-me-coffee.js" defer></script>
   </body>
 </html>

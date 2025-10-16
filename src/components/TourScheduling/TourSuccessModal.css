@@ -1,0 +1,211 @@
+.success-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.success-modal {
+  background: white;
+  border-radius: 16px;
+  max-width: 550px;
+  width: 100%;
+  padding: 40px;
+  text-align: center;
+  animation: successSlideIn 0.4s ease;
+}
+
+@keyframes successSlideIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.success-icon {
+  margin-bottom: 24px;
+}
+
+.checkmark-circle {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+}
+
+.checkmark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #4CAF50;
+  stroke-miterlimit: 10;
+  animation: checkmark 0.4s ease-in-out 0.4s both;
+}
+
+.checkmark-circle-bg {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #4CAF50;
+  fill: #f0f9f0;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes checkmark {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.success-modal h2 {
+  color: #4CAF50;
+  margin: 0 0 16px 0;
+  font-size: 28px;
+}
+
+.success-message {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 24px;
+}
+
+.what-next {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.what-next h3 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.what-next ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.what-next li {
+  margin: 8px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.daycares-contacted {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.daycares-contacted h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.daycares-contacted ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.daycares-contacted li {
+  padding: 8px;
+  margin: 4px 0;
+  background: #f0f9f0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.daycares-contacted .checkmark {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.download-btn,
+.close-success-btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.download-btn {
+  background: #4CAF50;
+  color: white;
+}
+
+.download-btn:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.close-success-btn {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.close-success-btn:hover {
+  background: #e0e0e0;
+}
+
+.request-id {
+  font-size: 12px;
+  color: #999;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .success-modal {
+    padding: 24px;
+  }
+  
+  .success-modal h2 {
+    font-size: 24px;
+  }
+}
