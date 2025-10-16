@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import DaycareDataView from '../components/DaycareDataView';
-import TourSelectionCart from '../components/TourScheduling/TourSelectionCart';
-import TourRequestModal from '../components/TourScheduling/TourRequestModal';
-import TourSuccessModal from '../components/TourScheduling/TourSuccessModal';
-import { useTourSelection } from '../hooks/useTourSelection';
 import DaycareDetails from '../components/DaycareDetails';
 import SortFilterWrapper from '../components/SortFilterWrapper';
 import { fetchTotalDaycareCount, fetchFilteredDaycareData, fetchDaycareById } from '../utils/api';
@@ -50,14 +46,6 @@ const Home = ({ tabView, profileId }) => {
   const [activeTab, setActiveTab] = useState(initialTabView);
   // eslint-disable-next-line no-unused-vars
   const [dataSourcePref, setDataSourcePref] = useState('Optimized MySQL');
-
-  // Tour scheduling state
-  const tourSelection = useTourSelection();
-  const [showTourModal, setShowTourModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [submittedTourId, setSubmittedTourId] = useState(null);
-  const [submittedDaycares, setSubmittedDaycares] = useState([]);
-  const [tourSubmitting, setTourSubmitting] = useState(false);
   
   // Check if specific daycare ID was provided
   // Utility function to ensure all daycares have normalized violation counts
@@ -203,7 +191,7 @@ const Home = ({ tabView, profileId }) => {
         const daycare = { ...daycareFromState, _timestamp: Date.now() };
         
         // Use the hardcoded rating and price directly from the database - MODIFIED: Default to 0 stars, not 3
-        const ratingInfo = daycare.overall_rating || daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
+        const ratingInfo = daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
         // Log the rating to debug
         console.log(`Rating for ${daycare.operation_name}: `, ratingInfo);
             
@@ -250,7 +238,7 @@ const Home = ({ tabView, profileId }) => {
               });
               
               // Use the hardcoded rating and price directly from the database - MODIFIED: Default to 0 stars, not 3
-              const ratingInfo = daycare.overall_rating || daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
+              const ratingInfo = daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
               // Log the rating to debug
               console.log(`Rating for ${daycare.operation_name}: `, ratingInfo);
               
@@ -463,7 +451,7 @@ const Home = ({ tabView, profileId }) => {
           };
           
           // Use the hardcoded rating and price directly from the database - MODIFIED: Default to 0 stars, not 3
-          const ratingInfo = daycare.overall_rating || daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
+          const ratingInfo = daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
           const estimatedPrice = daycare.monthly_cost || daycare.price_est || daycare.estimated_price || 1200;
           
           return {
@@ -615,15 +603,6 @@ const Home = ({ tabView, profileId }) => {
         
         // Process each daycare to normalize fields
         const processedDaycares = data.map(daycare => {
-			console.log(`[API->Home] Daycare: ${daycare.operation_name}`);
-          	console.log(`[API->Home] Raw rating from API:`, daycare.rating);
-          	console.log(`[API->Home] overall_rating:`, daycare.overall_rating);
-          	console.log(`[API->Home] All rating-related fields:`, {
-	            rating: daycare.rating,
-	            overall_rating: daycare.overall_rating,
-	            rating_details: daycare.rating_details
-	        });
-			
           // Force no caching by adding a timestamp
           daycare._timestamp = Date.now();
 
@@ -641,7 +620,7 @@ const Home = ({ tabView, profileId }) => {
           };
           
           // Use the hardcoded rating and price directly from the database - MODIFIED: Default to 0 stars, not 3
-          const ratingInfo = daycare.overall_rating || daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
+          const ratingInfo = daycare.rating || { score: 0.0, stars: 'N/A', class: 'not-rated' };
           const estimatedPrice = daycare.monthly_cost || daycare.price_est || daycare.estimated_price || 1200;
           
           // Debug log for Meadow Oaks Academy
@@ -2134,8 +2113,8 @@ const Home = ({ tabView, profileId }) => {
     
     // If we couldn't get rating from store, use the passed rating
     if (scoreValue === undefined) {
-      if (!rating || (typeof rating === 'object' && (!rating.score || rating.score === 0))) {
-        // FIX: Show empty stars for no rating or 0 rating
+      if (!rating) {
+        // FIX: Don't default to any stars, show N/A
         return (
           <div className="rating-container" key={key}>
             <span className="rating not-rated">☆☆☆☆☆</span>
@@ -2169,27 +2148,35 @@ const Home = ({ tabView, profileId }) => {
     }
     
     // Generate star display based on score
-    const fullStars = Math.floor(scoreValue);
-    const hasHalfStar = (scoreValue - fullStars) >= 0.5;
-    
-    starDisplay = '';
-    for (let i = 0; i < fullStars; i++) {
-      starDisplay += '★';
-    }
-    if (hasHalfStar && fullStars < 5) {
-      starDisplay += '½';
-    }
-    for (let i = fullStars + (hasHalfStar ? 1 : 0); i < 5; i++) {
-      starDisplay += '☆';
-    }
-    
-    // Determine rating class
-    if (!ratingClass) {
-      if (scoreValue >= 4.5) ratingClass = 'excellent';
-      else if (scoreValue >= 3.5) ratingClass = 'good';
-      else if (scoreValue >= 2.5) ratingClass = 'average';
-      else if (scoreValue >= 1.5) ratingClass = 'below-average';
-      else ratingClass = 'poor';
+    if (!starDisplay) {
+      if (scoreValue >= 4.5) {
+        starDisplay = '★★★★★';
+        ratingClass = 'excellent';
+      } else if (scoreValue >= 4.0) {
+        starDisplay = '★★★★☆';
+        ratingClass = 'excellent';
+      } else if (scoreValue >= 3.5) {
+        starDisplay = '★★★½☆';
+        ratingClass = 'good';
+      } else if (scoreValue >= 3.0) {
+        starDisplay = '★★★☆☆';
+        ratingClass = 'good';
+      } else if (scoreValue >= 2.5) {
+        starDisplay = '★★½☆☆';
+        ratingClass = 'average';
+      } else if (scoreValue >= 2.0) {
+        starDisplay = '★★☆☆☆';
+        ratingClass = 'average';
+      } else if (scoreValue >= 1.5) {
+        starDisplay = '★½☆☆☆';
+        ratingClass = 'poor';
+      } else if (scoreValue >= 1.0) {
+        starDisplay = '★☆☆☆☆';
+        ratingClass = 'poor';
+      } else {
+        starDisplay = '☆☆☆☆☆';
+        ratingClass = 'poor';
+      }
     }
     
     return (
@@ -2232,8 +2219,6 @@ const Home = ({ tabView, profileId }) => {
         sortDirection={sortDirection}
         filterOptions={filters} // This is passing the filters to DaycareDataView
         viewType="daycares"
-        onSelectForTour={tourSelection.addDaycare}
-        selectedForTour={tourSelection.isSelected}
         expandable={false}
         headerImage={heroImage}
         searchPlaceholder="Search by daycare name, city, type, zip code..."
@@ -2247,44 +2232,6 @@ const Home = ({ tabView, profileId }) => {
           onClose={handleCloseDetails}
           initialTab={activeTab}
           dataSource="API"
-        />
-      )}
-
-      {/* Tour Selection Cart */}
-      <TourSelectionCart
-        selectedDaycares={tourSelection.selectedDaycares}
-        onRemoveDaycare={tourSelection.removeDaycare}
-        onClearAll={tourSelection.clearSelection}
-        onRequestTours={() => setShowTourModal(true)}
-      />
-
-      {/* Tour Request Modal */}
-      {showTourModal && (
-        <TourRequestModal
-          selectedDaycares={tourSelection.selectedDaycares}
-          onClose={() => setShowTourModal(false)}
-          onSuccess={(tourId, daycares) => {
-            setSubmittedTourId(tourId);
-            setSubmittedDaycares(daycares);
-            setShowTourModal(false);
-            setShowSuccessModal(true);
-            tourSelection.clearSelection();
-          }}
-          submitting={tourSubmitting}
-          setSubmitting={setTourSubmitting}
-        />
-      )}
-
-      {/* Tour Success Modal */}
-      {showSuccessModal && (
-        <TourSuccessModal
-          tourId={submittedTourId}
-          daycares={submittedDaycares}
-          onClose={() => {
-            setShowSuccessModal(false);
-            setSubmittedTourId(null);
-            setSubmittedDaycares([]);
-          }}
         />
       )}
     </>

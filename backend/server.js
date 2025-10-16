@@ -66,7 +66,6 @@ const reviewsRoutes = require('./routes/reviews');
 const adminRoutes = require('./routes/admin');
 const violationsRoutes = require('./routes/violations');
 const recommendationsRoutes = require('./routes/recommendations');
-const tourRoutes = require('./routes/tours');
 const daycaresRoutes = require('./routes/daycares');
 const ratingsRoutes = require('./routes/ratings');
 const tieredRatingsRoutes = require('./routes/tiered_ratings');
@@ -219,7 +218,6 @@ app.use('/api/admin', (req, res, next) => {
 }, adminRoutes);
 app.use('/api/violations', violationsRoutes);
 app.use('/api/recommendations', recommendationsRoutes);
-app.use('/api/tours', tourRoutes);
 app.use('/api/daycares', daycaresRoutes);
 app.use('/api/ratings/tiered', tieredRatingsRoutes); // More specific route must come first
 app.use('/api/ratings', ratingsRoutes);
@@ -464,6 +462,8 @@ module.exports = app;
 // Tour Scheduling Routes
 const tourRoutes = require('./routes/tourScheduling/tourRoutes');
 app.use('/api/tour-requests', tourRoutes);
+const enrollmentRoutes = require("./routes/tourScheduling/enrollmentRoutes");
+app.use("/api/enrollments", enrollmentRoutes);
 
 console.log('Tour scheduling routes initialized');
 

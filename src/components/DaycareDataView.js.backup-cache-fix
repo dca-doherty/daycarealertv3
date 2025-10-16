@@ -32,8 +32,6 @@ const DaycareDataView = ({
   expandable = true,
   expandedContentRenderer = null,
   headerImage = null,
-  onSelectForTour,
-  selectedForTour,
   searchPlaceholder = "Search daycares...",
   noResultsMessage = "No results found. Please try a different search.",
   extraContent = null,
@@ -555,28 +553,15 @@ const DaycareDataView = ({
         >
           View Details
         </Button>
-      ),
-      tourSelection: onSelectForTour ? (
-        <Button
-          variant={selectedForTour && selectedForTour(item.operation_id) ? "success" : "outline-success"}
-          size="sm"
-          className="select-tour-btn ms-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelectForTour(item);
-          }}
-        >
-          {selectedForTour && selectedForTour(item.operation_id) ? "✓ Selected" : "Select for Tour"}
-        </Button>
-      ) : null,
+      )
     };
-      // Enhanced expanded content with more details
     
     // Add expandable content if provided
     if (expandable && expandedContentRenderer) {
       processedItem.expandedContent = () => expandedContentRenderer(item);
     } else {
-    processedItem.expandedContent = () => {
+      // Enhanced expanded content with more details
+      processedItem.expandedContent = () => {
         // Import the normalizeViolationCounts utility
         const { normalizeViolationCounts } = require('../utils/daycareUtils');
         

@@ -1,5 +1,5 @@
 const PDFDocument = require('pdfkit');
-const pool = require('../../config/database');
+const { pool } = require('../../config/db');
 
 class PDFService {
   /**

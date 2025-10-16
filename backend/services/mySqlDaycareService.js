@@ -1085,7 +1085,7 @@ const getDaycareOperations = async (limit = 20, offset = 0, filters = {}, sortCo
              (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID AND rnc.revised_risk_level = 'Low') as low_risk_violations
              
       FROM daycare_operations d
-      LEFT JOIN daycare_ratings_view_balanced r ON d.OPERATION_ID = r.operation_id
+      LEFT JOIN daycare_ratings_balanced_view r ON d.OPERATION_ID = r.operation_id
       LEFT JOIN daycare_cost_estimates c ON d.OPERATION_ID = c.operation_id
       LEFT JOIN risk_analysis ra ON d.OPERATION_ID = ra.operation_id
       WHERE d.OPERATION_STATUS = 'Y' 
@@ -1377,7 +1377,7 @@ const getDaycareOperations = async (limit = 20, offset = 0, filters = {}, sortCo
       let countQuery = `
         SELECT COUNT(*) AS total 
         FROM daycare_operations d
-        LEFT JOIN daycare_ratings_view_balanced r ON d.OPERATION_ID = r.operation_id
+        LEFT JOIN daycare_ratings_balanced_view r ON d.OPERATION_ID = r.operation_id
         LEFT JOIN daycare_cost_estimates c ON d.OPERATION_ID = c.operation_id
         WHERE d.OPERATION_STATUS = 'Y' 
           AND d.TEMPORARILY_CLOSED = 'NO'
@@ -1514,7 +1514,7 @@ const getDaycareById = async (operationId) => {
              (SELECT COUNT(*) FROM revised_non_compliance rnc WHERE rnc.operation_id = d.OPERATION_ID AND rnc.revised_risk_level = 'Low') as low_risk_violations
              
       FROM daycare_operations d
-      LEFT JOIN daycare_ratings_view_balanced r ON d.OPERATION_ID = r.operation_id
+      LEFT JOIN daycare_ratings_balanced_view r ON d.OPERATION_ID = r.operation_id
       LEFT JOIN daycare_cost_estimates c ON d.OPERATION_ID = c.operation_id
       LEFT JOIN risk_analysis ra ON d.OPERATION_ID = ra.operation_id
       WHERE d.OPERATION_ID = ? OR d.OPERATION_NUMBER = ?

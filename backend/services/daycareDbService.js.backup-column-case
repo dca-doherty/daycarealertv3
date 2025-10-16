@@ -265,23 +265,23 @@ const getDaycareOperations = async (limit = 20, offset = 0, filters = {}, sortCo
         return {
           operation_id: (row.OPERATION_ID || row.operation_id).toString(),
           operation_number: (row.OPERATION_ID || row.operation_id).toString(), // For backward compatibility with frontend
-          operation_name: row.OPERATION_NAME,
-          operation_type: row.OPERATION_TYPE,
-          location_address: row.LOCATION_ADDRESS,
-          city: row.CITY,
-          county: row.COUNTY,
-          phone_number: row.PHONE_NUMBER,
-          issuance_date: row.ISSUANCE_DATE,
-          license_issue_date: row.ISSUANCE_DATE, // alias for frontend compatibility
-          total_capacity: parseInt(row.TOTAL_CAPACITY, 10) || 0,
-          email_address: row.EMAIL_ADDRESS,
-          website_address: row.WEBSITE_ADDRESS,
-          administrator_director_name: row.ADMINISTRATOR_DIRECTOR_NAME,
-          days_of_operation: row.DAYS_OF_OPERATION,
-          hours_of_operation: row.HOURS_OF_OPERATION,
-          accepts_child_care_subsidies: row.ACCEPTS_CHILD_CARE_SUBSIDIES,
-          accepts_cccsubsidy: row.ACCEPTS_CHILD_CARE_SUBSIDIES, // alias for frontend compatibility
-          temporarily_closed: row.TEMPORARILY_CLOSED,
+          operation_name: row.operation_name,
+          operation_type: row.operation_type,
+          location_address: row.location_address,
+          city: row.city,
+          county: row.county,
+          phone_number: row.phone_number,
+          issuance_date: row.issuance_date,
+          license_issue_date: row.issuance_date, // alias for frontend compatibility
+          total_capacity: parseInt(row.total_capacity, 10) || 0,
+          email_address: row.email_address,
+          website_address: row.website_address,
+          administrator_director_name: row.administrator_director_name,
+          days_of_operation: row.days_of_operation,
+          hours_of_operation: row.hours_of_operation,
+          accepts_child_care_subsidies: row.accepts_child_care_subsidies,
+          accepts_cccsubsidy: row.accepts_child_care_subsidies, // alias for frontend compatibility
+          temporarily_closed: row.temporarily_closed,
           
           // Violation summary counts from revised_non_compliance
           high_risk_violations: row.high_risk_violations || 0,
@@ -735,7 +735,7 @@ const getCities = async () => {
       console.log(`Found ${rows.length} cities in local database`);
       
       // Transform the results to match expected format
-      const cities = rows.map(row => row.CITY);
+      const cities = rows.map(row => row.city);
       return {
         data: cities,
         source: 'db'

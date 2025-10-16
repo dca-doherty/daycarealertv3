@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const enrollmentService = require('../../services/tourScheduling/enrollmentTrackingService');
+const { pool } = require("../../config/db");
 
 /**
  * POST /api/enrollments/confirm

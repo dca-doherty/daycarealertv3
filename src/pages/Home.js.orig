@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import DaycareDataView from '../components/DaycareDataView';
-import TourSelectionCart from '../components/TourScheduling/TourSelectionCart';
-import TourRequestModal from '../components/TourScheduling/TourRequestModal';
-import TourSuccessModal from '../components/TourScheduling/TourSuccessModal';
-import { useTourSelection } from '../hooks/useTourSelection';
 import DaycareDetails from '../components/DaycareDetails';
 import SortFilterWrapper from '../components/SortFilterWrapper';
 import { fetchTotalDaycareCount, fetchFilteredDaycareData, fetchDaycareById } from '../utils/api';
@@ -50,14 +46,6 @@ const Home = ({ tabView, profileId }) => {
   const [activeTab, setActiveTab] = useState(initialTabView);
   // eslint-disable-next-line no-unused-vars
   const [dataSourcePref, setDataSourcePref] = useState('Optimized MySQL');
-
-  // Tour scheduling state
-  const tourSelection = useTourSelection();
-  const [showTourModal, setShowTourModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [submittedTourId, setSubmittedTourId] = useState(null);
-  const [submittedDaycares, setSubmittedDaycares] = useState([]);
-  const [tourSubmitting, setTourSubmitting] = useState(false);
   
   // Check if specific daycare ID was provided
   // Utility function to ensure all daycares have normalized violation counts
@@ -2232,8 +2220,6 @@ const Home = ({ tabView, profileId }) => {
         sortDirection={sortDirection}
         filterOptions={filters} // This is passing the filters to DaycareDataView
         viewType="daycares"
-        onSelectForTour={tourSelection.addDaycare}
-        selectedForTour={tourSelection.isSelected}
         expandable={false}
         headerImage={heroImage}
         searchPlaceholder="Search by daycare name, city, type, zip code..."
@@ -2247,44 +2233,6 @@ const Home = ({ tabView, profileId }) => {
           onClose={handleCloseDetails}
           initialTab={activeTab}
           dataSource="API"
-        />
-      )}
-
-      {/* Tour Selection Cart */}
-      <TourSelectionCart
-        selectedDaycares={tourSelection.selectedDaycares}
-        onRemoveDaycare={tourSelection.removeDaycare}
-        onClearAll={tourSelection.clearSelection}
-        onRequestTours={() => setShowTourModal(true)}
-      />
-
-      {/* Tour Request Modal */}
-      {showTourModal && (
-        <TourRequestModal
-          selectedDaycares={tourSelection.selectedDaycares}
-          onClose={() => setShowTourModal(false)}
-          onSuccess={(tourId, daycares) => {
-            setSubmittedTourId(tourId);
-            setSubmittedDaycares(daycares);
-            setShowTourModal(false);
-            setShowSuccessModal(true);
-            tourSelection.clearSelection();
-          }}
-          submitting={tourSubmitting}
-          setSubmitting={setTourSubmitting}
-        />
-      )}
-
-      {/* Tour Success Modal */}
-      {showSuccessModal && (
-        <TourSuccessModal
-          tourId={submittedTourId}
-          daycares={submittedDaycares}
-          onClose={() => {
-            setShowSuccessModal(false);
-            setSubmittedTourId(null);
-            setSubmittedDaycares([]);
-          }}
         />
       )}
     </>

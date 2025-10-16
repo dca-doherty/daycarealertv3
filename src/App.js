@@ -17,6 +17,8 @@ import Enterprise from './pages/Enterprise';
 import ApiDocs from './pages/ApiDocs';
 import Alerts from './pages/Alerts';
 import Profile from './pages/Profile';
+import EnrollmentConfirmation from './pages/EnrollmentConfirmation';
+import CommissionDashboard from './pages/CommissionDashboard';
 import Marketplace from './pages/Marketplace';
 import Sponsors from './pages/sponsors';
 import CostEstimator from './pages/CostEstimator';
@@ -144,7 +146,8 @@ function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
-                
+                <Route path="/enrollment-confirm/:enrollmentId" element={<EnrollmentConfirmation />} />
+		<Route path="/admin/commissions" element={<CommissionDashboard />} />
                 {/* Enterprise & API Documentation - B2B Services */}
                 <Route path="/enterprise" element={<Enterprise />} />
                 <Route path="/api-docs" element={<ApiDocs />} />

@@ -1,0 +1,17 @@
+--- src/pages/Home.js
++++ src/pages/Home.js
+@@ -47,6 +51,14 @@
+   // eslint-disable-next-line no-unused-vars
+   const [dataSourcePref, setDataSourcePref] = useState('Optimized MySQL');
+ 
++  // Tour scheduling state
++  const tourSelection = useTourSelection();
++  const [showTourModal, setShowTourModal] = useState(false);
++  const [showSuccessModal, setShowSuccessModal] = useState(false);
++  const [submittedTourId, setSubmittedTourId] = useState(null);
++  const [submittedDaycares, setSubmittedDaycares] = useState([]);
++  const [tourSubmitting, setTourSubmitting] = useState(false);
++
+   // Check if specific daycare ID was provided
+   // Utility function to ensure all daycares have normalized violation counts
+ 
