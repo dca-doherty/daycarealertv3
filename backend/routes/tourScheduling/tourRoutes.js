@@ -29,12 +29,14 @@ router.post('/', async (req, res) => {
     // Create tour request
     const result = await tourRequestService.createTourRequest(parentInfo, selectedDaycares);
     
-    // Send confirmation email to parent
-    await emailService.sendParentConfirmationEmail(
-      result.tourRequestId,
-      parentInfo,
-      selectedDaycares
-    );
+    // Send confirmation email to parent (async, don't block response)
+    setImmediate(() => {
+      emailService.sendParentConfirmationEmail(
+        result.tourRequestId,
+        parentInfo,
+        selectedDaycares
+      ).catch(err => console.error('Error sending parent email (ignored):', err));
+    });
     
     res.json(result);
     

@@ -6,6 +6,7 @@ export const useTourSelection = () => {
   const [selectedDaycares, setSelectedDaycares] = useState([]);
   
   const addDaycare = useCallback((daycare) => {
+    console.log("addDaycare called with:", daycare);
     setSelectedDaycares(prev => {
       // Check if already selected
       if (prev.some(d => d.operation_id === daycare.operation_id)) {
@@ -28,7 +29,7 @@ export const useTourSelection = () => {
     );
   }, []);
   
-  const clearSelections = useCallback(() => {
+  const clearSelection = useCallback(() => {
     setSelectedDaycares([]);
   }, []);
   
@@ -42,7 +43,7 @@ export const useTourSelection = () => {
     selectedDaycares,
     addDaycare,
     removeDaycare,
-    clearSelections,
+    clearSelection,
     isSelected,
     canAddMore,
     selectionCount: selectedDaycares.length,

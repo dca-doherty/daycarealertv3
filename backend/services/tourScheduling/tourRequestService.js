@@ -53,8 +53,10 @@ class TourRequestService {
       await connection.commit();
       
       // Send emails asynchronously
-      this.sendTourRequestEmails(tourRequestId, requestData, selectedDaycares)
-        .catch(err => console.error('Error sending emails:', err));
+      setImmediate(() => {
+        this.sendTourRequestEmails(tourRequestId, requestData, selectedDaycares)
+        .catch(err => console.error('Error sending emails (ignored):', err));
+      });
       
       return {
         success: true,

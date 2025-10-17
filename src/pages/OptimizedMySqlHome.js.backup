@@ -3,7 +3,6 @@ import { useParams, useLocation } from 'react-router-dom';
 import DaycareDataView from '../components/DaycareDataView';
 import DaycareDetails from '../components/DaycareDetails';
 import DaycareComparison from '../components/DaycareComparison';
-import TourRequestModal from '../components/TourScheduling/TourRequestModal';
 import { Button } from 'react-bootstrap';
 import { fetchDaycares, fetchDaycareById, fetchCities } from '../utils/optimizedMysqlApi';
 import { initializeGlobalStore, getDaycareViolationData } from '../utils/violationHelper';
@@ -24,11 +23,6 @@ const OptimizedMySqlHome = ({ tabView, profileId }) => {
   const [compareMode, setCompareMode] = useState(false);
   const [daycareComparison, setDaycareComparison] = useState([]);
   const [showComparisonModal, setShowComparisonModal] = useState(false);
-
-  // Tour mode state
-  const [tourMode, setTourMode] = useState(false);
-  const [tourSelection, setTourSelection] = useState([]);
-  const [showTourModal, setShowTourModal] = useState(false);
   
   // Define comparison functions with useCallback to prevent recreation on each render
   const toggleCompareMode = useCallback(() => {
@@ -61,6 +55,10 @@ const OptimizedMySqlHome = ({ tabView, profileId }) => {
     window.daycarealertCompareMode = compareMode;
     window.daycareComparisonCount = daycareComparison.length;
     window.toggleCompareMode = toggleCompareMode;
+    window.toggleTourMode = toggleTourMode;
+    window.openTourModal = openTourModal;
+    window.toggleTourMode = toggleTourMode;
+    window.openTourModal = openTourModal;
     window.openComparisonModal = openComparisonModal;
     
     // Clean up global variables when component unmounts
@@ -68,6 +66,10 @@ const OptimizedMySqlHome = ({ tabView, profileId }) => {
       window.daycarealertCompareMode = undefined;
       window.daycareComparisonCount = undefined;
       window.toggleCompareMode = undefined;
+      window.toggleTourMode = undefined;
+      window.openTourModal = undefined;
+      window.toggleTourMode = undefined;
+      window.openTourModal = undefined;
       window.openComparisonModal = undefined;
     };
   }, [compareMode, daycareComparison.length, toggleCompareMode, openComparisonModal]);
@@ -571,59 +573,6 @@ const OptimizedMySqlHome = ({ tabView, profileId }) => {
   const isInComparison = useCallback((daycare) => {
     return daycareComparison.some(d => d.operation_id === daycare.operation_id);
   }, [daycareComparison]);
-  // Tour mode functions
-  const toggleTourMode = useCallback(() => {
-    setTourMode(prev => {
-      const newValue = !prev;
-      // Update window global immediately
-      window.daycarealertTourMode = newValue;
-      
-      if (!newValue) {
-        // Turning OFF tour mode - clear selections
-        setTourSelection([]);
-      } else {
-        // Turning ON tour mode - disable compare mode
-        setCompareMode(false);
-        setDaycareComparison([]);
-      }
-      
-      return newValue;
-    });
-  }, []);
-
-  const addToTourSelection = useCallback((daycare) => {
-    setTourSelection(prev => {
-      if (prev.some(d => d.operation_id === daycare.operation_id)) {
-        return prev;
-      }
-      if (prev.length >= 5) {
-        alert('Maximum 5 daycares can be selected for tours');
-        return prev;
-      }
-      return [...prev, daycare];
-    });
-  }, []);
-
-  const removeFromTourSelection = useCallback((daycare) => {
-    setTourSelection(prev => prev.filter(d => d.operation_id !== daycare.operation_id));
-  }, []);
-
-  const isInTourSelection = useCallback((daycare) => {
-    return tourSelection.some(d => d.operation_id === daycare.operation_id);
-  }, [tourSelection]);
-
-  const openTourModal = useCallback(() => {
-    if (tourSelection.length > 0) {
-      setShowTourModal(true);
-    } else {
-      alert('Please select at least one daycare to schedule a tour');
-    }
-  }, [tourSelection.length]);
-
-  const closeTourModal = useCallback(() => {
-    setShowTourModal(false);
-  }, []);
-
 
   // Add a daycare to comparison
   const addToComparison = useCallback((daycare) => {
@@ -657,40 +606,14 @@ const OptimizedMySqlHome = ({ tabView, profileId }) => {
     window.daycareComparisonCount = newComparison.length;
   }, [daycareComparison]);
 
-
-  // Initialize window global variables
-  useEffect(() => {
-    window.daycarealertCompareMode = compareMode;
-    window.daycareComparisonCount = daycareComparison.length;
-    window.toggleCompareMode = toggleCompareMode;
-    window.openComparisonModal = openComparisonModal;
-    window.daycarealertTourMode = tourMode;
-    window.tourSelectionCount = tourSelection.length;
-    window.toggleTourMode = toggleTourMode;
-    window.openTourModal = openTourModal;
-    
-    return () => {
-      window.daycarealertCompareMode = undefined;
-      window.daycareComparisonCount = undefined;
-      window.toggleCompareMode = undefined;
-      window.openComparisonModal = undefined;
-      window.daycarealertTourMode = undefined;
-      window.tourSelectionCount = undefined;
-      window.toggleTourMode = undefined;
-      window.openTourModal = undefined;
-    };
-  }, [compareMode, daycareComparison.length, toggleCompareMode, openComparisonModal, tourMode, tourSelection.length, toggleTourMode, openTourModal]);
-
   // Handle daycare selection from the data view
   const handleDaycareSelect = useCallback((daycare, fromComparison = false) => {
-    // If in tour mode, add to tour selection instead of opening details
-    if (tourMode && !fromComparison) {
+    // If in tour mode, toggle tour selection
+    if (tourMode) {
       if (isInTourSelection(daycare)) {
         removeFromTourSelection(daycare);
-        // Notification: Removed from tour
       } else {
         addToTourSelection(daycare);
-        // Notification: Added to tour
       }
       return;
     }
@@ -783,7 +706,7 @@ const OptimizedMySqlHome = ({ tabView, profileId }) => {
     
     // Store the scroll position in a data attribute for restoration later
     document.body.setAttribute('data-previous-scroll', scrollPosition);
-  }, [compareMode, initialTabView, isInComparison, addToComparison, removeFromComparison, tourMode, isInTourSelection, addToTourSelection, removeFromTourSelection]);
+  }, [compareMode, initialTabView, isInComparison, addToComparison, removeFromComparison]);
   
   // Handle closing the daycare details modal
   const handleCloseDetails = useCallback(() => {
@@ -801,7 +724,80 @@ const OptimizedMySqlHome = ({ tabView, profileId }) => {
   // Close comparison modal
   const closeComparisonModal = useCallback(() => {
     setShowComparisonModal(false);
+  }, []);  
+  // State for tour selection (similar to comparison)
+  const [tourMode, setTourMode] = useState(false);
+  const [tourSelection, setTourSelection] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [showTourModal, setShowTourModal] = useState(false);
+  
+  // Toggle tour mode
+  const toggleTourMode = useCallback(() => {
+    const newTourMode = !tourMode;
+    setTourMode(newTourMode);
+    
+    // Update window global variables for cross-component communication
+    window.daycarealertTourMode = newTourMode;
+    window.tourSelectionCount = newTourMode ? tourSelection.length : 0;
+    
+    if (tourMode) {
+      // If turning off tour mode, clear the selection list
+      setTourSelection([]);
+      window.tourSelectionCount = 0;
+    }
+  }, [tourMode, tourSelection.length]);
+
+  // Open tour modal
+  const openTourModal = useCallback(() => {
+    if (tourSelection.length > 0) {
+      setShowTourModal(true);
+    } else {
+      alert('Please select at least one daycare to schedule a tour');
+    }
+  }, [tourSelection.length]);
+
+  // Check if a daycare is in the tour selection
+  const isInTourSelection = useCallback((daycare) => {
+    return tourSelection.some(d => d.operation_id === daycare.operation_id);
+  }, [tourSelection]);
+
+  // Add a daycare to tour selection
+  const addToTourSelection = useCallback((daycare) => {
+    if (!tourSelection.some(d => d.operation_id === daycare.operation_id)) {
+      const newSelection = [...tourSelection, daycare];
+      setTourSelection(newSelection);
+      
+      // Update window global variable
+      window.tourSelectionCount = newSelection.length;
+      
+      // Show notification
+      const notification = document.createElement('div');
+      notification.className = 'tour-notification';
+      notification.textContent = `Added ${daycare.operation_name} to tour list`;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+  }, [tourSelection]);
+
+  // Remove a daycare from tour selection
+  const removeFromTourSelection = useCallback((daycare) => {
+    const newSelection = tourSelection.filter(d => d.operation_id !== daycare.operation_id);
+    setTourSelection(newSelection);
+    
+    // Update window global variable
+    window.tourSelectionCount = newSelection.length;
+  }, [tourSelection]);
+
+  // Close tour modal
+  const closeTourModal = useCallback(() => {
+    setShowTourModal(false);
   }, []);
+
+
+
 
   // Column definitions for the responsive data table
   const columns = useMemo(() => {
@@ -954,7 +950,7 @@ const OptimizedMySqlHome = ({ tabView, profileId }) => {
 
   return (
     <>
-      <div className={`daycare-data-container ${compareMode ? 'comparison-mode-active' : ''}`}>
+      <div className={`daycare-data-container ${compareMode ? 'comparison-mode-active' : ''} ${tourMode ? 'tour-mode-active' : ''}`}>
         {/* Visual indicator for comparison mode */}
         {compareMode && (
           <div className="comparison-mode-banner">
@@ -964,6 +960,7 @@ const OptimizedMySqlHome = ({ tabView, profileId }) => {
               <span className="comparison-counter">{daycareComparison.length} daycares selected</span>
             </p>
           </div>
+
         )}
         
         <DaycareDataView
@@ -988,6 +985,10 @@ const OptimizedMySqlHome = ({ tabView, profileId }) => {
           headerImage={heroImage}
           searchPlaceholder="Search by daycare name, city, type, zipcode ..."
           onDaycareSelect={handleDaycareSelect}
+          onSelectForTour={tourMode ? addToTourSelection : null}
+          selectedForTour={(id) => tourSelection.some(d => d.operation_id === id)}
+          onSelectForTour={tourMode ? addToTourSelection : null}
+          selectedForTour={(id) => tourSelection.some(d => d.operation_id === id)}
           dataSource="OptimizedMySQL"
           enableFavorites={!compareMode} // Disable favorites when in comparison mode
         />
@@ -999,6 +1000,10 @@ const OptimizedMySqlHome = ({ tabView, profileId }) => {
           daycare={selectedDaycare} 
           onClose={handleCloseDetails}
           initialTab={activeTab}
+          onSelectForTour={tourMode ? addToTourSelection : null}
+          selectedForTour={(id) => tourSelection.some(d => d.operation_id === id)}
+          onSelectForTour={tourMode ? addToTourSelection : null}
+          selectedForTour={(id) => tourSelection.some(d => d.operation_id === id)}
           dataSource="OptimizedMySQL"
         />
       )}
@@ -1042,87 +1047,6 @@ const OptimizedMySqlHome = ({ tabView, profileId }) => {
           }}
         />
       )}
-
-      {/* Tour Mode Indicator */}
-      {tourMode && (
-        <div className="tour-mode-indicator">
-          <div className="tour-mode-content">
-            <span>Daycares selected for tours ({tourSelection.length}/5)</span>
-            <div className="tour-buttons">
-              <Button 
-                variant="outline-light" 
-                size="sm" 
-                onClick={toggleTourMode}
-                className="me-2"
-              >
-                Exit Tour Mode
-              </Button>
-              <Button 
-                variant="primary" 
-                size="sm" 
-                onClick={openTourModal}
-                disabled={tourSelection.length === 0}
-              >
-                Schedule Tours ({tourSelection.length})
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tour Request Modal */}
-      <TourRequestModal
-        isOpen={showTourModal}
-        selectedDaycares={tourSelection}
-        onClose={closeTourModal}
-        onSubmit={async (formData) => {
-          try {
-            const payload = {
-              parentInfo: {
-                parentName: formData.parentName,
-                parentEmail: formData.parentEmail,
-                parentPhone: formData.parentPhone,
-                parentAddress: formData.parentAddress || '',
-                numberOfChildren: formData.numberOfChildren,
-                childrenAges: formData.childrenAges,
-                preferredStartDate: formData.preferredStartDate,
-                availableDays: formData.availableDays,
-                preferredTimeSlots: formData.preferredTimeSlots,
-                additionalNotes: formData.additionalNotes || ''
-              },
-              selectedDaycares: tourSelection.map(d => ({
-                operation_id: d.operation_id,
-                operation_name: d.operation_name,
-                operation_type: d.operation_type,
-                location_address: d.location_address,
-                location_city: d.location_city,
-                location_state: d.location_state,
-                location_zip: d.location_zip
-              }))
-            };
-
-            const response = await fetch('/api/tour-requests', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-              alert(`✅ Success! Tour request #${data.tourRequestId} submitted!\n\nConfirmation emails have been sent.`);
-              setTourSelection([]);
-              setTourMode(false);
-              closeTourModal();
-            } else {
-              throw new Error(data.message || 'Failed to submit tour request');
-            }
-          } catch (error) {
-            console.error('Error submitting tour request:', error);
-            alert('❌ Failed to submit tour request. Please try again.');
-          }
-        }}
-      />
     </>
   );
 };

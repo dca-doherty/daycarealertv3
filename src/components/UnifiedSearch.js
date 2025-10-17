@@ -558,6 +558,44 @@ const UnifiedSearch = ({
           </div>
         </div>
       )}
+
+      {/* TOUR REQUEST TOOL */}
+      <div id="tour-request-controls" className="daycare-comparison-container" style={{margin: "0 0 15px 0"}}>
+        <div className="comparison-header">
+          <span>Tour Request Tool</span>
+        </div>
+        <div className="comparison-controls">
+          <button
+            id="select-tours-button"
+            className="comparison-toggle-button"
+            onClick={() => {
+              if (window.toggleTourMode) {
+                window.toggleTourMode();
+              }
+            }}
+          >
+            {window.daycarealertTourMode ? "EXIT TOUR MODE" : "SELECT DAYCARES FOR TOURS"}
+          </button>
+          {window.daycarealertTourMode && (
+            <div style={{marginTop: "10px"}}>
+              <button
+                className="comparison-view-button"
+                onClick={() => {
+                  if (window.openTourModal) {
+                    window.openTourModal();
+                  }
+                }}
+                disabled={window.tourSelectionCount === 0}
+              >
+                VIEW TOUR SCHEDULE ({window.tourSelectionCount || 0})
+              </button>
+            </div>
+          )}
+          <div style={{fontSize: "14px", color: "#333", marginTop: "10px"}}>
+            Click daycares below to add them to your tour request (max 5)
+          </div>
+        </div>
+      </div>
       
       <form onSubmit={handleSubmit} className="unified-search-form">
         <div className="search-controls">
