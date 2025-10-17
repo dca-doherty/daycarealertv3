@@ -1,0 +1,27 @@
+/* FORCE all table headers to be visible */
+table th,
+.table th,
+.responsive-table th {
+  display: table-cell !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* FORCE header content to be visible */
+th .header,
+th div {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: #333 !important;
+  font-weight: bold !important;
+  padding: 8px !important;
+}
+
+/* Target specific columns that are missing */
+th:nth-child(5),
+th:nth-child(6),
+th:nth-child(7) {
+  display: table-cell !important;
+  visibility: visible !important;
+}
